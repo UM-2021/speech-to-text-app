@@ -13,6 +13,7 @@ import { gridOutline, homeOutline, listOutline } from 'ionicons/icons';
 import Home from './pages/Home';
 import Sucursales from './pages/Sucursales';
 import Auditorias from './pages/MisAuditorias';
+import Login from './pages/Login';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -46,6 +47,9 @@ const App: React.FC = () => (
 					</Route>
 					<Route exact path='/auditorias'>
 						<Auditorias />
+					</Route>
+					<Route exact path='/login'>
+						<Login/>
 					</Route>
 					<Route exact path='/'>
 						<Redirect to='/home' />

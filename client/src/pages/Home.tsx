@@ -13,6 +13,8 @@ import {
 } from '@ionic/react';
 import { add } from 'ionicons/icons';
 
+import './Home.css';
+
 const Home: React.FC = () => {
 	return (
 		<IonPage>
@@ -32,7 +34,7 @@ const Home: React.FC = () => {
 					<span className='ion-text-left'>Iniciar Auditoría</span>
 				</IonButton>
         
-        <IonList inset={true} lines="full">
+        <IonList inset={true} lines="full" className="auditorias">
           <IonListHeader>
             <IonLabel>Auditorias</IonLabel>
           </IonListHeader>
