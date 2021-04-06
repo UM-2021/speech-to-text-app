@@ -11,7 +11,7 @@ import {
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
-import { add, storefrontOutline } from 'ionicons/icons';
+import { add, documentTextOutline } from 'ionicons/icons';
 
 const MisAuditorias: React.FC = () => {
 	const auditorias = [
@@ -58,7 +58,7 @@ const MisAuditorias: React.FC = () => {
 				<IonList>
 					{auditorias.map(a => (
 						<IonItem onClick={() => showDetail(a.title)}>
-							<IonIcon icon={storefrontOutline} />
+							<IonIcon icon={documentTextOutline} />
 							<IonLabel>
 								<h3>{a.title}</h3>
 							</IonLabel>

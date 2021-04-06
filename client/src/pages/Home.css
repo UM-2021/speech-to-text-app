@@ -2,3 +2,10 @@
     border: 1px solid;
     border-radius: 15px;
 }
+.list-item{
+    border-bottom: 2px dotted var(--ion-color-medium);
+}
+.list-header{
+    font-size: 2em;
+    border-bottom: 2px solid var(--ion-color-medium);
+}

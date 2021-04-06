@@ -33,6 +33,8 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import React from 'react';
+import Auditoria from './pages/Auditoria';
 
 const App: React.FC = () => (
 	<IonApp>
@@ -51,11 +53,14 @@ const App: React.FC = () => (
 					<Route exact path='/login'>
 						<Login/>
 					</Route>
+					<Route exact path='/auditoria'>
+						<Auditoria/>
+					</Route>
 					<Route exact path='/'>
 						<Redirect to='/home' />
 					</Route>
 				</IonRouterOutlet>
-				<IonTabBar slot='bottom'>
+				<IonTabBar slot='bottom' translucent={true}>
 					<IonTabButton tab='home' href='/home'>
 						<IonIcon icon={homeOutline} />
 						<IonLabel>Inicio</IonLabel>
@@ -66,7 +71,7 @@ const App: React.FC = () => (
 					</IonTabButton>
 					<IonTabButton tab='auditorias' href='/auditorias'>
 						<IonIcon icon={gridOutline} />
-						<IonLabel>Auditorias</IonLabel>
+						<IonLabel>Auditorías</IonLabel>
 					</IonTabButton>
 				</IonTabBar>
 			</IonTabs>
