@@ -71,9 +71,9 @@ const Home: React.FC = () => {
 							<IonTitle size='large'>Inicio</IonTitle>
 						</IonToolbar>
 					</IonHeader>
-					<IonButton expand='block' size='large' className='ion-margin' href='/login'>
+					<IonButton expand='block' size='large' className='ion-margin new-button' fill='clear' href='/login'>
 						<IonIcon icon={add} className='ion-float-start' />
-						<span className='ion-text-left'>Iniciar Auditoría</span>
+						<span>Iniciar Auditoría</span>
 					</IonButton>
 			
 			<IonList inset={true} lines="full" className="auditorias">
