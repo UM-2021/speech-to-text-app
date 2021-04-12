@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSlides, IonSlide, IonItem, IonLabel, IonRange, IonItemDivider,IonIcon, IonList, IonSelect, IonSelectOption} from '@ionic/react';
-import { RangeValue } from '@ionic/core';
-import { sunny } from 'ionicons/icons';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSlides, IonSlide, IonItem, IonLabel, IonItemDivider, IonList, IonSelect, IonSelectOption} from '@ionic/react';
+
 import './Auditoria.css';
+import PreguntaAudio from './PreguntaAudio';
+import PreguntaNumerica from './PreguntaNumerica';
 
 const Auditoria: React.FC = () => {
     const slideOpts = {
@@ -15,10 +16,6 @@ const Auditoria: React.FC = () => {
     lower: number;
     upper: number;
     }>({ lower: 0, upper: 0 });
-
-    const test = (value: string): void => {
-        console.log(value);
-    }
 
     const [hairColor, setHairColor] = useState<string>('brown');
 
@@ -37,15 +34,10 @@ const Auditoria: React.FC = () => {
 				</IonHeader>
                 <IonSlides className="slider" pager={true} options={slideOpts} style={{height: '100%'}}>
                     <IonSlide>
-                        <h1>Slide 1</h1>
+                        <PreguntaAudio pregunta="Tiene vidrios blindados?"/>
                     </IonSlide>
                     <IonSlide>
-                        <IonItem onFocus={() => test("si")} style={{width: '100%'}}>
-                            <IonRange min={0} max={100} color="secondary" pin={true} value={0} disabled={false} onIonChange={e => setValue(e.detail.value as number)} >
-                                <IonLabel slot="start">0</IonLabel>
-                                <IonLabel slot="end">100</IonLabel>
-                            </IonRange>
-                        </IonItem>
+                        <PreguntaNumerica pregunta="¿Cuantos vidrios blindadoy hay?"/>
                     </IonSlide>
                     <IonSlide>
                         <IonList>

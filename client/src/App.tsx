@@ -34,7 +34,7 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import React from 'react';
-import Auditoria from './pages/Auditoria';
+import Auditoria from './components/Auditoria';
 
 const App: React.FC = () => (
 	<IonApp>
