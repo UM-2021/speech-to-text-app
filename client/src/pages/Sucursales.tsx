@@ -26,7 +26,7 @@ const Sucursales: React.FC = () => {
 	];
 
   const showDetail = (title: string): void => {
-    const tech = sucursales.find(a => a.title === title);
+    // const tech = sucursales.find(a => a.title === title);
       // nav.push('nav-detail', { tech });
   }
 
