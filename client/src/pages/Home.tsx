@@ -1,4 +1,3 @@
-import { Redirect, Route } from 'react-router-dom';
 import {
 	IonContent,
 	IonHeader,
@@ -11,12 +10,9 @@ import {
 	IonItem,
 	IonLabel,
 	IonListHeader,
-	IonRouterOutlet,
 } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
 import { add, documentTextOutline } from 'ionicons/icons';
 import React from 'react';
-import Login from './Login';
 
 import './Home.css';
 
@@ -44,22 +40,13 @@ const Home: React.FC = () => {
 		}
 	];
 
-  const showDetail = (title: string): void => {
-    const tech = auditorias.find(a => a.title === title);
-      // nav.push('nav-detail', { tech });
-  }
+	const showDetail = (title: string): void => {
+		// const tech = auditorias.find(a => a.title === title);
+		// nav.push('nav-detail', { tech });
+	}
 
 	return (
-		<IonReactRouter>
 			<IonPage>
-				<IonRouterOutlet>
-					<Route exact path='/login'>
-						<Login />
-					</Route>
-					<Route exact path='/'>
-						<Redirect to='/home' />
-					</Route>
-				</IonRouterOutlet>
 				<IonHeader>
 					<IonToolbar>
 						<IonTitle>Inicio</IonTitle>
@@ -71,16 +58,16 @@ const Home: React.FC = () => {
 							<IonTitle size='large'>Inicio</IonTitle>
 						</IonToolbar>
 					</IonHeader>
-					<IonButton expand='block' size='large' className='ion-margin new-button' fill='clear' href='/login'>
+					<IonButton expand='block' size='large' className='ion-margin new-button' fill='clear' href='/auditoria/new'>
 						<IonIcon icon={add} className='ion-float-start' />
 						<span>Iniciar Auditoría</span>
 					</IonButton>
-			
-			<IonList inset={true} lines="full" className="auditorias">
-			<IonListHeader className="list-header">
-				<IonLabel>Auditorías</IonLabel>
-			</IonListHeader>
-			{auditorias.map(a => (
+
+					<IonList inset={true} lines="full" className="auditorias">
+						<IonListHeader className="list-header">
+							<IonLabel>Auditorías</IonLabel>
+						</IonListHeader>
+						{auditorias.map(a => (
 							<IonItem onClick={() => showDetail(a.title)} className="list-item">
 								<IonIcon icon={documentTextOutline} />
 								<IonLabel>
@@ -88,10 +75,9 @@ const Home: React.FC = () => {
 								</IonLabel>
 							</IonItem>
 						))}
-			</IonList>   
+					</IonList>
 				</IonContent>
 			</IonPage>
-		</IonReactRouter>
 	);
 };
 

@@ -1,4 +1,8 @@
 .rounded {
-    --border-radius: 50%;
-    height: 50px;
+	--border-radius: 50%;
+	height: 50px;
+}
+
+.bg-color {
+	background: inherit;
 }

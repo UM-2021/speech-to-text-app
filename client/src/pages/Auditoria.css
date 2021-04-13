@@ -4,6 +4,10 @@ h1{
     justify-content: center;
 }
 
+ion-slides {
+  height: 90%;
+}
+
 ion-select {
     /* Applies to the value and placeholder color */
     color: #545ca7;
