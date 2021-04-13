@@ -37,7 +37,7 @@ const Auditoria: React.FC = () => {
                         <PreguntaAudio pregunta="Tiene vidrios blindados?"/>
                     </IonSlide>
                     <IonSlide>
-                        <PreguntaNumerica pregunta="¿Cuantos vidrios blindadoy hay?"/>
+                        <PreguntaNumerica pregunta="¿Cuantos vidrios blindados hay?"/>
                     </IonSlide>
                     <IonSlide>
                         <IonList>
