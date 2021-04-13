@@ -1,16 +1,29 @@
-.auditorias{
-    border: 1px solid;
-    border-radius: 15px;
+.list-container {
+  display: flex;
+  flex-direction: column;
+	height: 60%;
+	border: 2px solid #d6d9e4;
+	border-radius: 4px !important;
+  overflow-y: scroll;
 }
-.list-item{
-    border-bottom: 2px dotted var(--ion-color-medium);
-}
-.list-header{
-    font-size: 2em;
-    border-bottom: 2px solid var(--ion-color-medium);
+.list {
+  height: 100%;
+	overflow-y: scroll;
 }
 
-.new-button {
+.list-header {
+	position: relative;
+	top: 0;
+}
+.list-item {
+	border-bottom: 2px dotted #bcbfca;
+  --border-width: 0 !important;
+}
+/* .list-header{
+    border-bottom: 2px solid var(--ion-color-medium);
+} */
+
+/* .new-button {
     min-width: 300px;
     min-height: 60px;
     font-family: 'Nunito', sans-serif;
@@ -63,4 +76,4 @@
     transform: translate(-50%, -50%);
     animation: none;
     display: none;
-  }
+  } */

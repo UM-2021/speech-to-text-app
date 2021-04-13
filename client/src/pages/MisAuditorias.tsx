@@ -12,6 +12,7 @@ import {
 	IonToolbar
 } from '@ionic/react';
 import { add, documentTextOutline } from 'ionicons/icons';
+import { Link } from 'react-router-dom';
 
 const MisAuditorias: React.FC = () => {
 	const auditorias = [
@@ -37,10 +38,10 @@ const MisAuditorias: React.FC = () => {
 		}
 	];
 
-  const showDetail = (title: string): void => {
-    const tech = auditorias.find(a => a.title === title);
-      // nav.push('nav-detail', { tech });
-  }
+	const showDetail = (title: string): void => {
+		const tech = auditorias.find(a => a.title === title);
+		// nav.push('nav-detail', { tech });
+	};
 
 	return (
 		<IonPage>
@@ -66,9 +67,11 @@ const MisAuditorias: React.FC = () => {
 					))}
 				</IonList>
 				<IonFab vertical='bottom' horizontal='end' slot='fixed'>
-					<IonFabButton>
-						<IonIcon icon={add} />
-					</IonFabButton>
+					<Link to='/auditoria/new'>
+						<IonFabButton>
+							<IonIcon icon={add} />
+						</IonFabButton>
+					</Link>
 				</IonFab>
 			</IonContent>
 		</IonPage>

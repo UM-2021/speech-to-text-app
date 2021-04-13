@@ -53,17 +53,15 @@ const App: React.FC = () => (
 						<Auditorias />
 					</Route>
 					<Route exact path='/login'>
-						<Login/>
+						<Login />
 					</Route>
 					<Route exact path='/auditoria'>
-						<Auditoria/>
+						<Auditoria />
 					</Route>
 					<Route exact path='/auditoria/new'>
-						<NuevaAuditoria/>
+						<NuevaAuditoria />
 					</Route>
-					<Route exact path='/auditoria/formulario'>
-						<FormularioAuditoria/>
-					</Route>
+					<Route exact path='/auditoria/formulario/:id' component={FormularioAuditoria} />
 					<Route exact path='/'>
 						<Redirect to='/home' />
 					</Route>
