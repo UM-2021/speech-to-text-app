@@ -4,7 +4,7 @@ import { add, storefrontOutline } from 'ionicons/icons';
 const Sucursales: React.FC = () => {
   const sucursales = [
 		{
-			title: '18 de julio esq. noseque',
+			title: '18 de julio esq. Calle',
 			description: 'Este local fue auditado correctamente',
 			color: '#E63135'
 		},
@@ -26,7 +26,7 @@ const Sucursales: React.FC = () => {
 	];
 
   const showDetail = (title: string): void => {
-    const tech = sucursales.find(a => a.title === title);
+    // const tech = sucursales.find(a => a.title === title);
       // nav.push('nav-detail', { tech });
   }
 
@@ -53,11 +53,6 @@ const Sucursales: React.FC = () => {
 						</IonItem>
 					))}
 				</IonList>
-				<IonFab vertical='bottom' horizontal='end' slot='fixed'>
-					<IonFabButton>
-						<IonIcon icon={add} />
-					</IonFabButton>
-				</IonFab>
 			</IonContent>
 		</IonPage>
   );

@@ -35,6 +35,8 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import React from 'react';
 import Auditoria from './pages/Auditoria';
+import NuevaAuditoria from './pages/NuevaAuditoria';
+import FormularioAuditoria from './pages/FormularioAuditoria';
 
 const App: React.FC = () => (
 	<IonApp>
@@ -51,11 +53,15 @@ const App: React.FC = () => (
 						<Auditorias />
 					</Route>
 					<Route exact path='/login'>
-						<Login/>
+						<Login />
 					</Route>
 					<Route exact path='/auditoria'>
-						<Auditoria/>
+						<Auditoria />
 					</Route>
+					<Route exact path='/auditoria/new'>
+						<NuevaAuditoria />
+					</Route>
+					<Route exact path='/auditoria/formulario/:id' component={FormularioAuditoria} />
 					<Route exact path='/'>
 						<Redirect to='/home' />
 					</Route>
