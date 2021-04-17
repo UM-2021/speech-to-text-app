@@ -1,7 +1,5 @@
 import {
 	IonContent,
-	IonFab,
-	IonFabButton,
 	IonHeader,
 	IonIcon,
 	IonItem,
@@ -11,11 +9,10 @@ import {
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
-import { add, documentTextOutline } from 'ionicons/icons';
-import { Link } from 'react-router-dom';
+import { alertCircleOutline, arrowForwardOutline } from 'ionicons/icons';
 
-const MisAuditorias: React.FC = () => {
-	const auditorias = [
+const Incidentes: React.FC = () => {
+	const incidentes = [
 		{
 			title: '18 de julio esq. noseque',
 			description: 'Este local fue auditado correctamente',
@@ -38,44 +35,33 @@ const MisAuditorias: React.FC = () => {
 		}
 	];
 
-	const showDetail = (title: string): void => {
-		const tech = auditorias.find(a => a.title === title);
-		// nav.push('nav-detail', { tech });
-	};
-
 	return (
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					<IonTitle>Auditorías</IonTitle>
+					<IonTitle>Incidentes asignados</IonTitle>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent fullscreen>
 				<IonHeader collapse='condense'>
 					<IonToolbar>
-						<IonTitle size='large'>Mis auditorías</IonTitle>
+						<IonTitle size='large'>Incidentes asignados</IonTitle>
 					</IonToolbar>
 				</IonHeader>
 				<IonList>
-					{auditorias.map(a => (
-						<IonItem onClick={() => showDetail(a.title)}>
-							<IonIcon icon={documentTextOutline} />
+					{incidentes.map(a => (
+						<IonItem button>
+							<IonIcon slot='start' icon={alertCircleOutline} />
 							<IonLabel>
 								<h3>{a.title}</h3>
 							</IonLabel>
+							<IonIcon slot='end' icon={arrowForwardOutline} />
 						</IonItem>
 					))}
 				</IonList>
-				<IonFab vertical='bottom' horizontal='end' slot='fixed'>
-					<Link to='/auditoria/new'>
-						<IonFabButton>
-							<IonIcon icon={add} />
-						</IonFabButton>
-					</Link>
-				</IonFab>
 			</IonContent>
 		</IonPage>
 	);
 };
 
-export default MisAuditorias;
+export default Incidentes;

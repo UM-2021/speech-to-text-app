@@ -3,6 +3,7 @@ import {
 	IonButtons,
 	IonContent,
 	IonHeader,
+	IonIcon,
 	IonItem,
 	IonList,
 	IonPage,
@@ -10,10 +11,11 @@ import {
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
+import { arrowForwardOutline } from 'ionicons/icons';
 import React from 'react';
 import { useHistory, Link } from 'react-router-dom';
 
-const NuevaAuditoria: React.FC = () => {
+const SeleccionSucursalParaAuditoria: React.FC = () => {
 	let history = useHistory();
 	const sucursales = [
 		{
@@ -41,97 +43,97 @@ const NuevaAuditoria: React.FC = () => {
 			color: '#FFD439'
 		},
 		{
-			id: 1,
+			id: 5,
 			title: '18 de julio esq. Calle',
 			description: 'Este local fue auditado correctamente',
 			color: '#E63135'
 		},
 		{
-			id: 2,
+			id: 6,
 			title: 'Prado',
 			description: 'The latest version of cascading stylesheets - the styling language of the web!',
 			color: '#0CA9EA'
 		},
 		{
-			id: 3,
+			id: 7,
 			title: 'Av. Brasil 2394',
 			description: "The latest version of the web's markup language.",
 			color: '#F46529'
 		},
 		{
-			id: 4,
+			id: 8,
 			title: 'Ciudad vieja',
 			description: 'One of the most popular programming languages on the Web!',
 			color: '#FFD439'
 		},
 		{
-			id: 1,
+			id: 9,
 			title: '18 de julio esq. Calle',
 			description: 'Este local fue auditado correctamente',
 			color: '#E63135'
 		},
 		{
-			id: 2,
+			id: 10,
 			title: 'Prado',
 			description: 'The latest version of cascading stylesheets - the styling language of the web!',
 			color: '#0CA9EA'
 		},
 		{
-			id: 3,
+			id: 11,
 			title: 'Av. Brasil 2394',
 			description: "The latest version of the web's markup language.",
 			color: '#F46529'
 		},
 		{
-			id: 4,
+			id: 12,
 			title: 'Ciudad vieja',
 			description: 'One of the most popular programming languages on the Web!',
 			color: '#FFD439'
 		},
 		{
-			id: 1,
+			id: 13,
 			title: '18 de julio esq. Calle',
 			description: 'Este local fue auditado correctamente',
 			color: '#E63135'
 		},
 		{
-			id: 2,
+			id: 14,
 			title: 'Prado',
 			description: 'The latest version of cascading stylesheets - the styling language of the web!',
 			color: '#0CA9EA'
 		},
 		{
-			id: 3,
+			id: 15,
 			title: 'Av. Brasil 2394',
 			description: "The latest version of the web's markup language.",
 			color: '#F46529'
 		},
 		{
-			id: 4,
+			id: 16,
 			title: 'Ciudad vieja',
 			description: 'One of the most popular programming languages on the Web!',
 			color: '#FFD439'
 		},
 		{
-			id: 1,
+			id: 17,
 			title: '18 de julio esq. Calle',
 			description: 'Este local fue auditado correctamente',
 			color: '#E63135'
 		},
 		{
-			id: 2,
+			id: 18,
 			title: 'Prado',
 			description: 'The latest version of cascading stylesheets - the styling language of the web!',
 			color: '#0CA9EA'
 		},
 		{
-			id: 3,
+			id: 19,
 			title: 'Av. Brasil 2394',
 			description: "The latest version of the web's markup language.",
 			color: '#F46529'
 		},
 		{
-			id: 4,
+			id: 20,
 			title: 'Ciudad vieja',
 			description: 'One of the most popular programming languages on the Web!',
 			color: '#FFD439'
@@ -142,7 +144,7 @@ const NuevaAuditoria: React.FC = () => {
 			<IonHeader translucent>
 				<IonToolbar className='toolbar'>
 					<IonButtons slot='start'>
-						<IonButton color='light' onClick={() => history.goBack()}>Cancelar</IonButton>
+						<IonButton size='small' color='light' onClick={() => history.goBack()}>Cancelar</IonButton>
 					</IonButtons>
 					<IonTitle size='large'>Nueva Auditoría</IonTitle>
 				</IonToolbar>
@@ -161,8 +163,11 @@ const NuevaAuditoria: React.FC = () => {
 
 				<IonList>
 					{sucursales.map(s => (
-						<Link to={`/auditoria/formulario/${s.id}`} style={{ textDecoration: 'none' }}>
-							<IonItem>{s.title}</IonItem>
+						<Link key={s.id} to={`/auditoria/datos/${s.id}`} style={{ textDecoration: 'none' }}>
+							<IonItem>
+								{s.title}
+								<IonIcon slot='end' icon={arrowForwardOutline} />
+							</IonItem>
 						</Link>
 					))}
 				</IonList>
@@ -171,4 +176,4 @@ const NuevaAuditoria: React.FC = () => {
 	);
 };
 
-export default NuevaAuditoria;
+export default SeleccionSucursalParaAuditoria;

@@ -12,15 +12,17 @@ import {
 	IonItemDivider,
 	IonList,
 	IonSelect,
-	IonSelectOption
+	IonSelectOption,
+	IonButtons,
+	IonButton
 } from '@ionic/react';
 
-import './Auditoria.css';
+import './PreguntasAuditoria.css';
 import PreguntaNumerica from '../components/PreguntaNumerica';
 import Pregunta from '../components/Pregunta';
 import PreguntaAudio from '../components/PreguntaAudio';
 
-const Auditoria: React.FC = () => {
+const PreguntasAuditoria: React.FC = () => {
 	const slideOpts = {
 		initialSlide: 1,
 		speed: 400
@@ -33,6 +35,9 @@ const Auditoria: React.FC = () => {
 			<IonHeader>
 				<IonToolbar>
 					<IonTitle>Nueva Auditoría</IonTitle>
+					<IonButtons slot='end'>
+						<IonButton color='danger'>Salir</IonButton>
+					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
@@ -78,4 +83,4 @@ const Auditoria: React.FC = () => {
 	);
 };
 
-export default Auditoria;
+export default PreguntasAuditoria;
