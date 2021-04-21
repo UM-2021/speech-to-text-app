@@ -4,5 +4,6 @@
 }
 
 .bg-color {
+	/* grid-row: -1; */
 	background: inherit;
 }

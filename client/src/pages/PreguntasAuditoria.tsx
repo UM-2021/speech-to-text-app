@@ -37,7 +37,7 @@ const PreguntasAuditoria: React.FC = () => {
 				{
 					pregunta: '¿Cuenta con vidrios blindados de 32mm?',
 					tipo: 'Opciones',
-					opciones: ['Si', 'No', 'Capaz', 'No corresponde', 'Otra opcion mas larga mas larga']
+					opciones: ['Si', 'No', 'Capaz', 'No corresponde']
 				},
 				{
 					pregunta: '¿Cuantos siniestro ha tenido?',
@@ -75,6 +75,7 @@ const PreguntasAuditoria: React.FC = () => {
 					{preguntas.map(p => (
 						<IonSlide>
 							<Pregunta pregunta={p.pregunta}>
+								{p.tipo === 'Audio' && <div></div>}
 								{p.tipo === 'Opciones' && <PreguntaOpciones opciones={p.opciones} />}
 								{p.tipo === 'Numerica' && <PreguntaNumerica />}
 								<PreguntaAudio />
