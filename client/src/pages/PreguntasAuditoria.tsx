@@ -24,7 +24,7 @@ import PreguntaAudio from '../components/PreguntaAudio';
 
 const PreguntasAuditoria: React.FC = () => {
 	const slideOpts = {
-		initialSlide: 1,
+		initialSlide: 0,
 		speed: 400
 	};
 
