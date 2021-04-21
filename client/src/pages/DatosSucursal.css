@@ -1,0 +1,9 @@
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.block-btn {
+    width: 50%;
+}
