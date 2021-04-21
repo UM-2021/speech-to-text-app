@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	IonContent,
 	IonHeader,
@@ -21,14 +21,33 @@ import './PreguntasAuditoria.css';
 import PreguntaNumerica from '../components/PreguntaNumerica';
 import Pregunta from '../components/Pregunta';
 import PreguntaAudio from '../components/PreguntaAudio';
+import PreguntaOpciones from '../components/PreguntaOpciones';
 
 const PreguntasAuditoria: React.FC = () => {
-	const slideOpts = {
-		initialSlide: 0,
-		speed: 400
-	};
+	const [preguntas, setPreguntas] = useState<{ pregunta: string; tipo: string; opciones?: string[] }[]>([]);
 
-	const [hairColor, setHairColor] = useState<string>('brown');
+	useEffect(() => {
+		const fetchPreguntas = async () => {
+			console.log('Fetch preguntas');
+			setPreguntas([
+				{
+					pregunta: '¿Cumple con los requisitos de la norma N-12?',
+					tipo: 'Audio'
+				},
+				{
+					pregunta: '¿Cuenta con vidrios blindados de 32mm?',
+					tipo: 'Opciones',
+					opciones: ['Si', 'No', 'Capaz', 'No corresponde', 'Otra opcion mas larga mas larga']
+				},
+				{
+					pregunta: '¿Cuantos siniestro ha tenido?',
+					tipo: 'Numerica'
+				}
+			]);
+		};
+
+		fetchPreguntas();
+	}, []);
 
 	return (
 		<IonPage>
@@ -46,37 +65,22 @@ const PreguntasAuditoria: React.FC = () => {
 						<IonTitle size='large'>Nueva Auditoría</IonTitle>
 					</IonToolbar>
 				</IonHeader>
-				<IonSlides className='slider' pager={true} options={slideOpts}>
-					<IonSlide>
-						<Pregunta pregunta='¿Cumple con los requisitos de la norma N-12?'>
-							<PreguntaAudio />
-						</Pregunta>
-					</IonSlide>
-					<IonSlide>
-						<Pregunta pregunta='¿Cuantos vidrios blindadoy hay?'>
-							<PreguntaNumerica />
-						</Pregunta>
-					</IonSlide>
-					<IonSlide>
-						<IonList>
-							<IonLabel>Hair Color</IonLabel>
-							<IonSelect
-								value={hairColor}
-								okText='Okay'
-								cancelText='Dismiss'
-								onIonChange={e => setHairColor(e.detail.value)}>
-								<IonSelectOption value='brown'>Brown</IonSelectOption>
-								<IonSelectOption value='blonde'>Blonde</IonSelectOption>
-								<IonSelectOption value='black'>Black</IonSelectOption>
-								<IonSelectOption value='red'>Red</IonSelectOption>
-							</IonSelect>
-							<IonItemDivider>Your Selections</IonItemDivider>
-							<IonItem>Hair Color: {hairColor}</IonItem>
-						</IonList>
-					</IonSlide>
-					<IonSlide>
-						<h1>Slide 4</h1>
-					</IonSlide>
+				<IonSlides
+					className='slider'
+					pager={true}
+					options={{
+						initialSlide: 0,
+						speed: 400
+					}}>
+					{preguntas.map(p => (
+						<IonSlide>
+							<Pregunta pregunta={p.pregunta}>
+								{p.tipo === 'Opciones' && <PreguntaOpciones opciones={p.opciones} />}
+								{p.tipo === 'Numerica' && <PreguntaNumerica />}
+								<PreguntaAudio />
+							</Pregunta>
+						</IonSlide>
+					))}
 				</IonSlides>
 			</IonContent>
 		</IonPage>

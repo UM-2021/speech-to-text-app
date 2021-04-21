@@ -62,11 +62,11 @@ const Sucursales: React.FC = () => {
 					showClearButton='focus'></IonSearchbar>
 
 				<IonList>
-					{sucursales.map(a => (
-						<Link key={a.id} to={`/sucursal/perfil/${a.id}`} style={{ textDecoration: 'none' }}>
+					{sucursales.map(s => (
+						<Link key={s.id} to={`/sucursal/perfil/${s.id}`} style={{ textDecoration: 'none' }}>
 							<IonItem button>
 								<IonIcon slot='start' icon={storefrontOutline} />
-								<IonLabel>{a.title}</IonLabel>
+								<IonLabel>{s.title}</IonLabel>
 								<IonIcon slot='end' icon={arrowForwardOutline} />
 							</IonItem>
 						</Link>

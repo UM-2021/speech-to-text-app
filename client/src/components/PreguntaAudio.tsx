@@ -22,8 +22,7 @@ const PreguntaAudio: React.FC = () => {
 	}
 
 	return (
-		<IonSegment className='ion-justify-content-between bg-color'>
-			<h1>{status}</h1>
+		<IonSegment className='ion-justify-content-between bg-color ion-margin-top'>
 			<IonButton color='light' className='rounded '>
 				<IonIcon icon={cameraOutline} />
 			</IonButton>

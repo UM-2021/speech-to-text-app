@@ -49,11 +49,11 @@ const Incidentes: React.FC = () => {
 					</IonToolbar>
 				</IonHeader>
 				<IonList>
-					{incidentes.map(a => (
+					{incidentes.map(i => (
 						<IonItem button>
 							<IonIcon slot='start' icon={alertCircleOutline} />
 							<IonLabel>
-								<h3>{a.title}</h3>
+								<h3>{i.title}</h3>
 							</IonLabel>
 							<IonIcon slot='end' icon={arrowForwardOutline} />
 						</IonItem>
