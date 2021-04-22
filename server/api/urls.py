@@ -50,7 +50,7 @@ urlpatterns = [
     url(r'^$', PreguntaList.as_view(), name='list'),
     url(r'^(?P<pk>\d+)$', PreguntaDetail.as_view(), name='detail'),
     url(r'^nuevo$', PreguntaCreation.as_view(), name='new'),
-    url(r'^editar/(?P<pk>\d+)$',PreguntaUpdate.as_view(), name='edit'),
+    url(r'^editar/(?P<pk>\d+)$', PreguntaUpdate.as_view(), name='edit'),
     url(r'^borrar/(?P<pk>\d+)$', PreguntaDelete.as_view(), name='delete'),
 
 ]
