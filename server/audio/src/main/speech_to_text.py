@@ -25,13 +25,11 @@ def recognize(audio, service):
     Uses the IBM Speech to Text service to translate the audio file to text.
     :rtype: dict with the transcript and confidence for the the most likely alternative for the translated text.
     """
-    dic = json.loads(
-        json.dumps(
-            service.recognize(
-                audio=audio,
-                content_type='audio/mp3',
-                model='es-AR_BroadbandModel',
-                continuous=True).get_result(), indent=2))
+    dic = service.recognize(
+            audio=audio,
+            content_type='audio/mp3',
+            model='es-AR_BroadbandModel',
+            continuous=True).get_result()
     transcription = dic.get('results')[0].get('alternatives')[0].get('transcript')
     confidence = dic.get('results')[0].get('alternatives')[0].get('confidence')
     return {'transcription': transcription, 'confidence': confidence}

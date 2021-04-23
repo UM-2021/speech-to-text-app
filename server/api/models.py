@@ -12,11 +12,11 @@ class Sucursal(models.Model, TimeStampedModel, SoftDeletableModel):
     esta_habilitado = models.BooleanField(null=False, default=False)
     ciudad = models.TextField(max_length=40)
     coord_lat = models.FloatField()
-    coord_ing = models.FloatField()
+    coord_long = models.FloatField()
 
     def __str__(self):
         return self.id, self.nombre, self.direccion, self.telefono, self.esta_habilitado, self.ciudad, self.coord_lat, \
-               self.coord_ing
+               self.coord_long
 
 
 class Auditoria(models.Model, TimeStampedModel, SoftDeletableModel):

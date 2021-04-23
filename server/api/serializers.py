@@ -5,7 +5,7 @@ from server.api.models import Sucursal, Auditoria, AuditoriaEsquema, Pregunta
 class SucursalSerializers(serializers.ModelSerializer):
     class Meta:
         model = Sucursal
-        fields = ('id', 'nombre', 'direccion', 'telefono', 'esta_habilitado', 'ciudad', 'coord_lat', 'coord_ing')
+        fields = ('id', 'nombre', 'direccion', 'telefono', 'esta_habilitado', 'ciudad', 'coord_lat', 'coord_long')
         read_only_fields = ('id')
 
 
