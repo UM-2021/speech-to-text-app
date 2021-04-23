@@ -82,6 +82,18 @@ const PreguntasAuditoria: React.FC = () => {
 							</Pregunta>
 						</IonSlide>
 					))}
+					<IonSlide>
+						<Pregunta pregunta='¿Enviar auditoría?'>
+							<div>
+								<IonButton expand='block' color='primary'>
+									Enviar
+								</IonButton>
+								<IonButton expand='block' color='danger'>
+									Cancelar
+								</IonButton>
+							</div>
+						</Pregunta>
+					</IonSlide>
 				</IonSlides>
 			</IonContent>
 		</IonPage>
