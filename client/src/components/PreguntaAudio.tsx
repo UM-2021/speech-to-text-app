@@ -12,39 +12,19 @@ import './PreguntaAudio.css';
 const PreguntaAudio: React.FC = () => {
 	const [status, setStatus] = useState<string>("");
 	const [availableAudio, setAvailableAudio] = useState<boolean>(true);
-	// const [audio, setAudio] = useState<MediaObject>(Media.create(File.externalRootDirectory));
-
-	const mediaObj: MediaObject = Media.create(File.externalRootDirectory + '/audiofile.3gp'); 
-	// const mediaObj: MediaObject = Media.create(File.externalRootDirectory.replace(/^file:\/\//, 'audiofile.3gp')); 
-	
-	// const audioFile = Media.create(File.externalRootDirectory.replace(/^file:\/\//, '') + 'audiofile.3gp');
+	const [mediaObj, setMediaObj] = useState<MediaObject>(Media.create(File.externalRootDirectory));
 
 	const recordAudio = () => {
-		if(availableAudio){
-			// audioFile.startRecord();
-			setStatus("recording...");
-
-			mediaObj.startRecord();
-			// while(availableAudio){
-			// }
-			// setStatus("llego");
-			// mediaObj.release();
-			// mediaObj.stopRecord();
-			// mediaObj.release();
-				// });
-		}
+		setStatus("recording...");
+		mediaObj.startRecord();
 	}
 	
 	const stopRecording = () => {
-		if (availableAudio){
-			// audioFile.stopRecord();
-			// audioFile.release();
-			mediaObj.stopRecord();
-			mediaObj.release();
-			setAvailableAudio(false);
-			setStatus("stopped");	
-		}
+		setStatus("stopped");
+		mediaObj.stopRecord();
+		mediaObj.release();
 	}
+
 
 	// const sendAudio = () => {
 	// 	// const reader = new FileReader();
