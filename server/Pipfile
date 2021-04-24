@@ -8,8 +8,8 @@ verify_ssl = true
 [packages]
 django = "==2.2.14"
 djangorestframework = "*"
-ibm_watson = "5.1.0"
-ibm_cloud_sdk_core = "3.9.0"
+ibm-watson = "5.1.0"
+ibm-cloud-sdk-core = "*"
 
 [requires]
 python_version = "3.7"

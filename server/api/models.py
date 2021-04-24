@@ -1,19 +1,21 @@
 from django.db import models
+from audio import speech_to_text
 
 
 class Sucursal(models.Model):
-    nombre = models.TextField(max_length=50)
-    direccion = models.TextField(max_length=100)
-    telefono = models.TextField(max_length=50, unique=True)
+    nombre = models.CharField(max_length=50)
+    direccion = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=50, unique=True)
     esta_habilitado = models.BooleanField(default=False)
-    ciudad = models.TextField(max_length=40)
+    ciudad = models.CharField(max_length=40)
     coord_lat = models.FloatField(null=True)
-    coord_ing = models.FloatField(null=True)
+    coord_lng = models.FloatField(null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
+
     def __str__(self):
-        return self.nombre
+        return f'Sucursal: {self.nombre} - {self.direccion}.'
 
 
 class AuditoriaEsquema(models.Model):
@@ -110,7 +112,7 @@ class Respuesta(models.Model):
 
 
 class Media(models.Model):
-    url = models.URLField(max_length=255)  # Doubt: Podria ser una alternativa usar un FileField, investigar ventajas.
+    url = models.URLField(max_length=255)
     respuesta_id = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)

@@ -1,11 +1,10 @@
-from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import viewsets
 
 from api.models import Sucursal
-from api.serializers import SucursalSerializer
+from .serializers import SucursalSerializer
 
 
 class SucursalViewSet(viewsets.ModelViewSet):

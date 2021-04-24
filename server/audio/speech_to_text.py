@@ -6,7 +6,7 @@ import json
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson import SpeechToTextV1
 
-import server.audio.src.resources.credentials as credentials
+from . import credentials as credentials
 
 
 def authenticate():

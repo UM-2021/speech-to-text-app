@@ -19,7 +19,7 @@ COPY Pipfile Pipfile
 COPY Pipfile.lock Pipfile.lock
 
 # Install requirements
-RUN pipenv install --deploy --system
+RUN pipenv install --system
 
 # Copy all source code
 COPY --chown=www-data:www-data . .
