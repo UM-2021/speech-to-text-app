@@ -1,7 +1,8 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
-
+"""
 from django.core.urlresolvers import reverse_lazy
 
 from django.views.generic import ListView
@@ -113,3 +114,13 @@ class PreguntaUpdate(UpdateView):
 class PreguntaDelete(DeleteView):
     model = Pregunta
     success_url = reverse_lazy('pregunta:list')
+
+"""
+
+
+def hello(request):
+    text = """<h1>welcome to my app !</h1>"""
+    from api.serializers import AuditoriaEsquemaSerializer
+    serializer = AuditoriaEsquemaSerializer()
+    print(repr(serializer))
+    return HttpResponse(serializer)
