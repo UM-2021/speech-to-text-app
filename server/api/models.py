@@ -75,7 +75,13 @@ class Pregunta(models.Model):
         (DIGEFE, 'DIGEFE'),
         (EXTRANORMATIVA, 'Extranormativa')
     ]
+
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
+
+    def save(self, *args, **kwargs):
+        if self.audio is not None:
+            self.pregunta = speech_to_text.get_transcription(self.audio)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.pregunta

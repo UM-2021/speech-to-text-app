@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 from api.models import Sucursal, AuditoriaEsquema, Usuario, Auditoria, Pregunta, Respuesta, Media
 
 
@@ -51,7 +52,7 @@ class AuditoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Auditoria
         fields = '__all__'
-
+        
 
 class PreguntaSerializer(serializers.ModelSerializer):
     class Meta:
