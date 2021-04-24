@@ -1,58 +1,82 @@
-# Create your models here.
 from django.db import models
-from model_utils.models import TimeStampedModel, SoftDeletableModel
-import server.audio.src.main.speech_to_text as speech_to_text
 
 
-class Sucursal(models.Model, TimeStampedModel, SoftDeletableModel):
-    id = models.BigAutoField(null=False, unique=True, primary_key=True)
-    nombre = models.TextField(max_length=50, null=False)
-    direccion = models.TextField(max_length=100, null=False)
-    telefono = models.TextField(max_length=50, null=False)
-    esta_habilitado = models.BooleanField(null=False, default=False)
+class Sucursal(models.Model):
+    nombre = models.TextField(max_length=50)
+    direccion = models.TextField(max_length=100)
+    telefono = models.TextField(max_length=50, unique=True)
+    esta_habilitado = models.BooleanField(default=False)
     ciudad = models.TextField(max_length=40)
-    coord_lat = models.FloatField()
-    coord_long = models.FloatField()
+    coord_lat = models.FloatField(null=True)
+    coord_ing = models.FloatField(null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.id, self.nombre, self.direccion, self.telefono, self.esta_habilitado, self.ciudad, self.coord_lat, \
-               self.coord_long
+        return self.nombre
 
 
-class Auditoria(models.Model, TimeStampedModel, SoftDeletableModel):
-    id = models.BigAutoField(null=False, unique=True, primary_key=True)
-    sucursal_id = models.ForeignKey(Sucursal.id)
-    usuario_id = models.ForeignKey(Usuario.id)
-    fecha = models.DateTimeField(null=False)
-    esquema = models.IntegerField(null=False)
-    puntuacion = models.IntegerField(null=False)
-
-    def __str__(self):
-        return self.id, self.sucursal_id, self.usuario_id, self.fecha, self.esquema, self.puntuacion
-
-
-class AuditoriaEsquema(TimeStampedModel, SoftDeletableModel):
-    # Campos
-    tipo = models.BigAutoField(null=False, unique=True)
+class AuditoriaEsquema(models.Model):
     nombre = models.TextField(max_length=255)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+    """Creo que tipo no deberia ir, cada "tipo" de Auditoria esquema es una AuditoriaEsquema, es decir una 
+    AuditoriaEsquema con un ID distinto"""
+    tipo = models.IntegerField()
 
     def __str__(self):
-        return self.tipo, self.nombre
+        return str(self.id)
 
 
-class Pregunta(TimeStampedModel, SoftDeletableModel):
-    # Enum de categoria
+class Usuario(models.Model):
+    nombre = models.TextField(max_length=60)
+    apellido = models.TextField(max_length=60)
+    fecha_de_nacimiento = models.DateTimeField()
+    email = models.EmailField(max_length=254)
+    esta_habilitado = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+
+    """ Las categorias hay que cambiarlas, puse esto temporalmente"""
+    JUNIOR = 'JR'
+    MID_LEVEL = 'MID'
+    SENIOR = 'SR'
+    LEVEL = (
+        (JUNIOR, 'Junior'),
+        (MID_LEVEL, 'Mid-level'),
+        (SENIOR, 'Senior')
+    )
+    categoria = models.CharField(max_length=3, choices=LEVEL)
+
+
+class Auditoria(models.Model):
+    sucursal_id = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
+    usuario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    esquema = models.ForeignKey(AuditoriaEsquema, on_delete=models.CASCADE)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+    puntuacion = models.IntegerField(null=True)  # Cuando se crea la auditoria pero todavia no se tiene el puntaje, null
+
+    def __str__(self):
+        return f"Auditoria con ID: {self.id} de la sucursal con ID: {self.sucursal_id}."
+
+
+class Pregunta(models.Model):
+    pregunta = models.TextField(max_length=255)
+    esquema_id = models.ForeignKey(AuditoriaEsquema, on_delete=models.CASCADE)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+
     INFORMATIVA = 'IN'
     DIGEFE = 'DG'
     EXTRANORMATIVA = 'EX'
-    CATEGORIAS = [(INFORMATIVA, 'Informativa'), (DIGEFE, 'DIGEFE'), (EXTRANORMATIVA, 'Extranormativa')]
+    CATEGORIAS = [
+        (INFORMATIVA, 'Informativa'),
+        (DIGEFE, 'DIGEFE'),
+        (EXTRANORMATIVA, 'Extranormativa')
+    ]
 
-    # Campos
-    id = models.BigAutoField(null=False, unique=True)
-    pregunta = models.TextField(max_length=255, null=False)
-    audio = models.BinaryField()
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
-    esquema_id = models.ForeignKey(AuditoriaEsquema.tipo)
 
     def save(self, *args, **kwargs):
         if self.audio is not None:
@@ -60,4 +84,47 @@ class Pregunta(TimeStampedModel, SoftDeletableModel):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.id, self.pregunta, self.audio, self.categoria, self.esquema_id
+        return self.pregunta
+
+
+class Respuesta(models.Model):
+    texto = models.TextField(max_length=255)
+    auditoria_id = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
+    pregunta_id = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+
+    """ Las categorias hay que cambiarlas, puse esto temporalmente"""
+    JUNIOR = 'JR'
+    MID_LEVEL = 'MID'
+    SENIOR = 'SR'
+    LEVEL = (
+        (JUNIOR, 'Junior'),
+        (MID_LEVEL, 'Mid-level'),
+        (SENIOR, 'Senior')
+    )
+    validez = models.CharField(max_length=3, choices=LEVEL)
+
+    def __str__(self):
+        return self.texto
+
+
+class Media(models.Model):
+    url = models.URLField(max_length=255)  # Doubt: Podria ser una alternativa usar un FileField, investigar ventajas.
+    respuesta_id = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+
+    """ Las categorias hay que cambiarlas, puse esto temporalmente"""
+    JUNIOR = 'JR'
+    MID_LEVEL = 'MID'
+    SENIOR = 'SR'
+    LEVEL = (
+        (JUNIOR, 'Junior'),
+        (MID_LEVEL, 'Mid-level'),
+        (SENIOR, 'Senior')
+    )
+    tipo = models.CharField(max_length=3, choices=LEVEL)
+
+    def __str__(self):
+        return self.url
