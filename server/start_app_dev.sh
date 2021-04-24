@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Migrating"
+python manage.py makemigrations
 python manage.py migrate --noinput # Apply database migrations
 
 echo "Run the Django development server"

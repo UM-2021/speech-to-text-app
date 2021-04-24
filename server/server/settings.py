@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'api'  # Doubt: Is this properly imported? Since our root folder seems to be different.
 ]
 
 MIDDLEWARE = [
