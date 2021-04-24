@@ -1,18 +1,19 @@
 import { Redirect, Route } from 'react-router-dom';
 import {
-  IonApp,
-  IonIcon,
-  IonLabel,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
+	IonApp,
+	IonBadge,
+	IonIcon,
+	IonLabel,
+	IonRouterOutlet,
+	IonTabBar,
+	IonTabButton,
+	IonTabs
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { gridOutline, homeOutline, listOutline } from 'ionicons/icons';
 import Home from './pages/Home';
 import Sucursales from './pages/Sucursales';
-import Auditorias from './pages/MisAuditorias';
+import Incidentes from './pages/Incidentes';
 import Login from './pages/Login';
 
 /* Core CSS required for Ionic components to work properly */
@@ -33,10 +34,13 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './App.css';
+
 import React from 'react';
-import Auditoria from './pages/Auditoria';
-import NuevaAuditoria from './pages/NuevaAuditoria';
-import FormularioAuditoria from './pages/FormularioAuditoria';
+import PreguntasAuditoria from './pages/PreguntasAuditoria';
+import SeleccionSucursalParaAuditoria from './pages/SeleccionSucursalParaAuditoria';
+import DatosSucursal from './pages/DatosSucursal';
+import PerfilSucursalPage from './pages/PerfilSucursalPage';
 
 const App: React.FC = () => (
 	<IonApp>
@@ -46,22 +50,23 @@ const App: React.FC = () => (
 					<Route exact path='/home'>
 						<Home />
 					</Route>
-					<Route exact path='/sucursales'>
+					<Route exact path='/sucursal/perfil/:id' component={PerfilSucursalPage} />
+					<Route exact path='/sucursal'>
 						<Sucursales />
 					</Route>
-					<Route exact path='/auditorias'>
-						<Auditorias />
+					<Route exact path='/incidentes'>
+						<Incidentes />
 					</Route>
 					<Route exact path='/login'>
 						<Login />
 					</Route>
 					<Route exact path='/auditoria'>
-						<Auditoria />
+						<PreguntasAuditoria />
 					</Route>
-					<Route exact path='/auditoria/new'>
-						<NuevaAuditoria />
+					<Route exact path='/auditoria/nueva'>
+						<SeleccionSucursalParaAuditoria />
 					</Route>
-					<Route exact path='/auditoria/formulario/:id' component={FormularioAuditoria} />
+					<Route exact path='/auditoria/datos/:id' component={DatosSucursal} />
 					<Route exact path='/'>
 						<Redirect to='/home' />
 					</Route>
@@ -71,13 +76,14 @@ const App: React.FC = () => (
 						<IonIcon icon={homeOutline} />
 						<IonLabel>Inicio</IonLabel>
 					</IonTabButton>
-					<IonTabButton tab='sucursales' href='/sucursales'>
+					<IonTabButton tab='sucursales' href='/sucursal'>
 						<IonIcon icon={listOutline} />
 						<IonLabel>Sucursales</IonLabel>
 					</IonTabButton>
-					<IonTabButton tab='auditorias' href='/auditorias'>
+					<IonTabButton tab='incidentes' href='/incidentes'>
+						<IonBadge color='danger'></IonBadge>
 						<IonIcon icon={gridOutline} />
-						<IonLabel>Auditorías</IonLabel>
+						<IonLabel>Incidentes</IonLabel>
 					</IonTabButton>
 				</IonTabBar>
 			</IonTabs>

@@ -10,13 +10,14 @@ import {
 	IonItem,
 	IonLabel
 } from '@ionic/react';
-import { add, documentTextOutline } from 'ionicons/icons';
+import { add, storefrontOutline } from 'ionicons/icons';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import './Home.css';
 
 const Home: React.FC = () => {
-	const auditorias = [
+	const sucursales = [
 		{
 			title: '18 de julio esq. noseque',
 			description: 'Este local fue auditado correctamente',
@@ -97,21 +98,18 @@ const Home: React.FC = () => {
 						<IonTitle size='large'>Inicio</IonTitle>
 					</IonToolbar>
 				</IonHeader>
-				<IonButton
-					expand='block'
-					size='large'
-					className='ion-margin'
-					color='primary'
-					href='/auditoria/new'>
-					<IonIcon icon={add} className='ion-float-start' />
-					<span>Iniciar Auditoría</span>
-				</IonButton>
+				<Link to='/auditoria/nueva'>
+					<IonButton expand='block' size='large' className='ion-margin' color='primary'>
+						<IonIcon icon={add} className='ion-float-start' />
+						<span>Iniciar Auditoría</span>
+					</IonButton>
+				</Link>
 				<div className='ion-margin list-container'>
-					<h3 className='ion-margin list-header'>Auditorías</h3>
+					<h3 className='ion-margin list-header'>SAG Recientes</h3>
 					<IonList lines='full' className='list'>
-						{auditorias.map(a => (
+						{sucursales.map(a => (
 							<IonItem onClick={() => showDetail(a.title)} className='list-item' button>
-								<IonIcon icon={documentTextOutline} />
+								<IonIcon slot='start' icon={storefrontOutline} />
 								<IonLabel>
 									<h3>{a.title}</h3>
 								</IonLabel>
