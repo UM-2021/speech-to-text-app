@@ -1,5 +1,9 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from api.models import Pregunta
+from auditoria.serializers import PreguntaSerializer
 
+
+class PreguntaViewSet(viewsets.ModelViewSet):
+    queryset = Pregunta.objects.all()
+    serializer_class = PreguntaSerializer

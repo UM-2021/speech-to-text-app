@@ -64,7 +64,7 @@ class Auditoria(models.Model):
 
 
 class Pregunta(models.Model):
-    pregunta = models.TextField(max_length=255)
+    pregunta = models.CharField(max_length=255)
     esquema_id = models.ForeignKey(AuditoriaEsquema, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
