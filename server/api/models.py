@@ -13,21 +13,8 @@ class Sucursal(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
-
     def __str__(self):
         return f'Sucursal: {self.nombre} - {self.direccion}.'
-
-
-class AuditoriaEsquema(models.Model):
-    nombre = models.TextField(max_length=255)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
-    """Creo que tipo no deberia ir, cada "tipo" de Auditoria esquema es una AuditoriaEsquema, es decir una 
-    AuditoriaEsquema con un ID distinto"""
-    tipo = models.IntegerField()
-
-    def __str__(self):
-        return str(self.id)
 
 
 class Usuario(models.Model):
@@ -54,7 +41,6 @@ class Usuario(models.Model):
 class Auditoria(models.Model):
     sucursal_id = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
     usuario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    esquema = models.ForeignKey(AuditoriaEsquema, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     puntuacion = models.IntegerField(null=True)  # Cuando se crea la auditoria pero todavia no se tiene el puntaje, null
@@ -65,7 +51,6 @@ class Auditoria(models.Model):
 
 class Pregunta(models.Model):
     pregunta = models.CharField(max_length=255)
-    esquema_id = models.ForeignKey(AuditoriaEsquema, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
@@ -93,6 +78,7 @@ class Respuesta(models.Model):
     texto = models.TextField(max_length=255)
     auditoria_id = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta_id = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    ususario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 

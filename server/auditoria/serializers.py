@@ -1,23 +1,5 @@
 from rest_framework import serializers
-
-
-from api.models import AuditoriaEsquema, Usuario, Auditoria, Pregunta, Respuesta, Media
-
-
-class AuditoriaEsquemaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AuditoriaEsquema
-        fields = '__all__'
-    """
-    Representacion de lo que seria:
-    
-    AuditoriaEsquemaSerializers():
-        id = IntegerField(label='ID', read_only=True)
-        nombre = CharField(max_length=255, style={'base_template': 'textarea.html'})
-        fecha_creacion = DateTimeField(read_only=True)
-        fecha_modificacion = DateTimeField(read_only=True)
-        tipo = IntegerField()
-    """
+from api.models import Usuario, Auditoria, Pregunta, Respuesta, Media
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
@@ -48,3 +30,15 @@ class MediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
         fields = '__all__'
+
+
+class RespuestaMultimediaSerializer(serializers.Serializer):
+    texto = serializers.CharField(max_length=255, style={'base_template': 'textarea.html'})
+    validez = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
+    auditoria_id = serializers.PrimaryKeyRelatedField(queryset=Auditoria.objects.all())
+    pregunta_id = serializers.PrimaryKeyRelatedField(queryset=Pregunta.objects.all())
+    usuario_id = serializers.PrimaryKeyRelatedField(queryset=Usuario.objects.all())
+    tipo = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
+    lista_url = serializers.ListField(
+        child=serializers.URLField(max_length=255)
+    )
