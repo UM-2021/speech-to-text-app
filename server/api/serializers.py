@@ -9,7 +9,7 @@ class SucursalSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     """
-    Representation:
+    Representacion de lo que seria:
     
     SucursalSerializers():
         id = IntegerField(label='ID', read_only=True)
@@ -30,7 +30,7 @@ class AuditoriaEsquemaSerializer(serializers.ModelSerializer):
         model = AuditoriaEsquema
         fields = '__all__'
     """
-    Representation:
+    Representacion de lo que seria:
     
     AuditoriaEsquemaSerializers():
         id = IntegerField(label='ID', read_only=True)

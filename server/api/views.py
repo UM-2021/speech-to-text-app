@@ -123,14 +123,6 @@ class PreguntaDelete(DeleteView):
 """
 
 
-def hello(request):
-    text = """<h1>welcome to my app !</h1>"""
-    from api.serializers import AuditoriaEsquemaSerializer
-    serializer = AuditoriaEsquemaSerializer()
-    print(repr(serializer))
-    return HttpResponse(serializer)
-
-
 class SucursalViewSet(viewsets.ModelViewSet):
     """
     Un ejemplo de una ViewSet para ver, crear, editar y eliminar Sucursales.
