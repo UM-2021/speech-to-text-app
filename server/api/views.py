@@ -26,13 +26,13 @@ class SucursalDetail(DetailView):
 class SucursalCreation(CreateView):
     model = Sucursal
     success_url = reverse_lazy('sucursal:list')
-    fields = ['nombre', 'direccion', 'telefono', 'esta_habilitado', 'ciudad', 'coord_lat','coord_ing']
+    fields = ['nombre', 'direccion', 'telefono', 'esta_habilitado', 'ciudad', 'coord_lat', 'coord_long']
 
 
 class SucursalUpdate(UpdateView):
     model = Sucursal
     success_url = reverse_lazy('sucursal:list')
-    fields = ['nombre', 'direccion', 'telefono', 'esta_habilitado', 'ciudad', 'coord_lat','coord_ing']
+    fields = ['nombre', 'direccion', 'telefono', 'esta_habilitado', 'ciudad', 'coord_lat', 'coord_long']
 
 
 class SucursalDelete(DeleteView):
@@ -64,6 +64,7 @@ class AuditoriaDelete(DeleteView):
     model = Auditoria
     success_url = reverse_lazy('auditoria:list')
 
+
 class AuditoriaEsquemaList(ListView):
     model = AuditoriaEsquema
 
@@ -73,7 +74,7 @@ class AuditoriaEsquemaDetail(DetailView):
 
 
 class AuditoriaEsquemaCreation(CreateView):
-    model =AuditoriaEsquema
+    model = AuditoriaEsquema
     success_url = reverse_lazy('auditoria_esquema:list')
     fields = ['tipo', 'nombre']
 
@@ -81,7 +82,7 @@ class AuditoriaEsquemaCreation(CreateView):
 class AuditoriaEsquemaUpdate(UpdateView):
     model = AuditoriaEsquema
     success_url = reverse_lazy('auditoria_esquema:list')
-    fields = ['tipo','nombre']
+    fields = ['tipo', 'nombre']
 
 
 class AuditoriaEsquemaDelete(DeleteView):
