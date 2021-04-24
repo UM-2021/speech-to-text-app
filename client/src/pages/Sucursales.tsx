@@ -13,6 +13,7 @@ import {
 import { arrowForwardOutline, storefrontOutline } from 'ionicons/icons';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Sucursales: React.FC = () => {
 	const sucursales = [
@@ -41,6 +42,17 @@ const Sucursales: React.FC = () => {
 			color: '#FFD439'
 		}
 	];
+
+	// var suc;
+
+	// const sucursalesGet = async () => {
+	// 	try {
+	// 		let res = await axios.get('/sucursales');
+	// 		suc = res.data;
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 	}
+	// }
 
 	return (
 		<IonPage>

@@ -13,6 +13,7 @@ import {
 import { add, storefrontOutline } from 'ionicons/icons';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import './Home.css';
 
@@ -79,6 +80,17 @@ const Home: React.FC = () => {
 			color: '#FFD439'
 		}
 	];
+
+	// var suc;
+
+	// const sucursalesGet = async () => {
+	// 	try {
+	// 		let res = await axios.get('/sucursales');
+	// 		suc = res.data;
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 	}
+	// }
 
 	const showDetail = (title: string): void => {
 		// const tech = auditorias.find(a => a.title === title);
