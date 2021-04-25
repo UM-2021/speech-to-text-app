@@ -9,10 +9,14 @@ import axios from "axios";
 
 import "./PreguntaAudio.css";
 
+const fs = require('fs');
+
 const PreguntaAudio: React.FC = () => {
   const [status, setStatus] = useState<string>("");
 
   const [path, setPath] = useState<string>("anterior");
+
+  const [blob, setBlob] = useState<Blob>(new Blob());
 
   const [availableAudio, setAvailableAudio] = useState<boolean>(true);
 
@@ -38,7 +42,7 @@ const PreguntaAudio: React.FC = () => {
     setStatus("stopped");
     mediaObj.stopRecord();
     mediaObj.release();
-    makeFileIntoBlob(path);
+    await makeFileIntoBlob(path);
   };
 
   const makeFileIntoBlob = (mypath: string) => {
@@ -70,32 +74,76 @@ const PreguntaAudio: React.FC = () => {
             medBlob,
             opt
           );
+		  setBlob(medBlob);
           resolve({ blob: medBlob });
         })
         .catch((err) => reject(err));
     });
   };
 
-  const sendAudio = () => {
-    // const reader = new FileReader();
-    // reader.onload = () => {
-    //   const formData = new FormData();
-    //   // formData.append("file", new Blob([reader.result]), file.name);  // Found both online
-    //   formData.append(mediaObj, new Blob([reader.result]));  // Tested both with same behavior.
-    //   const url = "http://"; // server
-    //   axios.post(url, {
-    // 	headers: {
-    // 	  "Content-Type": `multipart/form-data;`, // boundary=${dat._boundary}`,
-    // 	},
-    // 	data: formData,
-    // 	}
-    //   ).then((res) => {
-    // 	console.log(res);
-    //   });
-    // }
-    // reader.readAsArrayBuffer(mediaObj);
-    // eliminar el audio
-  };
+//   function submitForm(contentType, data) {
+// 	axios({
+// 		url: 'http://localhost:8000/api/auditoria/respuesta',
+// 		method: 'POST',
+// 		data: data,
+// 		headers: {
+// 			'Content-Type': contentType
+// 		}
+// 	})
+//    }
+
+//   const sendAudio = () => {
+// 	const toBase64 = file => new Promise((resolve, reject) => {
+// 		const reader = new FileReader();
+// 		reader.readAsDataURL(file);
+// 		reader.onload = () => resolve(reader.result);
+// 		reader.onerror = error => reject(error);
+// 	});
+	   
+// 	const data = {
+// 		title: title,
+// 		file: await toBase64(file),
+// 		desc: desc
+// 	}
+	   
+// 	submitForm("application/json", data, (msg) => console.log(msg));
+	
+
+
+	// const reader = new FileReader();
+	// reader.onload = () => {
+	//   const formData = new FormData();
+	//   // formData.append("file", new Blob([reader.result]), file.name);  // Found both online
+	//   formData.append(mediaObj, new Blob([reader.result]));  // Tested both with same behavior.
+	//   const url = "http://"; // server
+	//   axios.post(url, {
+	// 	headers: {
+	// 	  "Content-Type": `multipart/form-data;`, // boundary=${dat._boundary}`,
+	// 	},
+	// 	data: formData,
+	// 	}
+	//   ).then((res) => {
+	// 	console.log(res);
+	//   });
+	// }
+	// reader.readAsArrayBuffer(mediaObj);
+ 	// eliminar el audio
+	
+	// const config = {
+	// 	encoding: LINEAR16,
+	// 	sampleRateHertz: 16000,
+	// 	languageCode: es-AR,
+	// };
+	// const audio = {
+	// 	content: fs.readFileSync(filename).toString('base64'),
+	// };
+	
+	// const request = {
+	// 	config: config,
+	// 	audio: audio,
+// 	// };
+
+//   };
 
   return (
     <IonSegment className="ion-justify-content-between bg-color">
