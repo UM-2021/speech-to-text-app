@@ -6,7 +6,11 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'pregunta', views.PreguntaViewSet)
-router.register(r'respuesta', views.RespuestaConAudio, 'respuesta')
+router.register(r'auditoria', views.AuditoriaViewSet)
+router.register(r'respuesta', views.RespuestaViewSet)
+router.register(r'usuario', views.UsuarioViewSet)
+router.register(r'media', views.MediaViewSet)
+router.register(r'enviar-respuesta', views.RespuestaConAudio)
 
 app_name = 'auditoria'
 

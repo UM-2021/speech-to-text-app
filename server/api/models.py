@@ -18,8 +18,8 @@ class Sucursal(models.Model):
 
 
 class Usuario(models.Model):
-    nombre = models.TextField(max_length=60)
-    apellido = models.TextField(max_length=60)
+    nombre = models.CharField(max_length=60)
+    apellido = models.CharField(max_length=60)
     fecha_de_nacimiento = models.DateTimeField()
     email = models.EmailField(max_length=254)
     esta_habilitado = models.BooleanField(default=False)
@@ -65,17 +65,13 @@ class Pregunta(models.Model):
 
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
 
-    def save(self, *args, **kwargs):
-        if self.audio is not None:
-            self.pregunta = speech_to_text.get_transcription(self.audio)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.pregunta
 
 
 class Respuesta(models.Model):
-    texto = models.TextField(max_length=255)
+    texto = models.TextField()
+    audio = models.TextField(null=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
