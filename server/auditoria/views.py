@@ -34,9 +34,11 @@ class MediaViewSet(viewsets.ModelViewSet):
     serializer_class = MediaSerializer
 
 
-class RespuestaConAudio(APIView):
-
-    def post(self, request):
+class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
+    def get_queryset(self):
+        return super().get_queryset()
+    
+    def create(self, request):
         serializer_global = RespuestaMultimediaSerializer(data=request.data)
 
         if serializer_global.is_valid():

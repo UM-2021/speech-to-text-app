@@ -39,8 +39,8 @@ class Usuario(models.Model):
 
 
 class Auditoria(models.Model):
-    sucursal_id = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
-    usuario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     puntuacion = models.IntegerField(null=True)  # Cuando se crea la auditoria pero todavia no se tiene el puntaje, null
@@ -76,9 +76,9 @@ class Pregunta(models.Model):
 
 class Respuesta(models.Model):
     texto = models.TextField(max_length=255)
-    auditoria_id = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
-    pregunta_id = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    ususario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
@@ -99,7 +99,7 @@ class Respuesta(models.Model):
 
 class Media(models.Model):
     url = models.URLField(max_length=255)
-    respuesta_id = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
