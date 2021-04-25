@@ -78,7 +78,7 @@ class Respuesta(models.Model):
     texto = models.TextField(max_length=255)
     auditoria_id = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta_id = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    ususario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
