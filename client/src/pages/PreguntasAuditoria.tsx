@@ -22,28 +22,24 @@ import PreguntaNumerica from '../components/PreguntaNumerica';
 import Pregunta from '../components/Pregunta';
 import PreguntaAudio from '../components/PreguntaAudio';
 import PreguntaOpciones from '../components/PreguntaOpciones';
+import axios from 'axios';
+import { useHistory } from 'react-router';
+
+interface IPregunta {
+	id: string;
+	pregunta: string;
+	tipo: string;
+	opciones?: string[];
+}
 
 const PreguntasAuditoria: React.FC = () => {
-	const [preguntas, setPreguntas] = useState<{ pregunta: string; tipo: string; opciones?: string[] }[]>([]);
+	let history = useHistory();
+	const [preguntas, setPreguntas] = useState<IPregunta[]>([]);
 
 	useEffect(() => {
 		const fetchPreguntas = async () => {
-			console.log('Fetch preguntas');
-			setPreguntas([
-				{
-					pregunta: '¿Cumple con los requisitos de la norma N-12?',
-					tipo: 'Audio'
-				},
-				{
-					pregunta: '¿Cuenta con vidrios blindados de 32mm?',
-					tipo: 'Opciones',
-					opciones: ['Si', 'No', 'Capaz', 'No corresponde']
-				},
-				{
-					pregunta: '¿Cuantos siniestro ha tenido?',
-					tipo: 'Numerica'
-				}
-			]);
+			const { data } = await axios('http://localhost:8000/api/auditorias/pregunta');
+			setPreguntas(data);
 		};
 
 		fetchPreguntas();
@@ -55,7 +51,9 @@ const PreguntasAuditoria: React.FC = () => {
 				<IonToolbar>
 					<IonTitle>Nueva Auditoría</IonTitle>
 					<IonButtons slot='end'>
-						<IonButton color='danger'>Salir</IonButton>
+						<IonButton color='danger' onClick={() => history.goBack()}>
+							Salir
+						</IonButton>
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
@@ -73,11 +71,11 @@ const PreguntasAuditoria: React.FC = () => {
 						speed: 400
 					}}>
 					{preguntas.map(p => (
-						<IonSlide>
+						<IonSlide key={p.id}>
 							<Pregunta pregunta={p.pregunta}>
-								{p.tipo === 'Audio' && <div></div>}
-								{p.tipo === 'Opciones' && <PreguntaOpciones opciones={p.opciones} />}
-								{p.tipo === 'Numerica' && <PreguntaNumerica />}
+								{p.tipo === 'audi' && <div></div>}
+								{p.tipo === 'opci' && <PreguntaOpciones opciones={p.opciones} />}
+								{p.tipo === 'nume' && <PreguntaNumerica />}
 								<PreguntaAudio />
 							</Pregunta>
 						</IonSlide>

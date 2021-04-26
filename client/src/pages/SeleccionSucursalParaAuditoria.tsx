@@ -11,134 +11,26 @@ import {
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
+import axios from 'axios';
 import { arrowForwardOutline } from 'ionicons/icons';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+
+interface IBaseSucursal {
+	id: string;
+	nombre: string;
+}
 
 const SeleccionSucursalParaAuditoria: React.FC = () => {
 	let history = useHistory();
-	const sucursales = [
-		{
-			id: 1,
-			title: '18 de julio esq. Calle',
-			description: 'Este local fue auditado correctamente',
-			color: '#E63135'
-		},
-		{
-			id: 2,
-			title: 'Prado',
-			description: 'The latest version of cascading stylesheets - the styling language of the web!',
-			color: '#0CA9EA'
-		},
-		{
-			id: 3,
-			title: 'Av. Brasil 2394',
-			description: "The latest version of the web's markup language.",
-			color: '#F46529'
-		},
-		{
-			id: 4,
-			title: 'Ciudad vieja',
-			description: 'One of the most popular programming languages on the Web!',
-			color: '#FFD439'
-		},
-		{
-			id: 5,
-			title: '18 de julio esq. Calle',
-			description: 'Este local fue auditado correctamente',
-			color: '#E63135'
-		},
-		{
-			id: 6,
-			title: 'Prado',
-			description: 'The latest version of cascading stylesheets - the styling language of the web!',
-			color: '#0CA9EA'
-		},
-		{
-			id: 7,
-			title: 'Av. Brasil 2394',
-			description: "The latest version of the web's markup language.",
-			color: '#F46529'
-		},
-		{
-			id: 8,
-			title: 'Ciudad vieja',
-			description: 'One of the most popular programming languages on the Web!',
-			color: '#FFD439'
-		},
-		{
-			id: 9,
-			title: '18 de julio esq. Calle',
-			description: 'Este local fue auditado correctamente',
-			color: '#E63135'
-		},
-		{
-			id: 10,
-			title: 'Prado',
-			description: 'The latest version of cascading stylesheets - the styling language of the web!',
-			color: '#0CA9EA'
-		},
-		{
-			id: 11,
-			title: 'Av. Brasil 2394',
-			description: "The latest version of the web's markup language.",
-			color: '#F46529'
-		},
-		{
-			id: 12,
-			title: 'Ciudad vieja',
-			description: 'One of the most popular programming languages on the Web!',
-			color: '#FFD439'
-		},
-		{
-			id: 13,
-			title: '18 de julio esq. Calle',
-			description: 'Este local fue auditado correctamente',
-			color: '#E63135'
-		},
-		{
-			id: 14,
-			title: 'Prado',
-			description: 'The latest version of cascading stylesheets - the styling language of the web!',
-			color: '#0CA9EA'
-		},
-		{
-			id: 15,
-			title: 'Av. Brasil 2394',
-			description: "The latest version of the web's markup language.",
-			color: '#F46529'
-		},
-		{
-			id: 16,
-			title: 'Ciudad vieja',
-			description: 'One of the most popular programming languages on the Web!',
-			color: '#FFD439'
-		},
-		{
-			id: 17,
-			title: '18 de julio esq. Calle',
-			description: 'Este local fue auditado correctamente',
-			color: '#E63135'
-		},
-		{
-			id: 18,
-			title: 'Prado',
-			description: 'The latest version of cascading stylesheets - the styling language of the web!',
-			color: '#0CA9EA'
-		},
-		{
-			id: 19,
-			title: 'Av. Brasil 2394',
-			description: "The latest version of the web's markup language.",
-			color: '#F46529'
-		},
-		{
-			id: 20,
-			title: 'Ciudad vieja',
-			description: 'One of the most popular programming languages on the Web!',
-			color: '#FFD439'
-		}
-	];
+	const [sucursales, setSucursales] = useState<IBaseSucursal[]>([]);
+	useEffect(() => {
+		const fetchSucursales = async () => {
+			const { data } = await axios('http://localhost:8000/api/sucursales/');
+			setSucursales(data);
+		};
+		fetchSucursales();
+	}, []);
 	return (
 		<IonPage>
 			<IonHeader translucent>
@@ -165,7 +57,7 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 					{sucursales.map(s => (
 						<Link key={s.id} to={`/auditoria/datos/${s.id}`} style={{ textDecoration: 'none' }}>
 							<IonItem>
-								{s.title}
+								{s.nombre}
 								<IonIcon slot='end' icon={arrowForwardOutline} />
 							</IonItem>
 						</Link>

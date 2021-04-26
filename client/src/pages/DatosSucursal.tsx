@@ -5,7 +5,7 @@ import { RouteComponentProps, useHistory } from 'react-router-dom';
 import './DatosSucursal.css';
 import PerfilSucursal from '../components/PerfilSucursal';
 
-const DatosSucursal: React.FC<RouteComponentProps> = ({ match }) => {
+const DatosSucursal: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
 	let history = useHistory();
 	return (
 		<IonPage>
@@ -20,7 +20,7 @@ const DatosSucursal: React.FC<RouteComponentProps> = ({ match }) => {
 						<IonTitle size='large'>Nueva Auditoría</IonTitle>
 					</IonToolbar>
 				</IonHeader>
-				<PerfilSucursal />
+				<PerfilSucursal id={match.params.id} />
 			</IonContent>
 			<IonFooter className='center-content'>
 				<IonButton color='danger' className='block-btn' onClick={() => history.goBack()}>
