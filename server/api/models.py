@@ -1,5 +1,6 @@
 from django.db import models
 from audio import speech_to_text
+from django.contrib.postgres.fields import ArrayField
 
 
 class Sucursal(models.Model):
@@ -40,13 +41,13 @@ class Usuario(models.Model):
 
 class Auditoria(models.Model):
     sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     puntuacion = models.IntegerField(null=True)  # Cuando se crea la auditoria pero todavia no se tiene el puntaje, null
 
     def __str__(self):
-        return f"Auditoria con ID: {self.id} de la sucursal con ID: {self.sucursal_id}."
+        return f"Auditoria con ID: {self.id} de la sucursal con ID: {self.sucursal}."
 
 
 class Pregunta(models.Model):
@@ -54,16 +55,21 @@ class Pregunta(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
-    INFORMATIVA = 'IN'
-    DIGEFE = 'DG'
-    EXTRANORMATIVA = 'EX'
     CATEGORIAS = [
-        (INFORMATIVA, 'Informativa'),
-        (DIGEFE, 'DIGEFE'),
-        (EXTRANORMATIVA, 'Extranormativa')
+        ('IN', 'Informativa'),
+        ('DG', 'DIGEFE'),
+        ('EX', 'Extranormativa')
+    ]
+
+    TIPOS = [
+        ('audi', 'Audio'),
+        ('nume', 'Numerica'),
+        ('opci', 'Opciones')
     ]
 
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
+    tipo = models.CharField(max_length=4, choices=TIPOS, default=TIPOS[0][0])
+    opciones = ArrayField(models.CharField(max_length=25), null=True, blank=True)
 
     def __str__(self):
         return self.pregunta
@@ -71,10 +77,10 @@ class Pregunta(models.Model):
 
 class Respuesta(models.Model):
     texto = models.TextField()
-    audio = models.TextField(null=True)
+    audio = models.FileField(null=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    # usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 

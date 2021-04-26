@@ -32,14 +32,14 @@ class MediaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RespuestaMultimediaSerializer(serializers.Serializer):
-    texto = serializers.CharField(style={'base_template': 'textarea.html'})
-    audio = serializers.CharField(allow_null=True, required=False, style={'base_template': 'textarea.html'})
-    validez = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
-    auditoria_id = serializers.PrimaryKeyRelatedField(queryset=Auditoria.objects.all())
-    pregunta_id = serializers.PrimaryKeyRelatedField(queryset=Pregunta.objects.all())
-    usuario_id = serializers.PrimaryKeyRelatedField(queryset=Usuario.objects.all())
-    tipo = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
-    lista_url = serializers.ListField(
-        child=serializers.URLField(max_length=255)
-    )
+# class RespuestaMultimediaSerializer(serializers.Serializer):
+#     texto = serializers.CharField(style={'base_template': 'textarea.html'})
+#     audio = serializers.CharField(allow_null=True, required=False, style={'base_template': 'textarea.html'})
+#     validez = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
+#     auditoria_id = serializers.PrimaryKeyRelatedField(queryset=Auditoria.objects.all())
+#     pregunta_id = serializers.PrimaryKeyRelatedField(queryset=Pregunta.objects.all())
+#     usuario_id = serializers.PrimaryKeyRelatedField(queryset=Usuario.objects.all())
+#     tipo = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
+#     lista_url = serializers.ListField(
+#         child=serializers.URLField(max_length=255)
+#     )
