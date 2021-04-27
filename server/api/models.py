@@ -77,7 +77,7 @@ class Pregunta(models.Model):
 
 class Respuesta(models.Model):
     texto = models.TextField()
-    audio = models.FileField(null=True)
+    audio = models.FileField(upload_to='audios_de_respuesta/', max_length=255)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     # usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
