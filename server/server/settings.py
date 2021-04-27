@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 
 # Me di cuenta que aca va el path global de la carpeta pero adentro del docker. HAY QUE CAMBIARLOOOO.
-MEDIA_ROOT = '/home/joaquinf/Desktop/Joaco/ing_de_soft/speech-to-text-app/server/files'
+MEDIA_ROOT = 'files'
 
 
 # Database
