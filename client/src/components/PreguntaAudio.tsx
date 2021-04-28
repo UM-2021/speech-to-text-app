@@ -18,8 +18,6 @@ const PreguntaAudio: React.FC = () => {
 
   const [blob, setBlob] = useState<Blob>(new Blob());
 
-  const [availableAudio, setAvailableAudio] = useState<boolean>(true);
-
   const file = File.createFile(
     File.externalRootDirectory,
     "myaudio.mp3",
@@ -34,7 +32,7 @@ const PreguntaAudio: React.FC = () => {
   );
 
   const recordAudio = () => {
-    setStatus(path);
+    setStatus("recording...");
     mediaObj.startRecord();
   };
 
