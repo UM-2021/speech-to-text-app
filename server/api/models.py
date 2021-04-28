@@ -1,5 +1,7 @@
 from django.db import models
 from audio import speech_to_text
+from django.contrib.postgres.fields import ArrayField
+from django.utils import dateparse
 
 
 class Sucursal(models.Model):
@@ -13,26 +15,13 @@ class Sucursal(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
-
     def __str__(self):
         return f'Sucursal: {self.nombre} - {self.direccion}.'
 
 
-class AuditoriaEsquema(models.Model):
-    nombre = models.TextField(max_length=255)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
-    """Creo que tipo no deberia ir, cada "tipo" de Auditoria esquema es una AuditoriaEsquema, es decir una 
-    AuditoriaEsquema con un ID distinto"""
-    tipo = models.IntegerField()
-
-    def __str__(self):
-        return str(self.id)
-
-
 class Usuario(models.Model):
-    nombre = models.TextField(max_length=60)
-    apellido = models.TextField(max_length=60)
+    nombre = models.CharField(max_length=60)
+    apellido = models.CharField(max_length=60)
     fecha_de_nacimiento = models.DateTimeField()
     email = models.EmailField(max_length=254)
     esta_habilitado = models.BooleanField(default=False)
@@ -52,68 +41,60 @@ class Usuario(models.Model):
 
 
 class Auditoria(models.Model):
-    sucursal_id = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
-    usuario_id = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    esquema = models.ForeignKey(AuditoriaEsquema, on_delete=models.CASCADE)
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
-    puntuacion = models.IntegerField(null=True)  # Cuando se crea la auditoria pero todavia no se tiene el puntaje, null
+    puntuacion = models.IntegerField(null=True, blank=True, default=0)
+    finalizada = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Auditoria con ID: {self.id} de la sucursal con ID: {self.sucursal_id}."
+        return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
 
 
 class Pregunta(models.Model):
     pregunta = models.CharField(max_length=255)
-    esquema_id = models.ForeignKey(AuditoriaEsquema, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
-    INFORMATIVA = 'IN'
-    DIGEFE = 'DG'
-    EXTRANORMATIVA = 'EX'
     CATEGORIAS = [
-        (INFORMATIVA, 'Informativa'),
-        (DIGEFE, 'DIGEFE'),
-        (EXTRANORMATIVA, 'Extranormativa')
+        ('IN', 'Informativa'),
+        ('DG', 'DIGEFE'),
+        ('EX', 'Extranormativa')
+    ]
+
+    TIPOS = [
+        ('audi', 'Audio'),
+        ('nume', 'Numerica'),
+        ('opci', 'Opciones')
     ]
 
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
-
-    def save(self, *args, **kwargs):
-        if self.audio is not None:
-            self.pregunta = speech_to_text.get_transcription(self.audio)
-        super().save(*args, **kwargs)
+    tipo = models.CharField(max_length=4, choices=TIPOS, default=TIPOS[0][0])
+    opciones = ArrayField(models.CharField(max_length=25), null=True, blank=True)
 
     def __str__(self):
         return self.pregunta
 
 
 class Respuesta(models.Model):
-    texto = models.TextField(max_length=255)
-    auditoria_id = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
-    pregunta_id = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    respuesta = models.CharField(max_length=128)
+    notas = models.TextField(max_length=256, null=True, blank=True)
+    audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
+    auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    # usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
-
-    """ Las categorias hay que cambiarlas, puse esto temporalmente"""
-    JUNIOR = 'JR'
-    MID_LEVEL = 'MID'
-    SENIOR = 'SR'
-    LEVEL = (
-        (JUNIOR, 'Junior'),
-        (MID_LEVEL, 'Mid-level'),
-        (SENIOR, 'Senior')
-    )
-    validez = models.CharField(max_length=3, choices=LEVEL)
+    validez = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.texto
+        return f'{self.pregunta.pregunta} - {self.respuesta}'
 
 
 class Media(models.Model):
     url = models.URLField(max_length=255)
-    respuesta_id = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 

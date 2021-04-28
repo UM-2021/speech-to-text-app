@@ -8,31 +8,38 @@ import {
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
-import { eyeOutline } from 'ionicons/icons';
+import { arrowBack, eyeOutline } from 'ionicons/icons';
 import React from 'react';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 import PerfilSucursal from '../components/PerfilSucursal';
 
-const PerfilSucursalPage: React.FC = () => {
+
+
+const PerfilSucursalPage: React.FC<RouteComponentProps<{id: string}>> = ({ match }) => {
+	let history = useHistory();
 	return (
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
+					<IonButtons slot='start'>
+						<IonButton color='secondary' onClick={()=> history.goBack()}><IonIcon icon={arrowBack}/></IonButton>
+					</IonButtons>
 					<IonTitle>SAG</IonTitle>
 					<IonButtons slot='end'>
-						<IonButton color='primary'>Ver Auditoría</IonButton>
+						<IonButton color='secondary'>Ver Auditoría</IonButton>
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent>
-				{/* <IonHeader collapse='condense'>
+				<IonHeader collapse='condense'>
 					<IonToolbar>
 						<IonTitle size='large'>SAG</IonTitle>
 						<IonButtons slot='end'>
 							<IonButton color='primary'>Ver Auditoría</IonButton>
 						</IonButtons>
 					</IonToolbar>
-				</IonHeader> */}
-				<PerfilSucursal />
+				</IonHeader>
+				<PerfilSucursal id={match.params.id} />
 			</IonContent>
 		</IonPage>
 	);
