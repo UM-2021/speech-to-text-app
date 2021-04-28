@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+django = "==2.2.14"
+django-cors-headers = "*"
+djangorestframework = "*"
+psycopg2 = ">=2.7.5,<2.8.0"
+ibm-watson = "5.1.0"
+ibm-cloud-sdk-core = "*"
+
+[requires]
+python_version = "3.7"
