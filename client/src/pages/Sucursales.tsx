@@ -14,7 +14,6 @@ import axios from 'axios';
 import { arrowForwardOutline, storefrontOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 interface IBaseSucursal {
 	id: string;
@@ -30,17 +29,6 @@ const Sucursales: React.FC = () => {
 		};
 		fetchSucursales();
 	}, []);
-
-	// var suc;
-
-	// const sucursalesGet = async () => {
-	// 	try {
-	// 		let res = await axios.get('/sucursales');
-	// 		suc = res.data;
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 	}
-	// }
 
 	return (
 		<IonPage>
