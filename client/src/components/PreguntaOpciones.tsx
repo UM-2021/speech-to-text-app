@@ -1,21 +1,17 @@
 import { IonButton, IonSegment } from '@ionic/react';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 
 import './PreguntaOpciones.css';
 
-const PreguntaOpciones: React.FC<{ opciones: string[] | undefined }> = ({ opciones }) => {
-	const [answer, setAnswer] = useState('');
-
-	useEffect(() => {
-		// TODO: Hacer la request
-	}, [answer]);
-
+const PreguntaOpciones: React.FC<{ opciones: string[] | undefined; submitResponse: (s: string) => void }> = ({
+	opciones,
+	submitResponse
+}) => {
 	return (
 		<Fragment>
-			<h3>{answer}</h3>
 			<IonSegment className='bg-color grid'>
 				{opciones!.map(o => (
-					<IonButton key={o} className='grid-btn' onClick={() => setAnswer(o)}>
+					<IonButton key={o} className='grid-btn' onClick={() => submitResponse(o)}>
 						{o}
 					</IonButton>
 				))}

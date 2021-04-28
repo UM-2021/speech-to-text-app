@@ -12,7 +12,7 @@ import {
 	IonToolbar
 } from '@ionic/react';
 import axios from 'axios';
-import { arrowForwardOutline } from 'ionicons/icons';
+import { arrowBack, arrowForwardOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 
@@ -36,7 +36,9 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 			<IonHeader translucent>
 				<IonToolbar className='toolbar'>
 					<IonButtons slot='start'>
-						<IonButton size='small' color='light' onClick={() => history.goBack()}>Cancelar</IonButton>
+						<IonButton size='small' color='secondary' onClick={() => history.goBack()}>
+							<IonIcon icon={arrowBack} />
+						</IonButton>
 					</IonButtons>
 					<IonTitle size='large'>Nueva Auditoría</IonTitle>
 				</IonToolbar>

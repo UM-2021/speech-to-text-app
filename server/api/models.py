@@ -1,6 +1,7 @@
 from django.db import models
 from audio import speech_to_text
 from django.contrib.postgres.fields import ArrayField
+from django.utils import dateparse
 
 
 class Sucursal(models.Model):
@@ -44,10 +45,11 @@ class Auditoria(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
-    puntuacion = models.IntegerField(null=True)  # Cuando se crea la auditoria pero todavia no se tiene el puntaje, null
+    puntuacion = models.IntegerField(null=True, blank=True, default=0)
+    finalizada = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Auditoria con ID: {self.id} de la sucursal con ID: {self.sucursal}."
+        return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
 
 
 class Pregunta(models.Model):
@@ -76,27 +78,18 @@ class Pregunta(models.Model):
 
 
 class Respuesta(models.Model):
-    texto = models.TextField()
-    audio = models.FileField(upload_to='audios_de_respuesta/', max_length=255)
+    respuesta = models.CharField(max_length=128)
+    notas = models.TextField(max_length=256, null=True, blank=True)
+    audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     # usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
-
-    """ Las categorias hay que cambiarlas, puse esto temporalmente"""
-    JUNIOR = 'JR'
-    MID_LEVEL = 'MID'
-    SENIOR = 'SR'
-    LEVEL = (
-        (JUNIOR, 'Junior'),
-        (MID_LEVEL, 'Mid-level'),
-        (SENIOR, 'Senior')
-    )
-    validez = models.CharField(max_length=3, choices=LEVEL)
+    validez = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.texto
+        return f'{self.pregunta.pregunta} - {self.respuesta}'
 
 
 class Media(models.Model):

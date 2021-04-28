@@ -10,7 +10,7 @@ interface ISucursal {
 	id: string;
 	nombre: string;
 	direccion: string;
-	departamento: string;
+	ciudad: string;
 	telefono: string;
 }
 
@@ -43,7 +43,7 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 								icon={navigateCircleOutline}
 							/>
 						</IonAvatar>
-						<IonLabel>{sucursal!.direccion}, {sucursal!.departamento}</IonLabel>
+						<IonLabel>{sucursal!.direccion}, {sucursal!.ciudad}</IonLabel>
 					</IonChip>
 				</div>
 
@@ -69,7 +69,7 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 						<IonLabel color='medium' slot='start'>
 							Departamento
 						</IonLabel>
-						<IonLabel>{sucursal!.departamento}</IonLabel>
+						<IonLabel>{sucursal!.ciudad}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
