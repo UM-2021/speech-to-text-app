@@ -16,12 +16,17 @@ jobs:
       working-directory: server
       run: docker-compose build
     - name: Docker Run (in background)
+      working-directory: server
       run: docker-compose up -d
     - name: Accessing the container
+      working-directory: server
       run: docker exec -it speech-to-text-server sh
     - name: Run tests
+      working-directory: server
       run: python manage.py test
     - name: Docker stop (Backend server)
+      working-directory: server
       run: docker stop speech-to-text-server
     - name: Docker stop (DB)
+      working-directory: server
       run: docker stop server_db_1
