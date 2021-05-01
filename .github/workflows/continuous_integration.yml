@@ -18,12 +18,9 @@ jobs:
     - name: Docker Run (in background)
       working-directory: server
       run: docker-compose up -d
-    - name: Accessing the container
+    - name: Accessing The Container and Running Tests
       working-directory: server
-      run: docker exec -i speech-to-text-server sh
-    - name: Run tests
-      working-directory: server
-      run: python manage.py test
+      run: docker exec -i speech-to-text-server python manage.py test
     - name: Docker stop (Backend server)
       working-directory: server
       run: docker stop speech-to-text-server
