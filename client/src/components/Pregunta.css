@@ -20,7 +20,7 @@
 .shrink {
 	margin-right: auto;
 	margin-left: auto;
-	max-width: 75%;
+	max-width: 85%;
     width: 100%;
 	display: grid;
 	grid-template-rows: 2fr 1fr;

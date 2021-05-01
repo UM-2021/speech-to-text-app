@@ -7,3 +7,11 @@
 	/* grid-row: -1; */
 	background: inherit;
 }
+
+.keypad {
+	color: transparent;
+	opacity: '0';
+	max-width: 50px; 
+	position: absolute;
+	z-index: 10;
+}
