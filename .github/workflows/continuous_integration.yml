@@ -20,7 +20,7 @@ jobs:
       run: docker-compose up -d
     - name: Accessing the container
       working-directory: server
-      run: docker exec -it speech-to-text-server sh
+      run: docker exec -i speech-to-text-server sh
     - name: Run tests
       working-directory: server
       run: python manage.py test
