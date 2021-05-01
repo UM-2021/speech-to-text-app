@@ -13,6 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Docker Build
+      working-directory: server
       run: docker-compose build
     - name: Docker Run (in background)
       run: docker-compose up -d
