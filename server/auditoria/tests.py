@@ -5,14 +5,9 @@ from rest_framework.test import APITestCase
 class ExampleTestCase(APITestCase):
 
     def test_example(self):
-        user_data = {
-            "username": "Pablo",
-            "email": "Pablo@g.com",
-            "gender": "M",
-            "birth": "2000-12-12T06:55:00Z",
-            "level": "SR",
-            "password": "Pablo"
-        }
-        response = self.client.post('/users/', user_data, format='json')
-
-        self.assertEqual(response.status_code, 201)
+        """ This test was created just to test the GH Actions "continuous integration.yaml" workflow.
+        Once other tests have been developed, it can be removed. """
+        a = 4
+        b = 5
+        c = a + b
+        self.assertEqual(c, 9)

@@ -16,9 +16,11 @@ jobs:
       run: docker-compose build
     - name: Docker Run (in background)
       run: docker-compose up -d
+    - name: Accessing the container
+      run: docker exec -it speech-to-text-server sh
     - name: Run tests
-      run: docker exec -i lanthorn-backend_web_1 pytest
+      run: python manage.py test
     - name: Docker stop (Backend server)
-      run: docker stop lanthorn-backend_web_1
+      run: docker stop speech-to-text-server
     - name: Docker stop (DB)
-      run: docker stop lanthorn_db
+      run: docker stop server_db_1

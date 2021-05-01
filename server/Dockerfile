@@ -30,4 +30,4 @@ RUN pipenv install --system
 RUN apk del .tmp-build-deps
 
 # Copy all source code
-COPY --chown=www-data:www-data . .
+COPY . .
