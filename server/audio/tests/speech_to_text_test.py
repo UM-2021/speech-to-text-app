@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from audio import speech_to_text
+from server.audio import speech_to_text
 
 script_dir = os.path.dirname(__file__)
 
