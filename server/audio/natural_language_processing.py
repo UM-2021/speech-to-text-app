@@ -1,14 +1,80 @@
 """
 Class containing all logic related to the natural language processing.
+
+This service uses the audio transcription to obtain the response, incidents and notes. It assumes that the transcription
+has a particular format if the user wishes to create an incident (Action + " y asignar a" + Subject).
+
+Note: in order to get the response, a list of all the possible responses was used.
 """
 
 import json
+import re
+from unicodedata import normalize
 
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson import NaturalLanguageUnderstandingV1
-from ibm_watson.natural_language_understanding_v1 import Features, SemanticRolesOptions
+from ibm_watson.natural_language_understanding_v1 import Features, SemanticRolesOptions, EntitiesResult
 
-from server.audio import credentials
+from server.audio.resources import credentials
+from server.audio.resources.nlu_exceptions import UserNotFoundException, ActionNotFoundException
+
+"""
+Set containing the possible responses.     
+"""
+possible_responses = [
+    "si",
+    "no",
+    "no aplica",
+    "vencido",
+    "vigente",
+    "vencida",
+    "al día",
+    "remesa sin habilitación",
+    "guardia propia",
+    "servicio tercerizado",
+    "no tiene",
+    "tiene y sin rejas",
+    "tiene pero son rejas",
+    "gestor propio",
+    "habilitación definitiva",
+    "habilitación provisoria",
+    "en gestión",
+    "sin documentación"
+]
+
+
+def clean_text(text):
+    text = re.sub(
+        r"([^n\u0300-\u036f]|n(?!\u0303(?![\u0300-\u036f])))[\u0300-\u036f]+", r"\1",
+        normalize("NFD", text), 0, re.I
+    )
+    return text
+
+
+def split(text):
+    """
+    Splits the text into response, notes and incident (if there is one) using the possible_responses set.
+    Note: This first approach only recognizes one incident.
+    :rtype: dictionary with the response and notes
+    """
+    response_notes_dict = {'response': '', 'note': '', 'incident': {'user': '', 'action': ''}}
+    text = clean_text(text)
+    try:
+        entity = analyze_entities(text)[0]
+        response_notes_dict['incident']['user'] = entity
+        action = analyze_action(text)
+        response_notes_dict['incident']['action'] = action
+    except UserNotFoundException or ActionNotFoundException:
+        response_notes_dict = {'response': '', 'note': ''}
+    text = text.lower()
+    text_split = ' '.join(text.split()[:3])
+    for resp in possible_responses:
+        resp = clean_text(resp)
+        if resp in text_split:
+            if len(resp) > len(response_notes_dict['response']):
+                response_notes_dict['response'] = resp
+    response_notes_dict['note'] = text.replace(response_notes_dict['response'], '')
+    return response_notes_dict
 
 
 def authenticate():
@@ -22,9 +88,28 @@ def authenticate():
     return service
 
 
-def analyze(text):
+def analyze_action(text):
+    actions = []
     service = authenticate()
     response = service.analyze(
         text=text,
         features=Features(semantic_roles=SemanticRolesOptions())).get_result()
-    return json.dumps(response, indent=2)
+    for resp in response['semantic_roles']:
+        actions.append(resp['action']['text'])
+    if len(actions) == 0:
+        raise ActionNotFoundException
+    return actions
+
+
+def analyze_entities(text):
+    entities = []
+    service = authenticate()
+    response = service.analyze(
+        text=text,
+        features=Features(entities=EntitiesResult())).get_result()
+    for resp in response['entities']:
+        if resp['type'] == 'Person':
+            entities.append(resp['text'])
+    if len(entities) == 0:
+        raise UserNotFoundException
+    return entities

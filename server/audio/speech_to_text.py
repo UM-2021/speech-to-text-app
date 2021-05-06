@@ -5,7 +5,7 @@ Class containing all logic related to the speech to text translation.
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson import SpeechToTextV1
 
-from server.audio import credentials
+from server.audio.resources import credentials
 
 
 def authenticate():
