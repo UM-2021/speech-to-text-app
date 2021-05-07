@@ -21,6 +21,8 @@ const PreguntaAudio: React.FC = () => {
 
   const [activeAudio, setActiveAudio] = useState<boolean>(false);
 
+  const [myState, setMyState] = useState<Object>({ file: null, base64URL: "" });
+
   const file = File.createFile(
     File.externalRootDirectory,
     "myaudio.mp3",
@@ -42,52 +44,15 @@ const PreguntaAudio: React.FC = () => {
       setStatus("stopped");
       mediaObj.stopRecord();
       mediaObj.release();
-      // await makeFileIntoBlob(path);
-      // Base64.encodeFile(path)
-      //   .then((base64File: string) => {
-      //     setStatus(base64File);
-      //   })
-      //   .catch((err) => setStatus("FALSO TODO"));
+      Base64.encodeFile(path)
+        .then((base64File: string) => {
+          setStatus(base64File);
+        })
+        .catch((err) => setStatus("FALSO TODO"));
       // // await Base64.encodeFile(path);
     }
     setActiveAudio(!activeAudio);
   };
-
-  // const makeFileIntoBlob = (mypath: string) => {
-  //   return new Promise((resolve, reject) => {
-  //     let fileName,
-  //       fileExtension = "";
-  //     File.resolveLocalFilesystemUrl(mypath)
-  //       .then((fileEntry) => {
-  //         let { name, nativeURL } = fileEntry;
-  //         // get the path..
-  //         let fnpath = nativeURL.substring(0, nativeURL.lastIndexOf("/"));
-  //         fileName = name;
-  //         // if you already know the file extension, just assign it to           // variable below
-  //         fileExtension = ".mp3";
-  //         // we are provided the name, so now read the file into a buffer
-  //         return File.readAsArrayBuffer(fnpath, name);
-  //       })
-  //       .then((buffer: ArrayBuffer) => {
-  //         // get the buffer and make a blob to be saved
-  //         let medBlob = new Blob([buffer], {
-  //           type: `audio/${fileExtension}`,
-  //         });
-  //         // pass back blob and the name of the file for saving
-  //         // into fire base
-  //         const opt = { replace: true };
-  //         File.writeFile(
-  //           File.externalRootDirectory,
-  //           "myaudio.mp3",
-  //           medBlob,
-  //           opt
-  //         );
-  //         setBlob(medBlob);
-  //         resolve({ blob: medBlob });
-  //       })
-  //       .catch((err) => reject(err));
-  //   });
-  // };
 
   //   function submitForm(contentType, data) {
   // 	axios({
@@ -151,8 +116,58 @@ const PreguntaAudio: React.FC = () => {
 
   //   };
 
+  const getBase64 = (file: any) => {
+    return new Promise((resolve) => {
+      let fileInfo;
+      let baseURL: string | ArrayBuffer | null;
+      baseURL = "";
+      // Make new FileReader
+      let reader = new FileReader();
+
+      // Convert the file to base64 text
+      reader.readAsDataURL(file);
+
+      // on reader load somthing...
+      reader.onload = () => {
+        // Make a fileInfo Object
+        console.log("Called", reader);
+        baseURL = reader.result;
+        console.log(baseURL);
+        resolve(baseURL);
+      };
+      console.log(fileInfo);
+    });
+  };
+
+  const handleFileInputChange = (e: any) => {
+    // console.log(e.target.files[0]);
+    let file = myState.file;
+
+    file = e.target.files[0];
+
+    getBase64(file)
+      .then((result) => {
+        file["base64"] = result;
+        console.log("File Is", file);
+        setMyState({
+          base64URL: result,
+          file,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    setMyState({
+      file: e.target.files[0],
+    });
+  };
+
   return (
     <IonSegment className="ion-justify-content-between bg-color">
+      <div>
+        <input type="file" name="file" onChange={handleFileInputChange} />
+      </div>
       <IonButton color="light" className="rounded ">
         <IonIcon icon={cameraOutline} />
         {status}
