@@ -60,9 +60,7 @@ const App: React.FC = () => (
 					<Route exact path='/login'>
 						<Login />
 					</Route>
-					<Route exact path='/auditoria'>
-						<PreguntasAuditoria />
-					</Route>
+					<Route exact path='/auditoria/:id' component={PreguntasAuditoria} />
 					<Route exact path='/auditoria/nueva'>
 						<SeleccionSucursalParaAuditoria />
 					</Route>

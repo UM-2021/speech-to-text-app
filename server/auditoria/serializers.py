@@ -33,7 +33,8 @@ class MediaSerializer(serializers.ModelSerializer):
 
 
 class RespuestaMultimediaSerializer(serializers.Serializer):
-    texto = serializers.CharField(max_length=255, style={'base_template': 'textarea.html'})
+    texto = serializers.CharField(style={'base_template': 'textarea.html'})
+    audio = serializers.FileField(max_length=255)
     validez = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
     auditoria_id = serializers.PrimaryKeyRelatedField(queryset=Auditoria.objects.all())
     pregunta_id = serializers.PrimaryKeyRelatedField(queryset=Pregunta.objects.all())

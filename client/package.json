@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "redpagos",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -20,8 +20,11 @@
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
+<<<<<<< HEAD
     "com-badrit-base64": "^0.2.0",
     "cordova-plugin-audioinput": "^1.0.2",
+=======
+>>>>>>> 84c361ac3233bfd63b3b4897bb1fa680292b4441
     "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-media": "^5.0.3",
     "ionicons": "^5.4.0",

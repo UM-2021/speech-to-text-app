@@ -1,9 +1,5 @@
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from api.models import Pregunta, Auditoria, Respuesta, Usuario, Media
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, UsuarioSerializer,\
     MediaSerializer, RespuestaMultimediaSerializer
@@ -37,7 +33,7 @@ class MediaViewSet(viewsets.ModelViewSet):
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
     def get_queryset(self):
         return super().get_queryset()
-    
+
     def create(self, request):
         serializer_global = RespuestaMultimediaSerializer(data=request.data)
 
@@ -45,10 +41,11 @@ class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
             # Primero se crea la respuesta
             respuesta_dict = {
                 "texto": serializer_global.texto,
-                "auditoria_id": serializer_global.auditoria_id,
-                "pregunta_id": serializer_global.pregunta_id,
-                "usuario_id": serializer_global.usuario_id,
-                "validez": serializer_global.validez
+                "auditoria": serializer_global.auditoria_id,
+                "pregunta": serializer_global.pregunta_id,
+                "usuario": serializer_global.usuario_id,
+                "validez": serializer_global.validez,
+                "audio": serializer_global.audio
             }
             serializer_respuesta = RespuestaSerializer(data=respuesta_dict)
             if not serializer_respuesta.is_valid():
@@ -60,7 +57,7 @@ class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
             for url in serializer_global.lista_url:
                 media_dict = {
                     "url": url,
-                    "respuesta_id": respuesta_reciente.id,
+                    "respuesta": respuesta_reciente.id,
                     "tipo": serializer_global.tipo
                 }
                 serializer_media = MediaSerializer(data=media_dict)
@@ -75,6 +72,7 @@ class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
                 media_agregada.append(serializer_media.data)
 
             respuesta_con_audio_json = {
+                "Detalle": "La siguiente respuesta junto con la correspondiente media fue persisitda correctamente",
                 "Respuesta": serializer_respuesta.data,
                 "Media": media_agregada,
             }
