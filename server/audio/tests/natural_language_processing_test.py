@@ -6,13 +6,13 @@ from server.audio import natural_language_processing
 class SpeechToTextTest(unittest.TestCase):
 
     def test_action_1(self):
-        expected_actions = ['Avisarle', 'apruebe']
+        expected_actions = 'apruebe la auditoría'
         text = 'Avisarle a Gaston que apruebe la auditoría'
         result = natural_language_processing.analyze_action(text)
         self.assertEqual(result, expected_actions, f"Should be {expected_actions}")
 
     def test_action_2(self):
-        expected_actions = ['hay', 'llamar', 'habilitar']
+        expected_actions = 'habilitar la sucursal'
         text = 'Guardia propia hay que llamar a Juan y habilitar la sucursal'
         result = natural_language_processing.analyze_action(text)
         self.assertEqual(result, expected_actions, f"Should be {expected_actions}")
@@ -42,9 +42,9 @@ class SpeechToTextTest(unittest.TestCase):
         Specific thing from the language must not affect the test: 'ó' should be the same as 'o'.
         """
         expected_response = 'remesa sin habilitacion'
-        expected_note = ' habilitar remesa y asignar a jose'
-        expected_incident = {'user': 'Jose', 'action': ['asignar']}
-        text = "RemEsa sIn habiliTación habilitaR Remesa y asignar a José"
+        expected_note = ' hay que avisarle a jose que habilite la remesa'
+        expected_incident = {'user': 'Jose', 'action': 'habilite la remesa'}
+        text = "Remesa sin habilitación hay que avisarle a Jose que habilite la remesa"
         result = natural_language_processing.split(text)
         self.assertEqual(result['response'], expected_response, f"Should be {expected_response}")
         self.assertEqual(result['note'], expected_note, f"Should be {expected_note}")
@@ -53,7 +53,7 @@ class SpeechToTextTest(unittest.TestCase):
     def test_split_incident_flow_2(self):
         expected_response = 'guardia propia'
         expected_note = ' hay que llamar a juan y habilitar la sucursal'
-        expected_incident = {'user': 'Juan', 'action': ['hay', 'llamar', 'habilitar']}
+        expected_incident = {'user': 'Juan', 'action': 'habilitar la sucursal'}
         text = "Guardia propia hay que llamar a Juan y habilitar la sucursal"
         result = natural_language_processing.split(text)
         self.assertEqual(result['response'], expected_response, f"Should be {expected_response}")

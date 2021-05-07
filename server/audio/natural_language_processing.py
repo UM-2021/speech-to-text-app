@@ -7,10 +7,10 @@ has a particular format if the user wishes to create an incident (Action + " y a
 Note: in order to get the response, a list of all the possible responses was used.
 """
 
-import json
 import re
 from unicodedata import normalize
 
+from ibm_cloud_sdk_core import ApiException
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_watson.natural_language_understanding_v1 import Features, SemanticRolesOptions, EntitiesResult
@@ -89,16 +89,21 @@ def authenticate():
 
 
 def analyze_action(text):
-    actions = []
     service = authenticate()
-    response = service.analyze(
-        text=text,
-        features=Features(semantic_roles=SemanticRolesOptions())).get_result()
-    for resp in response['semantic_roles']:
-        actions.append(resp['action']['text'])
-    if len(actions) == 0:
-        raise ActionNotFoundException
-    return actions
+    try:
+        response = service.analyze(
+            text=text,
+            features=Features(semantic_roles=SemanticRolesOptions())).get_result()
+        raw_resp = response['semantic_roles'][-1]
+        action = raw_resp['action']['text']
+        try:
+            action += ' ' + raw_resp['object']['text']
+        except ApiException:
+            # It may or may not have an object
+            pass
+    except ApiException as e:
+        raise ActionNotFoundException(e) from e
+    return action
 
 
 def analyze_entities(text):
