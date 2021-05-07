@@ -43,51 +43,51 @@ const PreguntaAudio: React.FC = () => {
       mediaObj.stopRecord();
       mediaObj.release();
       // await makeFileIntoBlob(path);
-      Base64.encodeFile(path)
-        .then((base64File: string) => {
-          setStatus(base64File);
-        })
-        .catch((err) => setStatus("FALSO TODO"));
-      // await Base64.encodeFile(path);
+      // Base64.encodeFile(path)
+      //   .then((base64File: string) => {
+      //     setStatus(base64File);
+      //   })
+      //   .catch((err) => setStatus("FALSO TODO"));
+      // // await Base64.encodeFile(path);
     }
     setActiveAudio(!activeAudio);
   };
 
-  const makeFileIntoBlob = (mypath: string) => {
-    return new Promise((resolve, reject) => {
-      let fileName,
-        fileExtension = "";
-      File.resolveLocalFilesystemUrl(mypath)
-        .then((fileEntry) => {
-          let { name, nativeURL } = fileEntry;
-          // get the path..
-          let fnpath = nativeURL.substring(0, nativeURL.lastIndexOf("/"));
-          fileName = name;
-          // if you already know the file extension, just assign it to           // variable below
-          fileExtension = ".mp3";
-          // we are provided the name, so now read the file into a buffer
-          return File.readAsArrayBuffer(fnpath, name);
-        })
-        .then((buffer: ArrayBuffer) => {
-          // get the buffer and make a blob to be saved
-          let medBlob = new Blob([buffer], {
-            type: `audio/${fileExtension}`,
-          });
-          // pass back blob and the name of the file for saving
-          // into fire base
-          const opt = { replace: true };
-          File.writeFile(
-            File.externalRootDirectory,
-            "myaudio.mp3",
-            medBlob,
-            opt
-          );
-          setBlob(medBlob);
-          resolve({ blob: medBlob });
-        })
-        .catch((err) => reject(err));
-    });
-  };
+  // const makeFileIntoBlob = (mypath: string) => {
+  //   return new Promise((resolve, reject) => {
+  //     let fileName,
+  //       fileExtension = "";
+  //     File.resolveLocalFilesystemUrl(mypath)
+  //       .then((fileEntry) => {
+  //         let { name, nativeURL } = fileEntry;
+  //         // get the path..
+  //         let fnpath = nativeURL.substring(0, nativeURL.lastIndexOf("/"));
+  //         fileName = name;
+  //         // if you already know the file extension, just assign it to           // variable below
+  //         fileExtension = ".mp3";
+  //         // we are provided the name, so now read the file into a buffer
+  //         return File.readAsArrayBuffer(fnpath, name);
+  //       })
+  //       .then((buffer: ArrayBuffer) => {
+  //         // get the buffer and make a blob to be saved
+  //         let medBlob = new Blob([buffer], {
+  //           type: `audio/${fileExtension}`,
+  //         });
+  //         // pass back blob and the name of the file for saving
+  //         // into fire base
+  //         const opt = { replace: true };
+  //         File.writeFile(
+  //           File.externalRootDirectory,
+  //           "myaudio.mp3",
+  //           medBlob,
+  //           opt
+  //         );
+  //         setBlob(medBlob);
+  //         resolve({ blob: medBlob });
+  //       })
+  //       .catch((err) => reject(err));
+  //   });
+  // };
 
   //   function submitForm(contentType, data) {
   // 	axios({
