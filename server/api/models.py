@@ -96,7 +96,7 @@ class Respuesta(models.Model):
     notas = models.TextField(max_length=256, null=True, blank=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=get_user_model().objects.filter(username='german'))
+    usuario = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
     # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
