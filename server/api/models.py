@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from audio import speech_to_text
 from django.contrib.postgres.fields import ArrayField
@@ -9,7 +9,7 @@ class Sucursal(models.Model):
     nombre = models.CharField(max_length=50)
     numero = models.CharField(max_length=10)
     departamento = models.CharField(max_length=20)
-    barrio = models.CharField(max_length=20)
+    bardrio = models.CharField(max_length=20)
     direccion = models.CharField(max_length=100)
     telefono = models.CharField(max_length=50, unique=True)
     celular = models.CharField(max_length=50)
@@ -60,7 +60,7 @@ class Auditoria(models.Model):
     puntuacion = models.IntegerField(null=True, blank=True, default=0)
     finalizada = models.BooleanField(default=False)
     # Campos agregados por nosotros
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    usuario = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
@@ -96,7 +96,7 @@ class Respuesta(models.Model):
     notas = models.TextField(max_length=256, null=True, blank=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=get_user_model().objects.filter(username='german'))
     audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
     # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -124,17 +124,15 @@ class Media(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
-
-
     def __str__(self):
         return self.url
 
 
 class Incidente(models.Model):
-    reporta = models.ForeignKey(User,on_delete=models.CASCADE)
-    asignado = models.ForeignKey(User, on_delete=models.CASCADE)
+    reporta = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='reportado')
+    asignado = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    accion = models.CharField(max_length=255 )
+    accion = models.CharField(max_length=255)
 
     def __str__(self):
         return self.accion, self.reporta, self.asignado, self.pregunta

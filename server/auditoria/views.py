@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from api.models import Pregunta, Auditoria, Respuesta, Usuario, Media, Incidente
-from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, UsuarioSerializer, \
+from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
+from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
 
 
@@ -18,11 +18,6 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
-
-
-class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
 
 
 class MediaViewSet(viewsets.ModelViewSet):
