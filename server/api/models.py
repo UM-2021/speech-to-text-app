@@ -6,8 +6,18 @@ from django.utils import dateparse
 
 class Sucursal(models.Model):
     nombre = models.CharField(max_length=50)
+    numero = models.CharField(max_length=10)
+    departamento = models.CharField(max_length=20)
+    barrio = models.CharField(max_length=20)
     direccion = models.CharField(max_length=100)
     telefono = models.CharField(max_length=50, unique=True)
+    celular = models.CharField(max_length=50)
+    razon_social = models.CharField(max_length=50)
+    rut = models.CharField(max_length=12)
+    negocio_anexo = models.CharField(max_length=20)
+    tipo_de_acceso = models.CharField(max_length=30)
+    cantidad_de_cajas = models.IntegerField
+    # Campos agregados por nosotros
     esta_habilitado = models.BooleanField(default=False)
     ciudad = models.CharField(max_length=40)
     coord_lat = models.FloatField(null=True)
@@ -19,6 +29,7 @@ class Sucursal(models.Model):
         return f'Sucursal: {self.nombre} - {self.direccion}.'
 
 
+"""
 class Usuario(models.Model):
     nombre = models.CharField(max_length=60)
     apellido = models.CharField(max_length=60)
@@ -28,7 +39,7 @@ class Usuario(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
-    """ Las categorias hay que cambiarlas, puse esto temporalmente"""
+    # "" Las categorias hay que cambiarlas, puse esto temporalmente""
     JUNIOR = 'JR'
     MID_LEVEL = 'MID'
     SENIOR = 'SR'
@@ -38,6 +49,7 @@ class Usuario(models.Model):
         (SENIOR, 'Senior')
     )
     categoria = models.CharField(max_length=3, choices=LEVEL)
+"""
 
 
 class Auditoria(models.Model):
