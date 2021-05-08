@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import Usuario, Auditoria, Pregunta, Respuesta, Media
+from api.models import Usuario, Auditoria, Pregunta, Respuesta, Media, Incidente
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
@@ -12,7 +12,7 @@ class AuditoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Auditoria
         fields = '__all__'
-        
+
 
 class PreguntaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,3 +43,9 @@ class RespuestaMultimediaSerializer(serializers.Serializer):
     lista_url = serializers.ListField(
         child=serializers.URLField(max_length=255)
     )
+
+
+class IncidenteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Incidente
+        fields = '__all__'

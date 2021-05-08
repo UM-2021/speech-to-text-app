@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from api.models import Pregunta, Auditoria, Respuesta, Usuario, Media
-from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, UsuarioSerializer,\
-    MediaSerializer, RespuestaMultimediaSerializer
+from api.models import Pregunta, Auditoria, Respuesta, Usuario, Media, Incidente
+from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, UsuarioSerializer, \
+    MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
 
 
 class PreguntaViewSet(viewsets.ModelViewSet):
@@ -79,3 +79,8 @@ class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
             return Response(respuesta_con_audio_json, status=status.HTTP_201_CREATED)
 
         return Response(serializer_global.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class IncidenteViewSet(viewsets.ModelViewSet):
+    queryset = Incidente.objects.all()
+    serializer_class = IncidenteSerializer

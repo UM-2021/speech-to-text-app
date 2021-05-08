@@ -54,11 +54,13 @@ class Usuario(models.Model):
 
 class Auditoria(models.Model):
     sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     puntuacion = models.IntegerField(null=True, blank=True, default=0)
     finalizada = models.BooleanField(default=False)
+    #Campos agregados por nosotros
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
+
 
     def __str__(self):
         return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
@@ -66,8 +68,6 @@ class Auditoria(models.Model):
 
 class Pregunta(models.Model):
     pregunta = models.CharField(max_length=255)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
 
     CATEGORIAS = [
         ('IN', 'Informativa'),
@@ -83,6 +83,8 @@ class Pregunta(models.Model):
 
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
     tipo = models.CharField(max_length=4, choices=TIPOS, default=TIPOS[0][0])
+    respuesta_ok = models.CharField(max_length=255,null=true)
+    #Campos agregados por nosotros
     opciones = ArrayField(models.CharField(max_length=25), null=True, blank=True)
 
     def __str__(self):
@@ -92,13 +94,13 @@ class Pregunta(models.Model):
 class Respuesta(models.Model):
     respuesta = models.CharField(max_length=128)
     notas = models.TextField(max_length=256, null=True, blank=True)
-    audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    # usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
+    # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
-    validez = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.pregunta.pregunta} - {self.respuesta}'
@@ -106,7 +108,9 @@ class Respuesta(models.Model):
 
 class Media(models.Model):
     url = models.URLField(max_length=255)
-    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)    tipo = models.CharField(max_length=3, choices=LEVEL)
+    tipo = models.CharField(max_length=3, choices=LEVEL)
+    # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
@@ -119,7 +123,16 @@ class Media(models.Model):
         (MID_LEVEL, 'Mid-level'),
         (SENIOR, 'Senior')
     )
-    tipo = models.CharField(max_length=3, choices=LEVEL)
 
     def __str__(self):
         return self.url
+
+class Incidente(models.Model):
+    reporta = models.ForeignKey(Usuario,max_length=255)
+    asignado = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    pregunta = models.ForeignKey(Pregunta,max_length=3, choices=LEVEL)
+    accion = models.CharField(max_length=255,)
+
+
+    def __str__(self):
+        return self.accion, self.reporta, self.asignado, self.pregunta
