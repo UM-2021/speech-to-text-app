@@ -27,6 +27,12 @@ class MediaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class IncidenteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Incidente
+        fields = '__all__'
+
+
 class RespuestaMultimediaSerializer(serializers.Serializer):
     texto = serializers.CharField(style={'base_template': 'textarea.html'})
     audio = serializers.FileField(max_length=255)
@@ -38,9 +44,3 @@ class RespuestaMultimediaSerializer(serializers.Serializer):
     lista_url = serializers.ListField(
         child=serializers.URLField(max_length=255)
     )
-
-
-class IncidenteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Incidente
-        fields = '__all__'

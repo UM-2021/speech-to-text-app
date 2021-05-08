@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from audio import speech_to_text
 from django.contrib.postgres.fields import ArrayField
-from django.utils import dateparse
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 
 class Sucursal(models.Model):
@@ -28,29 +30,6 @@ class Sucursal(models.Model):
 
     def __str__(self):
         return f'Sucursal: {self.nombre} - {self.direccion}.'
-
-
-"""
-class Usuario(models.Model):
-    nombre = models.CharField(max_length=60)
-    apellido = models.CharField(max_length=60)
-    fecha_de_nacimiento = models.DateTimeField()
-    email = models.EmailField(max_length=254)
-    esta_habilitado = models.BooleanField(default=False)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
-
-    # "" Las categorias hay que cambiarlas, puse esto temporalmente""
-    JUNIOR = 'JR'
-    MID_LEVEL = 'MID'
-    SENIOR = 'SR'
-    LEVEL = (
-        (JUNIOR, 'Junior'),
-        (MID_LEVEL, 'Mid-level'),
-        (SENIOR, 'Senior')
-    )
-    categoria = models.CharField(max_length=3, choices=LEVEL)
-"""
 
 
 class Auditoria(models.Model):
@@ -136,3 +115,9 @@ class Incidente(models.Model):
 
     def __str__(self):
         return self.accion, self.reporta, self.asignado, self.pregunta
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)

@@ -7,6 +7,9 @@ from api.models import Sucursal, Auditoria
 from .serializers import SucursalSerializer
 
 
+# Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
+
+
 class SucursalViewSet(viewsets.ModelViewSet):
     """
     Un ejemplo de una ViewSet para ver, crear, editar y eliminar Sucursales.
