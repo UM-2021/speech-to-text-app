@@ -1,10 +1,10 @@
-import { MediaObject } from "@ionic-native/media";
-import React, { useState } from "react";
+import { MediaObject } from '@ionic-native/media';
+import React, { useState } from 'react';
 
-import "./Pregunta.css";
-import PreguntaAudio from "./PreguntaAudio";
-import PreguntaNumerica from "./PreguntaNumerica";
-import PreguntaOpciones from "./PreguntaOpciones";
+import './Pregunta.css';
+import PreguntaAudio from './PreguntaAudio';
+import PreguntaNumerica from './PreguntaNumerica';
+import PreguntaOpciones from './PreguntaOpciones';
 
 interface IPregunta {
   id: string;
@@ -16,7 +16,7 @@ interface IPregunta {
 const Pregunta: React.FC<
   IPregunta & { submitResponse: (payload: any) => void }
 > = ({ id, tipo, pregunta, opciones, submitResponse }) => {
-  const [respuesta, setRespuesta] = useState("");
+  const [respuesta, setRespuesta] = useState('');
   const handleResponse = async (a: string, audio?: string) => {
     let payload;
     setRespuesta(a);
@@ -48,14 +48,14 @@ const Pregunta: React.FC<
         <div>{respuesta}</div>
       </div>
       <div className="shrink">
-        {tipo === "audi" && <div></div>}
-        {tipo === "opci" && (
+        {tipo === 'audi' && <div></div>}
+        {tipo === 'opci' && (
           <PreguntaOpciones
             opciones={opciones}
             submitResponse={handleResponse}
           />
         )}
-        {tipo === "nume" && (
+        {tipo === 'nume' && (
           <PreguntaNumerica submitResponse={handleResponse} />
         )}
         <PreguntaAudio submitResponse={handleResponse} />
