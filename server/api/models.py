@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from audio import speech_to_text
 from django.contrib.postgres.fields import ArrayField
@@ -58,9 +59,8 @@ class Auditoria(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
     puntuacion = models.IntegerField(null=True, blank=True, default=0)
     finalizada = models.BooleanField(default=False)
-    #Campos agregados por nosotros
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
-
+    # Campos agregados por nosotros
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
@@ -83,8 +83,8 @@ class Pregunta(models.Model):
 
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
     tipo = models.CharField(max_length=4, choices=TIPOS, default=TIPOS[0][0])
-    respuesta_ok = models.CharField(max_length=255,null=true)
-    #Campos agregados por nosotros
+    respuesta_ok = models.CharField(max_length=255, null=True)
+    # Campos agregados por nosotros
     opciones = ArrayField(models.CharField(max_length=25), null=True, blank=True)
 
     def __str__(self):
@@ -96,7 +96,7 @@ class Respuesta(models.Model):
     notas = models.TextField(max_length=256, null=True, blank=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
     # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -107,13 +107,6 @@ class Respuesta(models.Model):
 
 
 class Media(models.Model):
-    url = models.URLField(max_length=255)
-    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)    tipo = models.CharField(max_length=3, choices=LEVEL)
-    tipo = models.CharField(max_length=3, choices=LEVEL)
-    # Campos agregados por nosotros
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
-
     """ Las categorias hay que cambiarlas, puse esto temporalmente"""
     JUNIOR = 'JR'
     MID_LEVEL = 'MID'
@@ -124,15 +117,24 @@ class Media(models.Model):
         (SENIOR, 'Senior')
     )
 
+    url = models.URLField(max_length=255)
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=3, choices=LEVEL)
+    # Campos agregados por nosotros
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+
+
+
     def __str__(self):
         return self.url
 
-class Incidente(models.Model):
-    reporta = models.ForeignKey(Usuario,max_length=255)
-    asignado = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    pregunta = models.ForeignKey(Pregunta,max_length=3, choices=LEVEL)
-    accion = models.CharField(max_length=255,)
 
+class Incidente(models.Model):
+    reporta = models.ForeignKey(User,on_delete=models.CASCADE)
+    asignado = models.ForeignKey(User, on_delete=models.CASCADE)
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    accion = models.CharField(max_length=255 )
 
     def __str__(self):
         return self.accion, self.reporta, self.asignado, self.pregunta

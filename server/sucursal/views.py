@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import viewsets
 
-from api.models import Sucursal
+from api.models import Sucursal, Auditoria
 from .serializers import SucursalSerializer
 
 
@@ -25,7 +25,7 @@ class SucursalViewSet(viewsets.ModelViewSet):
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
+    mixins.DestroyM odelMixin,
     mixins.ListModelMixin,
     y
     GenericViewSet
@@ -40,3 +40,11 @@ class SucursalViewSet(viewsets.ModelViewSet):
     """
     queryset = Sucursal.objects.all()
     serializer_class = SucursalSerializer
+
+    """
+    def get_ordering(self):
+        ultimasAuditorias=Auditoria.objects.orderby('-fecha_modificacion')[:10]
+        sucursales_id= ultimasAuditorias
+
+        ordering=self.request.GET.get('ordering','') 
+    """

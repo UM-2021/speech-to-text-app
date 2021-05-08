@@ -30,7 +30,7 @@ class MediaViewSet(viewsets.ModelViewSet):
     serializer_class = MediaSerializer
 
 
-class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
+class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):  #todo fIjarse si quedo bien(despues hacer los tests)
     def get_queryset(self):
         return super().get_queryset()
 
