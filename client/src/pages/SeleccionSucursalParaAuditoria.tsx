@@ -16,6 +16,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 import { fetchSucursales } from '../actions/sucursalesActions';
+import Loader from '../components/Loader';
 
 interface IBaseSucursal {
 	id: string;
@@ -52,17 +53,23 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 					placeholder='Busca una sucursal...'
 					showCancelButton='focus'
 					showClearButton='focus'></IonSearchbar>
-
-				<IonList>
-					{sucursales.map((s: any) => (
-						<Link key={s.id} to={`/auditoria/datos/${s.id}`} style={{ textDecoration: 'none' }}>
-							<IonItem>
-								{s.nombre}
-								<IonIcon slot='end' icon={arrowForwardOutline} />
-							</IonItem>
-						</Link>
-					))}
-				</IonList>
+				{loading ? (
+					<Loader />
+				) : (
+					<IonList>
+						{sucursales.map((s: any) => (
+							<Link
+								key={s.id}
+								to={`/auditoria/datos/${s.id}`}
+								style={{ textDecoration: 'none' }}>
+								<IonItem>
+									{s.nombre}
+									<IonIcon slot='end' icon={arrowForwardOutline} />
+								</IonItem>
+							</Link>
+						))}
+					</IonList>
+				)}
 			</IonContent>
 		</IonPage>
 	);

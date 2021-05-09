@@ -17,6 +17,8 @@ import Pregunta from '../components/Pregunta';
 import axios from 'axios';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 import Loader from '../components/Loader';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAuditoria, fetchPreguntas } from '../actions/auditoriasActions';
 
 interface IRespuesta {
 	respuesta: string;
@@ -35,48 +37,33 @@ interface IPregunta {
 
 const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
 	let history = useHistory();
-	const [preguntas, setPreguntas] = useState<IPregunta[]>([]);
+	const dispatch = useDispatch();
+	const { loading, error, preguntas } = useSelector((state: any) => state.preguntas);
+
 	const [respuestas, setRespuestas] = useState<IRespuesta[]>([]);
-	const [loading, setLoading] = useState(true);
 	const [submitted, setSubmitted] = useState(false);
-	const [auditoria, setAuditoria] = useState('');
 
 	useEffect(() => {
-		const fetchPreguntas = async () => {
-			const { data } = await axios('http://localhost:8000/api/auditorias/pregunta/');
-			const { data: auditoriaData } = await axios.post(
-				'http://localhost:8000/api/auditorias/auditoria/',
-				{
-					sucursal: match.params.id
-				}
-			);
-			setAuditoria(auditoriaData.id);
-			setPreguntas(data);
-			setLoading(false);
-		};
-
-		fetchPreguntas();
-	}, [match.params.id]);
+		dispatch(fetchAuditoria(match.params.id));
+		dispatch(fetchPreguntas());
+	}, [dispatch, match.params.id]);
 
 	const handleSubmit = () => {
-		setLoading(true);
-		respuestas.map(async r => {
-			await axios.post('http://localhost:8000/api/auditorias/respuesta/', r);
-		});
-		setLoading(false);
-		setSubmitted(true);
-		setTimeout(() => history.push('/'), 3000);
+		// 	respuestas.map(async r => {
+		// 		await axios.post('http://localhost:8000/api/auditorias/respuesta/', r);
+		// 	});
+		// 	// setLoading(false);
+		// 	setSubmitted(true);
+		// 	setTimeout(() => history.push('/'), 3000);
 	};
 
 	const submitResponse = (payload: any) => {
-		// WORKAROUND: We have to improve it.
-		// Delete record of that question.
-		const auxArray = respuestas.filter(r => r.pregunta !== payload.pregunta);
-
-		// Add the updated one.
-		auxArray.push({ ...payload, auditoria });
-
-		setRespuestas([...auxArray]);
+		// 	// WORKAROUND: We have to improve it.
+		// 	// Delete record of that question.
+		// 	const auxArray = respuestas.filter(r => r.pregunta !== payload.pregunta);
+		// 	// Add the updated one.
+		// 	auxArray.push({ ...payload, auditoria });
+		// 	setRespuestas([...auxArray]);
 	};
 
 	if (loading) return <Loader />;
@@ -112,20 +99,19 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 							initialSlide: 0,
 							speed: 400
 						}}>
-						{preguntas.map(p => (
+						{preguntas.map((p: any) => (
 							<IonSlide key={p.id}>
 								<Pregunta
 									pregunta={p.pregunta}
 									id={p.id}
 									tipo={p.tipo}
 									opciones={p.opciones}
-									submitResponse={submitResponse}
 								/>
 							</IonSlide>
 						))}
 						<IonSlide>
 							<div>
-								<IonButton expand='block' color='primary' onClick={handleSubmit}>
+								<IonButton expand='block' color='primary'>
 									Enviar
 								</IonButton>
 								<IonButton expand='block' color='danger'>

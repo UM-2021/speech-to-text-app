@@ -1,5 +1,6 @@
-import { MediaObject } from '@ionic-native/media';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { ADD_RESPUESTA } from '../actions/types';
 
 import './Pregunta.css';
 import PreguntaAudio from './PreguntaAudio';
@@ -13,21 +14,21 @@ interface IPregunta {
 	opciones?: any;
 }
 
-const Pregunta: React.FC<IPregunta & { submitResponse: (payload: any) => void }> = ({
-	id,
-	tipo,
-	pregunta,
-	opciones,
-	submitResponse
-}) => {
+const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones }) => {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		dispatch({ type: ADD_RESPUESTA, payload: { pregunta: id, isAnswered: false } });
+	}, [dispatch, id]);
+
 	const [respuesta, setRespuesta] = useState('');
-	const handleResponse = async (a: string, audio?: MediaObject) => {
+	const handleResponse = async (a: string, audio?: string) => {
 		setRespuesta(a);
 		const payload = {
-			pregunta: id, 
-			respuesta: a
-		}
-		submitResponse(payload);
+			pregunta: id,
+			respuesta: a,
+			audio: audio ? audio : null
+		};
 	};
 
 	return (
@@ -43,9 +44,9 @@ const Pregunta: React.FC<IPregunta & { submitResponse: (payload: any) => void }>
 			</div>
 			<div className='shrink'>
 				{tipo === 'audi' && <div></div>}
-				{tipo === 'opci' && <PreguntaOpciones opciones={opciones} submitResponse={handleResponse} />}
-				{tipo === 'nume' && <PreguntaNumerica submitResponse={handleResponse} />}
-				<PreguntaAudio submitResponse={handleResponse} />
+				{tipo === 'opci' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}
+				{tipo === 'nume' && <PreguntaNumerica preguntaId={id} />}
+				<PreguntaAudio preguntaId={id} />
 			</div>
 		</div>
 	);

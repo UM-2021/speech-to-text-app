@@ -10,9 +10,9 @@ import {
 export const sucursalesReducer = (state = { sucursales: [] }, action: any) => {
 	switch (action.type) {
 		case FETCH_SUCURSALES_REQUEST:
-			return { ...state, loading: true };
+			return { loading: true };
 		case FETCH_SUCURSALES_SUCCESS:
-			return { ...state, loading: false, sucursales: [...action.payload] };
+			return { loading: false, sucursales: [...action.payload] };
 		case FETCH_SUCURSALES_FAILED:
 			return { ...state, error: action.payload };
 		default:
