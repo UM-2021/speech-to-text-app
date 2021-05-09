@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ADD_RESPUESTA } from '../actions/types';
 
 import './Pregunta.css';
@@ -9,27 +9,32 @@ import PreguntaOpciones from './PreguntaOpciones';
 
 interface IPregunta {
 	id: string;
+	auditoriaId: string;
 	pregunta: string;
 	tipo: string;
 	opciones?: any;
 }
 
-const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones }) => {
+const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones, auditoriaId }) => {
 	const dispatch = useDispatch();
 
+	const respuestas = useSelector((state: any) => state.respuestas);
 	useEffect(() => {
-		dispatch({ type: ADD_RESPUESTA, payload: { pregunta: id, isAnswered: false } });
-	}, [dispatch, id]);
+		dispatch({
+			type: ADD_RESPUESTA,
+			payload: { pregunta: id, isAnswered: false, auditoria: auditoriaId }
+		});
+	}, [dispatch, id, auditoriaId]);
 
-	const [respuesta, setRespuesta] = useState('');
-	const handleResponse = async (a: string, audio?: string) => {
-		setRespuesta(a);
-		const payload = {
-			pregunta: id,
-			respuesta: a,
-			audio: audio ? audio : null
-		};
-	};
+	// const [respuesta, setRespuesta] = useState('');
+	// const handleResponse = async (a: string, audio?: string) => {
+	// 	setRespuesta(a);
+	// 	const payload = {
+	// 		pregunta: id,
+	// 		respuesta: a,
+	// 		audio: audio ? audio : null
+	// 	};
+	// };
 
 	return (
 		<div className='ion-padding flex ion-margin-vertical'>
@@ -40,8 +45,12 @@ const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones }) => {
 				<h5>
 					<i>Respuesta: </i>
 				</h5>
-				<div>{respuesta}</div>
+				<div>
+					{respuestas.filter((r: any) => r.pregunta === parseInt(id) && r.isAnswered)[0]
+						?.respuesta || ''}
+				</div>
 			</div>
+
 			<div className='shrink'>
 				{tipo === 'audi' && <div></div>}
 				{tipo === 'opci' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}

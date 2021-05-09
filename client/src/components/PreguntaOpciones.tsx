@@ -1,7 +1,7 @@
 import { IonButton, IonSegment } from '@ionic/react';
 import React, { Fragment, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { ADD_RESPUESTA } from '../actions/types';
+import { ADD_RESPUESTA_FIELD } from '../actions/types';
 
 import './PreguntaOpciones.css';
 
@@ -12,7 +12,7 @@ const PreguntaOpciones: React.FC<{ opciones: string[] | undefined; preguntaId: s
 	const dispatch = useDispatch();
 
 	const addAnswer = (value: string) => {
-		dispatch({ type: ADD_RESPUESTA, payload: { pregunta: preguntaId, respuesta: value } });
+		dispatch({ type: ADD_RESPUESTA_FIELD, payload: { pregunta: preguntaId, respuesta: value } });
 	};
 
 	return (

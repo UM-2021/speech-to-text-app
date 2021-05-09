@@ -4,14 +4,14 @@ import { arrowUpOutline, arrowDownOutline } from 'ionicons/icons';
 
 import './PreguntaNumerica.css';
 import { useDispatch } from 'react-redux';
-import { ADD_RESPUESTA } from '../actions/types';
+import { ADD_RESPUESTA_FIELD } from '../actions/types';
 
 const PreguntaNumerica: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 	const dispatch = useDispatch();
 	const [number, setNumber] = useState(0);
 
 	const addAnswer = (value: Number) => {
-		dispatch({ type: ADD_RESPUESTA, payload: { pregunta: preguntaId, respuesta: value } });
+		dispatch({ type: ADD_RESPUESTA_FIELD, payload: { pregunta: preguntaId, respuesta: value } });
 	};
 
 	return (

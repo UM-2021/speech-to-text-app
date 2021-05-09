@@ -18,7 +18,8 @@ import axios from 'axios';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAuditoria, fetchPreguntas } from '../actions/auditoriasActions';
+import { fetchAuditoria, fetchPreguntas, postRespuestas } from '../actions/auditoriasActions';
+import { RESPUESTAS_RESET } from '../actions/types';
 
 interface IRespuesta {
 	respuesta: string;
@@ -39,9 +40,9 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 	let history = useHistory();
 	const dispatch = useDispatch();
 	const { loading, error, preguntas } = useSelector((state: any) => state.preguntas);
-
-	const [respuestas, setRespuestas] = useState<IRespuesta[]>([]);
+	const { loading: auditoriaLoading, auditoria } = useSelector((state: any) => state.auditoria);
 	const [submitted, setSubmitted] = useState(false);
+	const [showLoader, setShowLoader] = useState(false);
 
 	useEffect(() => {
 		dispatch(fetchAuditoria(match.params.id));
@@ -66,6 +67,22 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 		// 	setRespuestas([...auxArray]);
 	};
 
+	const onExit = () => {
+		history.goBack();
+		dispatch({ type: RESPUESTAS_RESET });
+	};
+
+	const onSubmit = (e: any) => {
+		e.preventDefault();
+		setShowLoader(true);
+		dispatch(postRespuestas());
+		setTimeout(() => {
+			setSubmitted(true);
+			setShowLoader(false);
+			history.push('/');
+		}, 1500);
+	};
+
 	if (loading) return <Loader />;
 	else
 		return (
@@ -74,7 +91,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 					<IonToolbar>
 						<IonTitle>Nueva Auditoría</IonTitle>
 						<IonButtons slot='end'>
-							<IonButton color='danger' onClick={() => history.goBack()}>
+							<IonButton color='danger' onClick={onExit}>
 								Salir
 							</IonButton>
 						</IonButtons>
@@ -92,34 +109,44 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 							<IonTitle size='large'>Nueva Auditoría</IonTitle>
 						</IonToolbar>
 					</IonHeader>
-					<IonSlides
-						className='slider'
-						pager={true}
-						options={{
-							initialSlide: 0,
-							speed: 400
-						}}>
-						{preguntas.map((p: any) => (
-							<IonSlide key={p.id}>
-								<Pregunta
-									pregunta={p.pregunta}
-									id={p.id}
-									tipo={p.tipo}
-									opciones={p.opciones}
-								/>
+					{auditoriaLoading ? (
+						<Loader />
+					) : (
+						<IonSlides
+							className='slider'
+							pager={true}
+							options={{
+								initialSlide: 0,
+								speed: 400
+							}}>
+							{preguntas.map((p: any) => (
+								<IonSlide key={p.id}>
+									<Pregunta
+										auditoriaId={auditoria.id}
+										pregunta={p.pregunta}
+										id={p.id}
+										tipo={p.tipo}
+										opciones={p.opciones}
+									/>
+								</IonSlide>
+							))}
+
+							<IonSlide>
+								{showLoader ? (
+									<Loader />
+								) : (
+									<div>
+										<IonButton expand='block' color='primary' onClick={onSubmit}>
+											Enviar
+										</IonButton>
+										<IonButton expand='block' color='danger'>
+											Cancelar
+										</IonButton>
+									</div>
+								)}
 							</IonSlide>
-						))}
-						<IonSlide>
-							<div>
-								<IonButton expand='block' color='primary'>
-									Enviar
-								</IonButton>
-								<IonButton expand='block' color='danger'>
-									Cancelar
-								</IonButton>
-							</div>
-						</IonSlide>
-					</IonSlides>
+						</IonSlides>
+					)}
 				</IonContent>
 			</IonPage>
 		);

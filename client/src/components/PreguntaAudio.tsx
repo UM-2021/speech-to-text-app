@@ -2,7 +2,7 @@ import { IonButton, IonIcon, IonInput, IonSegment } from '@ionic/react';
 import { cameraOutline, keypadOutline, micOutline } from 'ionicons/icons';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ADD_RESPUESTA } from '../actions/types';
+import { ADD_RESPUESTA_FIELD } from '../actions/types';
 import { File } from '@ionic-native/file';
 import { Media, MediaObject } from '@ionic-native/media';
 import { Base64 } from '@ionic-native/base64';
@@ -20,7 +20,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 	const [audioFileHandler, setAudioFileHandler] = useState<any>({ file: null, base64URL: '' });
 
 	const addAnswer = (value: string) => {
-		dispatch({ type: ADD_RESPUESTA, payload: { pregunta: preguntaId, audio: value } });
+		dispatch({ type: ADD_RESPUESTA_FIELD, payload: { pregunta: preguntaId, audio: value } });
 	};
 
 	// const file = File.createFile(
