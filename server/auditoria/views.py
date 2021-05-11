@@ -1,13 +1,10 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from api.models import Pregunta, Auditoria, Respuesta, Usuario, Media, Incidente
-from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, UsuarioSerializer, \
+from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
+from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
 
-
-class PreguntaViewSet(viewsets.ModelViewSet):
-    queryset = Pregunta.objects.all()
-    serializer_class = PreguntaSerializer
+# Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 
 
 class AuditoriaViewSet(viewsets.ModelViewSet):
@@ -15,19 +12,24 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     serializer_class = AuditoriaSerializer
 
 
+class PreguntaViewSet(viewsets.ModelViewSet):
+    queryset = Pregunta.objects.all()
+    serializer_class = PreguntaSerializer
+
+
 class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
 
-class UsuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
-
-
 class MediaViewSet(viewsets.ModelViewSet):
     queryset = Media.objects.all()
     serializer_class = MediaSerializer
+
+
+class IncidenteViewSet(viewsets.ModelViewSet):
+    queryset = Incidente.objects.all()
+    serializer_class = IncidenteSerializer
 
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):  #todo fIjarse si quedo bien(despues hacer los tests)

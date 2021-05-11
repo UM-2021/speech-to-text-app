@@ -1,11 +1,6 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from api.models import Usuario, Auditoria, Pregunta, Respuesta, Media, Incidente
-
-
-class UsuarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Usuario
-        fields = '__all__'
+from api.models import Auditoria, Pregunta, Respuesta, Media, Incidente
 
 
 class AuditoriaSerializer(serializers.ModelSerializer):
@@ -32,20 +27,20 @@ class MediaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class IncidenteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Incidente
+        fields = '__all__'
+
+
 class RespuestaMultimediaSerializer(serializers.Serializer):
     texto = serializers.CharField(style={'base_template': 'textarea.html'})
     audio = serializers.FileField(max_length=255)
     validez = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
     auditoria_id = serializers.PrimaryKeyRelatedField(queryset=Auditoria.objects.all())
     pregunta_id = serializers.PrimaryKeyRelatedField(queryset=Pregunta.objects.all())
-    usuario_id = serializers.PrimaryKeyRelatedField(queryset=Usuario.objects.all())
+    usuario_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     tipo = serializers.ChoiceField(choices=(('JR', 'Junior'), ('MID', 'Mid-level'), ('SR', 'Senior')))
     lista_url = serializers.ListField(
         child=serializers.URLField(max_length=255)
     )
-
-
-class IncidenteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Incidente
-        fields = '__all__'
