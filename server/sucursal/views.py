@@ -46,8 +46,10 @@ class SucursalViewSet(viewsets.ModelViewSet):
 
     """
     def get_ordering(self):
-        ultimasAuditorias=Auditoria.objects.orderby('-fecha_modificacion')[:10]
-        sucursales_id= ultimasAuditorias
-
-        ordering=self.request.GET.get('ordering','') 
+        ultimasAuditorias=Auditoria.objects.orderby('-fecha_modificacion')[:20]
+        idUltimasSucursales=[]
+        for i in range(ultimasAuditorias):
+            idUltimasSucursales.append(ultimasAuditoria[i].sucursal)           
+        sucursales= Sucursal.objects.filters(id__in=idUltimasSucursales)
+        return sucursales       
     """
