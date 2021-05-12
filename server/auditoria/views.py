@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
@@ -12,9 +13,25 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     serializer_class = AuditoriaSerializer
 
 
+    def create(self, request):   #cuando se crea una audiotoria se pasa el id de la sucursal
+        datosSerializados = AuditoriaSerializer(data=request.data)
+        if Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id):
+            return Response(AuditoriaSerializer(Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id)))
+        if datosSerializados.isValid():
+            datosSerializados.save()
+            return Response(datosSerializados, status=status.HTTP_201_CREATED)
+        return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class PreguntaViewSet(viewsets.ModelViewSet):
     queryset = Pregunta.objects.all()
     serializer_class = PreguntaSerializer
+
+    @action(methods=['get'], detail=True)
+    def get_seccion(self, request,pk=None):  #todo fijarse que pasa si saco el None
+        print("kinko puto")
+        Preguntas =Pregunta.objects.filter(seccion__exact=pk)
+        return Response([(Pregunta.pregunta, Pregunta.id) for Pregunta in Preguntas])
 
 
 class RespuestaViewSet(viewsets.ModelViewSet):
@@ -32,7 +49,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
 
-class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):  #todo fIjarse si quedo bien(despues hacer los tests)
+class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
     def get_queryset(self):
         return super().get_queryset()
 
