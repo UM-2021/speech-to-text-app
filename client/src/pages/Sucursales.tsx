@@ -13,7 +13,10 @@ import {
 import axios from 'axios';
 import { arrowForwardOutline, storefrontOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { fetchSucursales } from '../actions/sucursalesActions';
+import Loader from '../components/Loader';
 
 interface IBaseSucursal {
 	id: string;
@@ -21,14 +24,12 @@ interface IBaseSucursal {
 }
 
 const Sucursales: React.FC = () => {
-	const [sucursales, setSucursales] = useState<IBaseSucursal[]>([]);
+	const dispatch = useDispatch();
+	const { loading, error, sucursales } = useSelector((state: any) => state.sucursales);
+
 	useEffect(() => {
-		const fetchSucursales = async () => {
-			const { data } = await axios('http://localhost:8000/api/sucursales/');
-			setSucursales(data);
-		};
-		fetchSucursales();
-	}, []);
+		dispatch(fetchSucursales());
+	}, [dispatch]);
 
 	return (
 		<IonPage>
@@ -48,18 +49,24 @@ const Sucursales: React.FC = () => {
 					placeholder='Busca una sucursal...'
 					showCancelButton='focus'
 					showClearButton='focus'></IonSearchbar>
-
-				<IonList>
-					{sucursales.map(s => (
-						<Link key={s.id} to={`/sucursal/perfil/${s.id}`} style={{ textDecoration: 'none' }}>
-							<IonItem button>
-								<IonIcon slot='start' icon={storefrontOutline} />
-								<IonLabel>{s.nombre}</IonLabel>
-								<IonIcon slot='end' icon={arrowForwardOutline} />
-							</IonItem>
-						</Link>
-					))}
-				</IonList>
+				{loading ? (
+					<Loader />
+				) : (
+					<IonList>
+						{sucursales.map((s: any) => (
+							<Link
+								key={s.id}
+								to={`/sucursal/perfil/${s.id}`}
+								style={{ textDecoration: 'none' }}>
+								<IonItem button>
+									<IonIcon slot='start' icon={storefrontOutline} />
+									<IonLabel>{s.nombre}</IonLabel>
+									<IonIcon slot='end' icon={arrowForwardOutline} />
+								</IonItem>
+							</Link>
+						))}
+					</IonList>
+				)}
 			</IonContent>
 		</IonPage>
 	);

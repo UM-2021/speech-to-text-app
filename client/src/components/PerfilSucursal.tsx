@@ -1,7 +1,9 @@
 import { IonAvatar, IonChip, IonIcon, IonItem, IonLabel, IonList, IonListHeader } from '@ionic/react';
-import axios from 'axios';
+
 import { navigateCircleOutline, storefrontOutline } from 'ionicons/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSucursal } from '../actions/sucursalesActions';
 import Loader from './Loader';
 
 import './PerfilSucursal.css';
@@ -15,16 +17,13 @@ interface ISucursal {
 }
 
 const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
-	const [sucursal, setSucursal] = useState<ISucursal>();
-	const [loading, setLoading] = useState(true);
+	const dispatch = useDispatch();
+	const { loading, error, sucursal } = useSelector((state: any) => state.sucursal);
+
 	useEffect(() => {
-		const fetchSucursal = async () => {
-			const { data } = await axios(`http://localhost:8000/api/sucursales/${id}`);
-			setSucursal(data);
-			setLoading(false);
-		};
-		fetchSucursal();
-	}, [id]);
+		dispatch(fetchSucursal(id));
+	}, [dispatch, id]);
+
 	if (loading) return <Loader />;
 	else
 		return (
@@ -43,7 +42,9 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 								icon={navigateCircleOutline}
 							/>
 						</IonAvatar>
-						<IonLabel>{sucursal!.direccion}, {sucursal!.ciudad}</IonLabel>
+						<IonLabel>
+							{sucursal!.direccion}, {sucursal!.ciudad}
+						</IonLabel>
 					</IonChip>
 				</div>
 

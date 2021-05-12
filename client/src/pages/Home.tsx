@@ -13,7 +13,10 @@ import {
 import axios from 'axios';
 import { add, storefrontOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { fetchSucursales } from '../actions/sucursalesActions';
+import Loader from '../components/Loader';
 
 import './Home.css';
 
@@ -23,14 +26,12 @@ interface IBaseSucursal {
 }
 
 const Home: React.FC = () => {
-	const [sucursales, setSucursales] = useState<IBaseSucursal[]>([]);
+	const dispatch = useDispatch();
+	const { loading, error, sucursales } = useSelector((state: any) => state.sucursales);
+
 	useEffect(() => {
-		const fetchSucursales = async () => {
-			const { data } = await axios('http://localhost:8000/api/sucursales/');
-			setSucursales(data);
-		};
-		fetchSucursales();
-	}, []);
+		dispatch(fetchSucursales());
+	}, [dispatch]);
 
 	return (
 		<IonPage>
@@ -53,21 +54,25 @@ const Home: React.FC = () => {
 				</Link>
 				<div className='ion-margin list-container'>
 					<h3 className='ion-margin list-header'>SAG Recientes</h3>
-					<IonList lines='full' className='list'>
-						{sucursales.map(a => (
-							<Link
-								key={a.id}
-								to={`/sucursal/perfil/${a.id}`}
-								style={{ textDecoration: 'none' }}>
-								<IonItem className='list-item' button>
-									<IonIcon slot='start' icon={storefrontOutline} />
-									<IonLabel>
-										<h3>{a.nombre}</h3>
-									</IonLabel>
-								</IonItem>
-							</Link>
-						))}
-					</IonList>
+					{loading ? (
+						<Loader />
+					) : (
+						<IonList lines='full' className='list'>
+							{sucursales.map((a: any) => (
+								<Link
+									key={a.id}
+									to={`/sucursal/perfil/${a.id}`}
+									style={{ textDecoration: 'none' }}>
+									<IonItem className='list-item' button>
+										<IonIcon slot='start' icon={storefrontOutline} />
+										<IonLabel>
+											<h3>{a.nombre}</h3>
+										</IonLabel>
+									</IonItem>
+								</Link>
+							))}
+						</IonList>
+					)}
 				</div>
 			</IonContent>
 		</IonPage>
