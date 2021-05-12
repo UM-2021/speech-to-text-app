@@ -41,38 +41,28 @@ import PreguntasAuditoria from './pages/PreguntasAuditoria';
 import SeleccionSucursalParaAuditoria from './pages/SeleccionSucursalParaAuditoria';
 import DatosSucursal from './pages/DatosSucursal';
 import PerfilSucursalPage from './pages/PerfilSucursalPage';
-import { useSelector } from 'react-redux';
 import PrivateRoute from './helpers/PrivateRoute';
 
 const App: React.FC = () => {
-	const { user } = useSelector((state: any) => state.auth);
-
 	return (
 		<IonApp>
 			<IonReactRouter>
 				<IonTabs>
 					<IonRouterOutlet>
-						<PrivateRoute exact path='/home'>
-							<Home />
-						</PrivateRoute>
-						<PrivateRoute exact path='/sucursal/perfil/:id' component={PerfilSucursalPage} />
-						<PrivateRoute exact path='/sucursal'>
-							<Sucursales />
-						</PrivateRoute>
-						<PrivateRoute exact path='/incidentes'>
-							<Incidentes />
-						</PrivateRoute>
 						<Route exact path='/login'>
 							<Login />
 						</Route>
+						<PrivateRoute exact path='/home' component={Home} />
+						<PrivateRoute exact path='/sucursal/perfil/:id' component={PerfilSucursalPage} />
+						<PrivateRoute exact path='/sucursal' component={Sucursales} />
+						<PrivateRoute exact path='/incidentes' component={Incidentes} />
 						<PrivateRoute exact path='/auditoria/:id' component={PreguntasAuditoria} />
-						<PrivateRoute exact path='/auditoria/nueva'>
-							<SeleccionSucursalParaAuditoria />
-						</PrivateRoute>
+						<PrivateRoute
+							exact
+							path='/auditoria/nueva'
+							component={SeleccionSucursalParaAuditoria}
+						/>
 						<PrivateRoute exact path='/auditoria/datos/:id' component={DatosSucursal} />
-						{/* <Route exact path='*'>
-							{user ? <Redirect to='/home' /> : <Redirect to='/login' />}
-						</Route> */}
 					</IonRouterOutlet>
 					<IonTabBar slot='bottom' translucent={true}>
 						<IonTabButton tab='home' href='/home'>
