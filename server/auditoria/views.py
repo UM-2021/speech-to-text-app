@@ -1,10 +1,14 @@
+import uuid
+from datetime import datetime
+
+from django.core.files.base import ContentFile
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
-
+from base64 import b64decode
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 
 
@@ -16,7 +20,8 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     def create(self, request):   #cuando se crea una audiotoria se pasa el id de la sucursal
         datosSerializados = AuditoriaSerializer(data=request.data)
         if Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id):
-            return Response(AuditoriaSerializer(Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id)))
+            if not Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id).finalizada:
+                return Response(AuditoriaSerializer(Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id)))
         if datosSerializados.isValid():
             datosSerializados.save()
             return Response(datosSerializados, status=status.HTTP_201_CREATED)
@@ -28,7 +33,7 @@ class PreguntaViewSet(viewsets.ModelViewSet):
     serializer_class = PreguntaSerializer
 
     @action(methods=['get'], detail=True)
-    def get_seccion(self, request,pk=None):  #todo fijarse que pasa si saco el None
+    def get_seccion(self, request,pk=None):
         print("kinko puto")
         Preguntas =Pregunta.objects.filter(seccion__exact=pk)
         return Response([(Pregunta.pregunta, Pregunta.id) for Pregunta in Preguntas])
@@ -37,6 +42,25 @@ class PreguntaViewSet(viewsets.ModelViewSet):
 class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
+
+    def create(self, request):
+        respuestaSerializada = RespuestaSerializer(data=request.data)
+        if respuestaSerializada.isValid():
+            audio_received = respuestaSerializada.audio
+            audio_received_ext = audio_received.split(';')
+            audio_received_ext = audio_received_ext[0].split(':')
+            audio_received_ext = audio_received_ext[1].split('/')
+            audio_received_ext = audio_received_ext[1]
+            clear_audio_data = audio_received.replace('data:image/jpeg;base64,', '')
+            audio_data = b64decode(clear_audio_data)
+            nombreAudio= datetime.now() #todo cambiar nombre
+            respuestaSerializada1=respuestaSerializada
+            respuestaSerializada1.audio = ContentFile(content=audio_data, name=nombreAudio + '.mp3')
+            respuestaSerializada1.save()
+            Response(respuestaSerializada,status=status.HTTP_201_CREATED)
+        return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class MediaViewSet(viewsets.ModelViewSet):
