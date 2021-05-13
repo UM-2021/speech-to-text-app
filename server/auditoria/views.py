@@ -9,6 +9,8 @@ from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
 from base64 import b64decode
+from django.forms.models import model_to_dict
+
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 
 
@@ -17,15 +19,37 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     serializer_class = AuditoriaSerializer
 
 
-    def create(self, request):   #cuando se crea una audiotoria se pasa el id de la sucursal
+    def create(self, request):
         datosSerializados = AuditoriaSerializer(data=request.data)
-        if Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id):
-            if not Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id).finalizada:
-                return Response(AuditoriaSerializer(Auditoria.objects.filter(sucursal__exact=datosSerializados.sucursal_id)))
-        if datosSerializados.isValid():
+        if datosSerializados.is_valid():
+            if not Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')) is None:#existe auditoria de esa sucursal
+                ultimaAuditoria=Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')).order_by('-fecha_creacion')[0]
+                if not ultimaAuditoria.finalizada: #si la ultima no esta finalizada
+                    dict=model_to_dict(ultimaAuditoria)
+                    dict['id']=ultimaAuditoria.id    #a ver si esta wea funciona NO FUNCIONA
+                    return Response(dict,status=status.HTTP_206_PARTIAL_CONTENT)
             datosSerializados.save()
-            return Response(datosSerializados, status=status.HTTP_201_CREATED)
+            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)  #todo fijarse ese serialize
         return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['get'], detail=True)
+    def respuestas(self, request, pk=None):
+        Respuestas = Respuesta.objects.filter(auditoria__exact=pk)
+        Responses =[]
+
+        for respuesta in Respuestas:
+            dic=model_to_dict(respuesta)
+            dic.pop('audio')
+            respuestaSerializada=RespuestaSerializer(data=dic)
+
+            if not respuestaSerializada.is_valid():
+
+                return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
+            if  respuestaSerializada.is_valid():
+                print(respuestaSerializada.data)
+                Responses.append(dic) #todo necesito un audio pa esto
+        print(Responses)
+        return Response(Responses,status=status.HTTP_200_OK)
 
 
 class PreguntaViewSet(viewsets.ModelViewSet):
@@ -33,8 +57,7 @@ class PreguntaViewSet(viewsets.ModelViewSet):
     serializer_class = PreguntaSerializer
 
     @action(methods=['get'], detail=True)
-    def get_seccion(self, request,pk=None):
-        print("kinko puto")
+    def seccion(self, request,pk=None):
         Preguntas =Pregunta.objects.filter(seccion__exact=pk)
         return Response([(Pregunta.pregunta, Pregunta.id) for Pregunta in Preguntas])
 
@@ -43,7 +66,9 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
-    def create(self, request):
+
+
+    def create(self, request): #todo revisar
         respuestaSerializada = RespuestaSerializer(data=request.data)
         if respuestaSerializada.isValid():
             audio_received = respuestaSerializada.audio
@@ -57,7 +82,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
             respuestaSerializada1=respuestaSerializada
             respuestaSerializada1.audio = ContentFile(content=audio_data, name=nombreAudio + '.mp3')
             respuestaSerializada1.save()
-            Response(respuestaSerializada,status=status.HTTP_201_CREATED)
+            Response(respuestaSerializada.data,status=status.HTTP_201_CREATED)
         return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
