@@ -1,4 +1,4 @@
-version: '3'
+version: '4'
 services:
   app:
     build: .
@@ -12,16 +12,16 @@ services:
       - 8000:80
     depends_on:
       - db
-    environment:
-      - DEBUG=True
-      - DATABASE_NAME=app
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_USER=ingdesw
-      - DATABASE_PASSWORD=password
+    env_file:
+      - ./.env.dev
   db:
     image: postgres:10-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=app
       - POSTGRES_USER=ingdesw
       - POSTGRES_PASSWORD=password
+
+volumes:
+      postgres_data:

@@ -378,6 +378,10 @@ storybook-static
 
 # profiling data
 
+#prod envs
+server/.env.prod
+server/.env.prod.db
+
 ### vscode ###
 .vscode
 !.vscode/settings.json
