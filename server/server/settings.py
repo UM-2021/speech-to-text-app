@@ -83,11 +83,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'server.wsgi.application'
 
 
-
+#media
 MEDIA_URL = "/mediafiles/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'files')
 
+
+
+#HTTP
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
