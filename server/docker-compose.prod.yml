@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
+    image: 856143538818.dkr.ecr.us-east-1.amazonaws.com/red-ec2:app
     command: gunicorn --preload server.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/server/web/staticfiles
@@ -13,17 +14,10 @@ services:
       - 8000
     env_file:
       - .env.prod
-    depends_on:
-      - db
-  db:
-    image: postgres:12.0-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - .env.prod.db
   nginx-proxy:
     container_name: nginx-proxy
     build: nginx
+    image: 856143538818.dkr.ecr.us-east-1.amazonaws.com/red-ec2:nginx-proxy
     restart: always
     ports:
       - 443:443
@@ -50,7 +44,6 @@ services:
       - nginx-proxy
 
 volumes:
-  postgres_data:
   static_volume:
   media_volume:
   certs:
