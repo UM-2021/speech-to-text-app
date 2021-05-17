@@ -1,6 +1,6 @@
 /** @format */
 
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, RedirectProps } from 'react-router-dom';
 import {
   IonApp,
   IonBadge,
