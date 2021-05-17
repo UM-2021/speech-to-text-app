@@ -26,7 +26,7 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     semi: ['error', 'always'],
     quotes: ['error', 'single'],
-    'linebreak-style': ['error', 'unix'],
+    'linebreak-style': ['error', 'windows'],
     'no-duplicate-imports': [
       'error',
       {

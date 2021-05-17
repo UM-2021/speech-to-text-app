@@ -55,8 +55,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "eslint": "eslint \"src/**/*.ts\" \"*.ts\" --fix",
-    "prettier": "prettier \"src/**/*.ts\" \"*.ts\" --write",
+    "eslint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" \"*.ts\" \"*.tsx\" --fix",
+    "prettier": "prettier \"src/**/*.ts\" \"src/**/*.tsx\" \"*.ts\" \"*.tsx\" --write",
     "lint": "npm run prettier && npm run eslint"
   },
   "eslintConfig": {
@@ -94,6 +94,9 @@
   },
   "lint-staged": {
     "*.ts": [
+      "npm run lint"
+    ],
+    "*.tsx": [
       "npm run lint"
     ]
   }
