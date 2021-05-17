@@ -387,3 +387,4 @@ storybook-static
 !.vscode/extensions.json
 *.code-workspace
 .idea
+.env.prod
