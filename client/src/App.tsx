@@ -1,13 +1,15 @@
+/** @format */
+
 import { Redirect, Route } from 'react-router-dom';
 import {
-	IonApp,
-	IonBadge,
-	IonIcon,
-	IonLabel,
-	IonRouterOutlet,
-	IonTabBar,
-	IonTabButton,
-	IonTabs
+  IonApp,
+  IonBadge,
+  IonIcon,
+  IonLabel,
+  IonRouterOutlet,
+  IonTabBar,
+  IonTabButton,
+  IonTabs
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { gridOutline, homeOutline, listOutline } from 'ionicons/icons';
@@ -44,45 +46,49 @@ import PerfilSucursalPage from './pages/PerfilSucursalPage';
 import PrivateRoute from './helpers/PrivateRoute';
 
 const App: React.FC = () => {
-	return (
-		<IonApp>
-			<IonReactRouter>
-				<IonTabs>
-					<IonRouterOutlet>
-						<Route exact path='/login'>
-							<Login />
-						</Route>
-						<PrivateRoute exact path='/home' component={Home} />
-						<PrivateRoute exact path='/sucursal/perfil/:id' component={PerfilSucursalPage} />
-						<PrivateRoute exact path='/sucursal' component={Sucursales} />
-						<PrivateRoute exact path='/incidentes' component={Incidentes} />
-						<PrivateRoute exact path='/auditoria/:id' component={PreguntasAuditoria} />
-						<PrivateRoute
-							exact
-							path='/auditoria/nueva'
-							component={SeleccionSucursalParaAuditoria}
-						/>
-						<PrivateRoute exact path='/auditoria/datos/:id' component={DatosSucursal} />
-					</IonRouterOutlet>
-					<IonTabBar slot='bottom' translucent={true}>
-						<IonTabButton tab='home' href='/home'>
-							<IonIcon icon={homeOutline} />
-							<IonLabel>Inicio</IonLabel>
-						</IonTabButton>
-						<IonTabButton tab='sucursales' href='/sucursal'>
-							<IonIcon icon={listOutline} />
-							<IonLabel>Sucursales</IonLabel>
-						</IonTabButton>
-						<IonTabButton tab='incidentes' href='/incidentes'>
-							<IonBadge color='danger'></IonBadge>
-							<IonIcon icon={gridOutline} />
-							<IonLabel>Incidentes</IonLabel>
-						</IonTabButton>
-					</IonTabBar>
-				</IonTabs>
-			</IonReactRouter>
-		</IonApp>
-	);
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/login">
+              <Login />
+            </Route>
+            <PrivateRoute exact path="/home" component={Home} />
+            <PrivateRoute
+              exact
+              path="/sucursal/perfil/:id"
+              component={PerfilSucursalPage}
+            />
+            <PrivateRoute exact path="/sucursal" component={Sucursales} />
+            <PrivateRoute exact path="/incidentes" component={Incidentes} />
+            <PrivateRoute exact path="/auditoria/:id" component={PreguntasAuditoria} />
+            <PrivateRoute
+              exact
+              path="/auditoria/nueva"
+              component={SeleccionSucursalParaAuditoria}
+            />
+            <PrivateRoute exact path="/auditoria/datos/:id" component={DatosSucursal} />
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom" translucent={true}>
+            <IonTabButton tab="home" href="/home">
+              <IonIcon icon={homeOutline} />
+              <IonLabel>Inicio</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="sucursales" href="/sucursal">
+              <IonIcon icon={listOutline} />
+              <IonLabel>Sucursales</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="incidentes" href="/incidentes">
+              <IonBadge color="danger"></IonBadge>
+              <IonIcon icon={gridOutline} />
+              <IonLabel>Incidentes</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  );
 };
 
 export default App;
