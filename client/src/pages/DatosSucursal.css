@@ -1,9 +1,11 @@
+/** @format */
+
 .center-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .block-btn {
-    width: 50%;
+  width: 50%;
 }

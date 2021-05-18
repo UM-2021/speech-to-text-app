@@ -7,16 +7,19 @@ module.exports = {
     es6: true
   },
   root: true,
-  plugins: ['react'],
+  plugins: ['@typescript-eslint', 'react'],
   extends: [
     'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
-    'plugin:react-hooks/recommended'
+    'plugin:react-hooks/recommended',
+    'prettier'
   ],
   globals: {
     Atomics: 'readonly'
   },
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module'
@@ -92,7 +95,26 @@ module.exports = {
       }
     ],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    'no-alert': process.env.NODE_ENV === 'production' ? 'error' : 'warn'
-  }
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-alert': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    'no-explicit-any': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off'
+  },
+  settings: {
+    react: {
+      version: 'detect'
+    }
+  },
+  overrides: [
+    {
+      files: ['*.js', '*.jsx'],
+      rules: {
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/no-explicit-any': 'off'
+      }
+    }
+  ]
 };

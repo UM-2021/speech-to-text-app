@@ -1,22 +1,24 @@
+/** @format */
+
 .list-container {
   display: flex;
   flex-direction: column;
-	height: 60%;
-	border: 2px solid #d6d9e4;
-	border-radius: 4px !important;
+  height: 60%;
+  border: 2px solid #d6d9e4;
+  border-radius: 4px !important;
   overflow-y: scroll;
 }
 .list {
   height: 100%;
-	overflow-y: scroll;
+  overflow-y: scroll;
 }
 
 .list-header {
-	position: relative;
-	top: 0;
+  position: relative;
+  top: 0;
 }
 .list-item {
-	border-bottom: 2px dotted #bcbfca;
+  border-bottom: 2px dotted #bcbfca;
   --border-width: 0 !important;
 }
 /* .list-header{

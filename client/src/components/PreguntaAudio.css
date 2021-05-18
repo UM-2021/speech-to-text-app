@@ -1,17 +1,19 @@
+/** @format */
+
 .rounded {
-	--border-radius: 50%;
-	height: 50px;
+  --border-radius: 50%;
+  height: 50px;
 }
 
 .bg-color {
-	/* grid-row: -1; */
-	background: inherit;
+  /* grid-row: -1; */
+  background: inherit;
 }
 
 .keypad {
-	color: transparent;
-	opacity: '0';
-	max-width: 50px; 
-	position: absolute;
-	z-index: 10;
+  color: transparent;
+  opacity: '0';
+  max-width: 50px;
+  position: absolute;
+  z-index: 10;
 }

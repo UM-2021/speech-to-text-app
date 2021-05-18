@@ -1,13 +1,15 @@
+/** @format */
+
 .grid {
-    display: grid;
-    gap: 5px;
-    justify-content: center;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  display: grid;
+  gap: 5px;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 }
 
 .grid-btn {
-    display: inline-block;
-    white-space: normal;
-    min-height: 90%;
-    height: auto;
+  display: inline-block;
+  white-space: normal;
+  min-height: 90%;
+  height: auto;
 }
