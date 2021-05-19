@@ -12,6 +12,10 @@ djangorestframework = "*"
 psycopg2 = ">=2.7.5,<2.8.0"
 ibm-watson = "5.1.0"
 ibm-cloud-sdk-core = "*"
+djangorestframework-jwt = "*"
+drf-jwt = "*"
+pyjwt = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

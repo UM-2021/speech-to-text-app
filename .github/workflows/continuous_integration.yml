@@ -15,18 +15,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Docker Build
-      working-directory: server
-      run: docker-compose build
-    - name: Docker Run (in background)
-      working-directory: server
-      run: docker-compose up -d
-    - name: Accessing The Container and Running Tests
-      working-directory: server
-      run: docker exec -i speech-to-text-server python manage.py test
-    - name: Docker stop (Backend server)
-      working-directory: server
-      run: docker stop speech-to-text-server
-    - name: Docker stop (DB)
-      working-directory: server
-      run: docker stop server_db_1
+    #    - name: Docker Build
+    #      working-directory: server
+    #      run: docker-compose build
+    #    - name: Docker Run (in background)
+    #      working-directory: server
+    #      run: docker-compose up -d
+    #    - name: Accessing The Container and Running Tests
+    #      working-directory: server
+    #      run: docker exec -i speech-to-text-server python manage.py test
+    #    - name: Docker stop (Backend server)
+    #      working-directory: server
+    #      run: docker stop speech-to-text-server
+    #    - name: Docker stop (DB)
+    #      working-directory: server
+    #      run: docker stop server_db_1
