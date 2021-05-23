@@ -1,4 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   IonApp,
   IonBadge,
@@ -44,12 +45,13 @@ import PerfilSucursalPage from './pages/PerfilSucursalPage';
 import PrivateRoute from './helpers/PrivateRoute';
 
 const App: React.FC = () => {
+  const { user } = useSelector((state: any) => state.auth);
   return (
     <IonApp>
       <IonReactRouter>
         <IonTabs>
           <IonRouterOutlet>
-            <Route path="/login">
+            <Route exact path="/login">
               <Login />
             </Route>
             <PrivateRoute exact path="/home" component={Home} />
@@ -75,6 +77,21 @@ const App: React.FC = () => {
               path="/auditoria/datos/:id"
               component={DatosSucursal}
             />
+            <Route path="*">
+              {user ? (
+                <>
+                  {console.log(user)}
+                  <Home />
+                  <Redirect to="/home" />
+                </>
+              ) : (
+                <>
+                  {console.log(user)}
+                  <Login />
+                  <Redirect to="/login" />
+                </>
+              )}
+            </Route>
           </IonRouterOutlet>
           <IonTabBar slot="bottom" translucent={true}>
             <IonTabButton tab="home" href="/home">
