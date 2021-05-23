@@ -80,13 +80,11 @@ const App: React.FC = () => {
             <Route path="*">
               {user ? (
                 <>
-                  {console.log(user)}
                   <Home />
                   <Redirect to="/home" />
                 </>
               ) : (
                 <>
-                  {console.log(user)}
                   <Login />
                   <Redirect to="/login" />
                 </>
