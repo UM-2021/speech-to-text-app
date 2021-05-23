@@ -77,18 +77,8 @@ const App: React.FC = () => {
               path="/auditoria/datos/:id"
               component={DatosSucursal}
             />
-            <Route path="*">
-              {user ? (
-                <>
-                  <Home />
-                  <Redirect to="/home" />
-                </>
-              ) : (
-                <>
-                  <Login />
-                  <Redirect to="/login" />
-                </>
-              )}
+            <Route exact path="/">
+              <Login />
             </Route>
           </IonRouterOutlet>
           {!user ? (
