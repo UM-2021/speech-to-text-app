@@ -91,21 +91,25 @@ const App: React.FC = () => {
               )}
             </Route>
           </IonRouterOutlet>
-          <IonTabBar slot="bottom" translucent={true}>
-            <IonTabButton tab="home" href="/home">
-              <IonIcon icon={homeOutline} />
-              <IonLabel>Inicio</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="sucursales" href="/sucursal">
-              <IonIcon icon={listOutline} />
-              <IonLabel>Sucursales</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="incidentes" href="/incidentes">
-              <IonBadge color="danger"></IonBadge>
-              <IonIcon icon={gridOutline} />
-              <IonLabel>Incidentes</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
+          {!user ? (
+            <IonTabBar />
+          ) : (
+            <IonTabBar slot="bottom" translucent={true}>
+              <IonTabButton tab="home" href="/home">
+                <IonIcon icon={homeOutline} />
+                <IonLabel>Inicio</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="sucursales" href="/sucursal">
+                <IonIcon icon={listOutline} />
+                <IonLabel>Sucursales</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="incidentes" href="/incidentes">
+                <IonBadge color="danger"></IonBadge>
+                <IonIcon icon={gridOutline} />
+                <IonLabel>Incidentes</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          )}
         </IonTabs>
       </IonReactRouter>
     </IonApp>
