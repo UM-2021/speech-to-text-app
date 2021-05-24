@@ -90,7 +90,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({
     setTimeout(() => {
       setSubmitted(true);
       setShowLoader(false);
-      history.push('/');
+      history.push('/home');
     }, 1500);
   };
 

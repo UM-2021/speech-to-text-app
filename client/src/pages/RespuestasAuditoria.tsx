@@ -2,7 +2,6 @@ import {
   IonAvatar,
   IonChip,
   IonIcon,
-  IonItem,
   IonLabel,
   IonList,
   IonListHeader,
@@ -46,17 +45,7 @@ const RespuestasAuditoria: React.FC = () => {
           </h6>
         </IonListHeader>
         {preguntas.map((pregunta: any, index: number) => (
-          <IonItem>
-            <IonLabel color="medium" slot="start" style={{ flexGrow: 2 }}>
-              {pregunta.pregunta}
-            </IonLabel>
-            {respuestas.length === preguntas.length && (
-              <IonLabel slot="end">{respuestas[index].respuesta}</IonLabel>
-            )}
-          </IonItem>
-        ))}
-        {preguntas.map((pregunta: any, index: number) => (
-          <div>
+          <div key={index}>
             <IonLabel color="medium" slot="start" style={{ flexGrow: 2 }}>
               {pregunta.pregunta}
             </IonLabel>
