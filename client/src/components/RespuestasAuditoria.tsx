@@ -10,7 +10,7 @@ import {
 import { navigateCircleOutline } from 'ionicons/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import Loader from '../components/Loader';
+import Loader from './Loader';
 
 const RespuestasAuditoria: React.FC = () => {
   const { loading, preguntas } = useSelector((state: any) => state.preguntas);
@@ -22,20 +22,18 @@ const RespuestasAuditoria: React.FC = () => {
   if (loading || sucursalLoading) return <Loader />;
   return (
     <>
-      <div className="center-content" style={{ marginBottom: '3rem' }}>
-        <IonChip>
-          <IonAvatar>
-            <IonIcon
-              color="primary"
-              style={{ fontSize: '26px' }}
-              icon={navigateCircleOutline}
-            />
-          </IonAvatar>
-          <IonLabel>
-            {sucursal!.direccion}, {sucursal!.ciudad}
-          </IonLabel>
-        </IonChip>
-      </div>
+      <IonChip>
+        <IonAvatar>
+          <IonIcon
+            color="primary"
+            style={{ fontSize: '26px' }}
+            icon={navigateCircleOutline}
+          />
+        </IonAvatar>
+        <IonLabel>
+          {sucursal!.direccion}, {sucursal!.ciudad}
+        </IonLabel>
+      </IonChip>
       <h6>{sucursal.nombre}</h6>
 
       <IonList lines="none">

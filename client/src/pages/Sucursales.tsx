@@ -61,7 +61,9 @@ const Sucursales: React.FC = () => {
         ) : (
           <IonList>
             {sucursales.map((s: any) => {
-              if (s.nombre.toLowerCase().includes(searchText)) {
+              if (
+                s.nombre.toLowerCase().includes(searchText.toLocaleLowerCase())
+              ) {
                 return (
                   <Link
                     key={s.id}

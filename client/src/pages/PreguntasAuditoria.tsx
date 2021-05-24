@@ -14,7 +14,7 @@ import {
 
 import './PreguntasAuditoria.css';
 import Pregunta from '../components/Pregunta';
-import RespuestasAuditoria from './RespuestasAuditoria';
+import RespuestasAuditoria from '../components/RespuestasAuditoria';
 import axios from 'axios';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 import Loader from '../components/Loader';

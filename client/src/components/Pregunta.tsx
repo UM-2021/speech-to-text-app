@@ -32,16 +32,6 @@ const Pregunta: React.FC<IPregunta> = ({
     });
   }, [dispatch, id, auditoriaId]);
 
-  // const [respuesta, setRespuesta] = useState('');
-  // const handleResponse = async (a: string, audio?: string) => {
-  // 	setRespuesta(a);
-  // 	const payload = {
-  // 		pregunta: id,
-  // 		respuesta: a,
-  // 		audio: audio ? audio : null
-  // 	};
-  // };
-
   return (
     <div className="ion-padding flex ion-margin-vertical">
       <div>
