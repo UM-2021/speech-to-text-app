@@ -1,0 +1,177 @@
+{"words": [
+   {
+      "display_as": "habilitacion",
+      "sounds_like": ["habilitacion"],
+      "count": 2,
+      "source": ["corpus1"],
+      "word": "habilitacion"
+   },
+   {
+      "display_as": "tercerizado",
+      "sounds_like": ["tercerizado"],
+      "count": 2,
+      "source": ["corpus1"],
+      "word": "tercerizado"
+   },
+   {
+      "display_as": "abombado",
+      "sounds_like": ["abombado"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "abombado"
+   },
+   {
+      "display_as": "bañadera",
+      "sounds_like": ["bañadera"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "bañadera"
+   },
+   {
+      "display_as": "birome",
+      "sounds_like": ["birome"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "birome"
+   },
+   {
+      "display_as": "camisaco",
+      "sounds_like": ["camisaco"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "camisaco"
+   },
+   {
+      "display_as": "camisilla",
+      "sounds_like": ["camisilla"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "camisilla"
+   },
+   {
+      "display_as": "cerrojos",
+      "sounds_like": ["cerrojos"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "cerrojos"
+   },
+   {
+      "display_as": "copetín",
+      "sounds_like": ["copetín"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "copetín"
+   },
+   {
+      "display_as": "desagregación",
+      "sounds_like": ["desagregación"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "desagregación"
+   },
+   {
+      "display_as": "destapobotella",
+      "sounds_like": ["destapobotella"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "destapobotella"
+   },
+   {
+      "display_as": "documentacion",
+      "sounds_like": ["documentacion"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "documentacion"
+   },
+   {
+      "display_as": "encamarse",
+      "sounds_like": ["encamarse"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "encamarse"
+   },
+   {
+      "display_as": "fuerta",
+      "sounds_like": ["fuerta"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "fuerta"
+   },
+   {
+      "display_as": "gomería",
+      "sounds_like": ["gomería"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "gomería"
+   },
+   {
+      "display_as": "handball",
+      "sounds_like": ["handball"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "handball"
+   },
+   {
+      "display_as": "jogging",
+      "sounds_like": ["jogging"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "jogging"
+   },
+   {
+      "display_as": "largavistas",
+      "sounds_like": ["largavistas"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "largavistas"
+   },
+   {
+      "display_as": "libretista",
+      "sounds_like": ["libretista"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "libretista"
+   },
+   {
+      "display_as": "musculosa",
+      "sounds_like": ["musculosa"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "musculosa"
+   },
+   {
+      "display_as": "pirulos",
+      "sounds_like": ["pirulos"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "pirulos"
+   },
+   {
+      "display_as": "placard",
+      "sounds_like": ["placard"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "placard"
+   },
+   {
+      "display_as": "romanita",
+      "sounds_like": ["romanita"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "romanita"
+   },
+   {
+      "display_as": "vidriero",
+      "sounds_like": ["vidriero"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "vidriero"
+   },
+   {
+      "display_as": "vinería",
+      "sounds_like": ["vinería"],
+      "count": 1,
+      "source": ["corpus1"],
+      "word": "vinería"
+   }
+]}

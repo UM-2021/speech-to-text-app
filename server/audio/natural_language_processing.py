@@ -34,7 +34,7 @@ possible_responses = [
     "servicio tercerizado",
     "no tiene",
     "tiene y sin rejas",
-    "tiene pero son rejas",
+    "tiene pero sin rejas",
     "gestor propio",
     "habilitación definitiva",
     "habilitación provisoria",
@@ -96,11 +96,8 @@ def analyze_action(text):
             features=Features(semantic_roles=SemanticRolesOptions())).get_result()
         raw_resp = response['semantic_roles'][-1]
         action = raw_resp['action']['text']
-        try:
+        if 'object' in raw_resp:
             action += ' ' + raw_resp['object']['text']
-        except ApiException:
-            # It may or may not have an object
-            pass
     except ApiException as e:
         raise ActionNotFoundException(e) from e
     return action
