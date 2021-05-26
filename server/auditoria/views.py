@@ -71,6 +71,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     def create(self, request): #todo revisar
         respuestaSerializada = RespuestaSerializer(data=request.data)
         if respuestaSerializada.isValid():
+            print(respuestaSerializada.audio)
             if respuestaSerializada.audio != None:
                 audio_received = respuestaSerializada.audio
                 clear_audio_data = audio_received.replace('data:audio/mpeg;base64,', '')
