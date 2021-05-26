@@ -71,13 +71,15 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     def create(self, request): #todo revisar
         respuestaSerializada = RespuestaSerializer(data=request.data)
         if respuestaSerializada.isValid():
-            audio_received = respuestaSerializada.audio
-            clear_audio_data = audio_received.replace('data:audio/mpeg;base64,', '')
-            audio_data = b64decode(clear_audio_data)
-            nombreAudio= datetime.now() #todo cambiar nombre
-            respuestaSerializada1=respuestaSerializada
-            respuestaSerializada1.audio = ContentFile(content=audio_data, name=nombreAudio + '.mp3')
-            respuestaSerializada1.save()
+            if respuestaSerializada.audio != None:
+                audio_received = respuestaSerializada.audio
+                clear_audio_data = audio_received.replace('data:audio/mpeg;base64,', '')
+                audio_data = b64decode(clear_audio_data)
+                nombreAudio= datetime.now() #todo cambiar nombre
+                respuestaSerializada1=respuestaSerializada
+                respuestaSerializada1.audio = ContentFile(content=audio_data, name=nombreAudio + '.mp3')
+                respuestaSerializada1.save()
+            respuestaSerializada.save()
             Response(respuestaSerializada.data,status=status.HTTP_201_CREATED)
         return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
 
