@@ -76,7 +76,7 @@ class Pregunta(models.Model):
 
 
 class Respuesta(models.Model):
-    respuesta = models.CharField(max_length=128)
+    respuesta = models.CharField(max_length=128,null=True)
     notas = models.TextField(max_length=256, null=True, blank=True)
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
