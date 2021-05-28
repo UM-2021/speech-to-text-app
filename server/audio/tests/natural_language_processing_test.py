@@ -46,6 +46,11 @@ class SpeechToTextTest(unittest.TestCase):
         expected_incident = {'user': 'Jose', 'action': 'habilite la remesa'}
         text = "Remesa sin habilitación hay que avisarle a Jose que habilite la remesa"
         result = natural_language_processing.split(text)
+        print(expected_response)
+        print(expected_note)
+        print(expected_incident)
+        print(result)
+
         self.assertEqual(result['response'], expected_response, f"Should be {expected_response}")
         self.assertEqual(result['note'], expected_note, f"Should be {expected_note}")
         self.assertEqual(result['incident'], expected_incident, f"Should be {expected_incident}")

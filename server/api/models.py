@@ -47,6 +47,11 @@ class Auditoria(models.Model):
 
 class Pregunta(models.Model):
     pregunta = models.CharField(max_length=255)
+    SECCION = [
+        ('AF', 'Afuera'),
+        ('AD', 'Adentro'),
+        ('CA', 'Caja')
+    ]
 
     CATEGORIAS = [
         ('IN', 'Informativa'),
@@ -59,7 +64,7 @@ class Pregunta(models.Model):
         ('nume', 'Numerica'),
         ('opci', 'Opciones')
     ]
-
+    seccion= models.CharField(max_length=2,choices=SECCION,default=SECCION[0][0])
     categoria = models.CharField(max_length=2, choices=CATEGORIAS)
     tipo = models.CharField(max_length=4, choices=TIPOS, default=TIPOS[0][0])
     respuesta_ok = models.CharField(max_length=255, null=True)
