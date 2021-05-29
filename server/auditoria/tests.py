@@ -1,4 +1,7 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
+from django.urls import  reverse
+from api.models import Sucursal, Auditoria, Pregunta, Respuesta, Media ,Incidente
+
 
 
 # python manage.py test app_articles.tests.tests_users.ExampleTestCase
@@ -11,3 +14,14 @@ class ExampleTestCase(APITestCase):
         b = 5
         c = a + b
         self.assertEqual(c, 9)
+
+"""
+class AuditoriaViewTestCase(APITestCase):
+
+    def test_auditoria_list_GET(self):
+        client=APIClient()
+        response=client.get(reverse('auditoria-list'))
+        self.assertEqual(response.status_code,200)
+
+
+"""

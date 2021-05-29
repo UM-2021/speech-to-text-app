@@ -72,7 +72,12 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         respuestaSerializada = RespuestaSerializer(data=request.data)
         if respuestaSerializada.isValid():
             audio_received = respuestaSerializada.audio
+            audio_received_ext = audio_received.split(';')
+            audio_received_ext = audio_received_ext[0].split(':')
+            audio_received_ext = audio_received_ext[1].split('/')
+            audio_received_ext = audio_received_ext[1]
             clear_audio_data = audio_received.replace('data:audio/mpeg;base64,', '')
+
             audio_data = b64decode(clear_audio_data)
             nombreAudio= datetime.now() #todo cambiar nombre
             respuestaSerializada1=respuestaSerializada
