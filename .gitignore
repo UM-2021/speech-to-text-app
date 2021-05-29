@@ -378,6 +378,7 @@ storybook-static
 
 # profiling data
 
+
 ### vscode ###
 .vscode
 !.vscode/settings.json
@@ -386,3 +387,5 @@ storybook-static
 !.vscode/extensions.json
 *.code-workspace
 .idea
+server/.env.prod
+server/.env.staging

@@ -1,6 +1,8 @@
+
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from api.models import Pregunta, Auditoria, Respuesta,Sucursal
+
 # python manage.py test app_articles.tests.tests_users.ExampleTestCase
 class ExampleTestCase(APITestCase):
 
@@ -11,6 +13,7 @@ class ExampleTestCase(APITestCase):
         b = 5
         c = a + b
         self.assertEqual(c, 9)
+
 
 class RespuestaViewTestCase(APITestCase):
 
@@ -49,6 +52,7 @@ class RespuestaViewTestCase(APITestCase):
         self.assertEqual(resp4.status_code, 400)
         self.assertEqual(resp5.status_code, 400)
         self.assertEqual(resp6.status_code, 400)
+
 
 
 
