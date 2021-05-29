@@ -1,12 +1,11 @@
 import { IonSpinner } from '@ionic/react';
-import React from 'react';
 
 const Loader = () => {
 	return (
 		<div
 			style={{
-				minHeight: '75vh',
-				minWidth: '100vw',
+				minHeight: '75%',
+				minWidth: '100%',
 				display: 'flex',
 				justifyContent: 'center',
 				alignItems: 'center'
