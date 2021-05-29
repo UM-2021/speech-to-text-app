@@ -21,15 +21,17 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         datosSerializados = AuditoriaSerializer(data=request.data)
-        if datosSerializados.is_valid():
-            if not Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')) is None:#existe auditoria de esa sucursal
-                ultimaAuditoria=Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')).order_by('-fecha_creacion')[0]
-                if not ultimaAuditoria.finalizada: #si la ultima no esta finalizada
-                    dict=model_to_dict(ultimaAuditoria)
-                    dict['id']=ultimaAuditoria.id    #a ver si esta wea funciona NO FUNCIONA
-                    return Response(dict,status=status.HTTP_206_PARTIAL_CONTENT)
-            datosSerializados.save()
-            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)  #todo fijarse ese serialize
+        if request.data.get("sucursal") != None:
+            if datosSerializados.is_valid():
+                if not Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')) is None:#existe auditoria de esa sucursal
+                    ultimaAuditoria=Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')).order_by('-fecha_creacion')[0]
+                    if not ultimaAuditoria.finalizada: #si la ultima no esta finalizada
+                        dict=model_to_dict(ultimaAuditoria)
+                        dict['id']=ultimaAuditoria.id    #a ver si esta wea funciona NO FUNCIONA
+                        return Response(dict,status=status.HTTP_206_PARTIAL_CONTENT)
+                datosSerializados.save()
+                return Response(datosSerializados.data, status=status.HTTP_201_CREATED)  #todo fijarse ese serialize
+            return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['get'], detail=True)
@@ -55,6 +57,19 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 class PreguntaViewSet(viewsets.ModelViewSet):
     queryset = Pregunta.objects.all()
     serializer_class = PreguntaSerializer
+
+    def create(self, request):
+        datosSerializados = PreguntaSerializer(data=request.data)
+        if request.data.get("pregunta") != None or request.data.get("seccion") != None or request.data.get("categoria") != None or request.data.get("tipo") != None:
+            if request.data.get("tipo") == 'opci':
+                if request.data.get("opciones") == None:
+                    return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    datos = request.data.copy()
+                    datos["opciones"] = request.data.get("opciones").replace(" ", "") #Las opciones que se muestren e las respuestas las sacamos solo separando por coma
+                    datosSerializados = PreguntaSerializer(data=datos)
+            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
+        return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['get'], detail=True)
     def seccion(self, request,pk=None):
@@ -92,6 +107,13 @@ class MediaViewSet(viewsets.ModelViewSet):
 class IncidenteViewSet(viewsets.ModelViewSet):
     queryset = Incidente.objects.all()
     serializer_class = IncidenteSerializer
+
+    def create(self, request):
+        datosSerializados = AuditoriaSerializer(data=request.data)
+        if request.data.get("reporta") != None or request.data.get("asignado") != None or request.data.get("pregunta") != None or request.data.get("accion") != None:
+            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
+        return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
@@ -145,6 +167,6 @@ class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
         return Response(serializer_global.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class IncidenteViewSet(viewsets.ModelViewSet):
-    queryset = Incidente.objects.all()
-    serializer_class = IncidenteSerializer
+# class IncidenteViewSet(viewsets.ModelViewSet):
+#     queryset = Incidente.objects.all()
+#     serializer_class = IncidenteSerializer
