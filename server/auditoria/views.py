@@ -82,7 +82,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
 
 
     def create(self,request):
-        if Pregunta.objects.filter(id__exact=request.data.get("pregunta").get('tipo'))=='nume':
+        if Pregunta.objects.filter(id__exact=request.data.get("pregunta").get('tipo'))=='audi':
             audio1=request.data.get("audio")
             if audio1 != None:
                 audio_received = audio1
