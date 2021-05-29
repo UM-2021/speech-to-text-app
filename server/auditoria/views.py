@@ -82,21 +82,23 @@ class RespuestaViewSet(viewsets.ModelViewSet):
 
 
     def create(self,request):
-        audio1=request.data.get("audio")
-        if audio1 != None:
-            audio_received = audio1
-            clear_audio_data = audio_received.replace('data:audio/mpeg;base64,', '')
-            audio_data = b64decode(clear_audio_data)
-            nombreAudio= str(datetime.now()) #todo cambiar nombre
-            datos=request.data.copy()
-            datos['audio']=ContentFile(content=audio_data, name=nombreAudio + '.mp3')
-            respuestaSerializada = RespuestaSerializer(data=datos)
-        else:
-            respuestaSerializada = RespuestaSerializer(data=request.data)
+        if Pregunta.objects.filter(id__exact=request.data.get("pregunta").get('tipo'))=='nume':
+            audio1=request.data.get("audio")
+            if audio1 != None:
+                audio_received = audio1
+                clear_audio_data = audio_received.replace('data:audio/mpeg;base64,', '')
+                audio_data = b64decode(clear_audio_data)
+                nombreAudio= str(datetime.now()) #todo cambiar nombre
+                datos=request.data.copy()
+                datos['audio']=ContentFile(content=audio_data, name=nombreAudio + '.mp3')
+                respuestaSerializada = RespuestaSerializer(data=datos)
+            else:
+                respuestaSerializada = RespuestaSerializer(data=request.data)
 
-        if respuestaSerializada.is_valid():
-            respuestaSerializada.save()
-            return Response(respuestaSerializada.data,status=status.HTTP_201_CREATED)
+            if respuestaSerializada.is_valid():
+                respuestaSerializada.save()
+                return Response(respuestaSerializada.data,status=status.HTTP_201_CREATED)
+            return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

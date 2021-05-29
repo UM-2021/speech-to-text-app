@@ -49,7 +49,9 @@ class SucursalViewSet(viewsets.ModelViewSet):
     def create(self, request):
         datosSerializados = SucursalSerializer(data=request.data)
         if request.data.get("reporta") != None and request.data.get("nombre") != None and request.data.get("numero") != None and request.data.get("departamento") != None and request.data.get("bardrio") != None and request.data.get("direccion") != None and request.data.get("telefono") != None and request.data.get("celular") != None and request.data.get("razon_social") != None and request.data.get("rut") != None and request.data.get("negocio_anexo") != None and request.data.get("tipo_de_acceso") != None and request.data.get("cantidad_de_cajas") != None and request.data.get("esta_habilitado") != None and request.data.get("ciudad") != None:
-            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
+            if(Sucursal.objects.filter(telefono__exact=request.data.get('telefono')).count()==0):
+                return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
+            return Response("Ya existe una sucursal con este numero de telefono", status=status.HTTP_400_BAD_REQUEST)
         return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['get'], detail=False)
