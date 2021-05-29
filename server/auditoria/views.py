@@ -46,7 +46,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 
                 return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
             if  respuestaSerializada.is_valid():
-                Responses.append(dic) #todo necesito un audio pa esto
+                Responses.append(dic)
         return Response(Responses,status=status.HTTP_200_OK)
 
 
@@ -65,7 +65,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     serializer_class = RespuestaSerializer
 
 
-    def create(self,request): #todo revisar
+    def create(self,request):
         audio1=request.data.get("audio")
         if audio1 != None:
             audio_received = audio1
@@ -73,7 +73,6 @@ class RespuestaViewSet(viewsets.ModelViewSet):
             audio_data = b64decode(clear_audio_data)
             nombreAudio= str(datetime.now()) #todo cambiar nombre
             datos=request.data.copy()
-            datos['audio'] = None
             datos['audio']=ContentFile(content=audio_data, name=nombreAudio + '.mp3')
             respuestaSerializada = RespuestaSerializer(data=datos)
         else:
