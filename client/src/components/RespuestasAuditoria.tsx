@@ -51,7 +51,7 @@ const RespuestasAuditoria: React.FC = () => {
               {pregunta.pregunta}
             </IonLabel>
             <br />
-            {respuestas && respuestas.length === preguntas.length && (
+            {respuestas.length === preguntas.length && (
               <IonLabel>{respuestas[index].respuesta}</IonLabel>
             )}
           </div>
