@@ -17,7 +17,7 @@ interface IPregunta {
   opciones?: any;
 }
 
-const Pregunta: React.FC<IPregunta> =({ id, tipo, pregunta, opciones, auditoriaId }) => {
+const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones, auditoriaId }) => {
   const dispatch = useDispatch();
 
   const respuestas = useSelector((state: any) => state.respuestas);
