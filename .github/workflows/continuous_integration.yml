@@ -30,7 +30,7 @@ jobs:
       #   run: docker exec -i speech-to-text-server python manage.py wait_for_db && python manage.py migrate
       - name: Accessing The Container and Running Tests
         working-directory: server
-        run: docker exec -i speech-to-text-server python manage.py wait_for_db && python manage.py test
+        run: docker-compose run app sh -c "python manage.py test"
       - name: Clean up
         working-directory: server
         run: docker-compose down
