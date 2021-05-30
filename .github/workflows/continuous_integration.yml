@@ -8,7 +8,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      DEBUG: 1
+      DATABASE: postgres
+      DATABASE_NAME: app
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_ENGINE: django.db.backends.postgresql
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DJANGO_ALLOWED_HOSTS: localhost 127.0.0.1 [::1]
+      USE_S3: FALSE
     services:
       postgres:
         image: postgres:10.8
