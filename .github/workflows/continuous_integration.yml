@@ -1,32 +1,56 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: CI
+name: Backend tests
 
 on:
   pull_request:
+    branches:
+      - dev
     paths:
-      - 'server/**'
+      - "server/**"
 
 jobs:
-  Tests:
-
+  build:
     runs-on: ubuntu-latest
+    env:
+      DEBUG: 1
+      DATABASE: postgres
+      DATABASE_NAME: app
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_ENGINE: django.db.backends.postgresql
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DJANGO_ALLOWED_HOSTS: localhost 127.0.0.1 [::1]
+      USE_S3: FALSE
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Docker Build
-      working-directory: server
-      run: docker-compose build
-    - name: Docker Run (in background)
-      working-directory: server
-      run: docker-compose up -d
-    - name: Accessing The Container and Running Tests
-      working-directory: server
-      run: docker exec -i speech-to-text-server python manage.py test
-    - name: Docker stop (Backend server)
-      working-directory: server
-      run: docker stop speech-to-text-server
-    - name: Docker stop (DB)
-      working-directory: server
-      run: docker stop server_db_1
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: psycopg2 prerequisites
+        run: sudo apt-get install libpq-dev
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-django
+        working-directory: ./server
+      - name: Run migrations
+        run: python manage.py migrate
+        working-directory: ./server
+      - name: Run tests
+        run: \python manage.py test
+        working-directory: ./server
