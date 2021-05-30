@@ -42,24 +42,6 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
     dispatch(fetchPreguntas());
   }, [dispatch, match.params.id]);
 
-  //   const handleSubmit = () => {
-  //     // 	respuestas.map(async r => {
-  //     // 		await axios.post('http://localhost:8000/api/auditorias/respuesta/', r);
-  //     // 	});
-  //     // 	// setLoading(false);
-  //     // 	setSubmitted(true);
-  //     // 	setTimeout(() => history.push('/'), 3000);
-  //   };
-
-  //   const submitResponse = (payload: any) => {
-  //     // 	// WORKAROUND: We have to improve it.
-  //     // 	// Delete record of that question.
-  //     // 	const auxArray = respuestas.filter(r => r.pregunta !== payload.pregunta);
-  //     // 	// Add the updated one.
-  //     // 	auxArray.push({ ...payload, auditoria });
-  //     // 	setRespuestas([...auxArray]);
-  //   };
-
   const onExit = () => {
     history.goBack();
     dispatch({ type: RESPUESTAS_RESET });
@@ -72,7 +54,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
     setTimeout(() => {
       setSubmitted(true);
       setShowLoader(false);
-      history.push('/');
+      history.push('/home');
     }, 1500);
   };
 

@@ -28,16 +28,6 @@ const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones, auditoria
     });
   }, [dispatch, id, auditoriaId]);
 
-  // const [respuesta, setRespuesta] = useState('');
-  // const handleResponse = async (a: string, audio?: string) => {
-  // 	setRespuesta(a);
-  // 	const payload = {
-  // 		pregunta: id,
-  // 		respuesta: a,
-  // 		audio: audio ? audio : null
-  // 	};
-  // };
-
   return (
     <div className="ion-padding flex ion-margin-vertical">
       <div>
@@ -48,14 +38,17 @@ const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones, auditoria
           <i>Respuesta: </i>
         </h5>
         <div>
-          {respuestas.filter((r: any) => r.pregunta === parseInt(id) && r.isAnswered)[0]
-            ?.respuesta || ''}
+          {respuestas.filter(
+            (r: any) => r.pregunta === parseInt(id) && r.isAnswered
+          )[0]?.respuesta || ''}
         </div>
       </div>
 
       <div className="shrink">
         {tipo === 'audi' && <div></div>}
-        {tipo === 'opci' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}
+        {tipo === 'opci' && (
+          <PreguntaOpciones opciones={opciones} preguntaId={id} />
+        )}
         {tipo === 'nume' && <PreguntaNumerica preguntaId={id} />}
         <PreguntaAudio preguntaId={id} />
       </div>

@@ -13,7 +13,7 @@ import {
   IonSearchbar
 } from '@ionic/react';
 import { arrowForwardOutline, storefrontOutline } from 'ionicons/icons';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchSucursales } from '../actions/sucursalesActions';
@@ -21,8 +21,11 @@ import Loader from '../components/Loader';
 
 const Sucursales: React.FC = () => {
   const dispatch = useDispatch();
-  // eslint-disable-next-line no-unused-vars
-  const { loading, error, sucursales } = useSelector((state: any) => state.sucursales);
+  const { loading, error, sucursales } = useSelector(
+    (state: any) => state.sucursales
+  );
+
+  const [searchText, setSearchText] = useState<string>('');
 
   useEffect(() => {
     dispatch(fetchSucursales());
@@ -45,23 +48,33 @@ const Sucursales: React.FC = () => {
         <IonSearchbar
           placeholder="Busca una sucursal..."
           showCancelButton="focus"
-          showClearButton="focus"></IonSearchbar>
+          showClearButton="focus"
+          value={searchText}
+          onIonChange={(e) => setSearchText(e.detail.value!)}
+        ></IonSearchbar>
         {loading ? (
           <Loader />
         ) : (
           <IonList>
-            {sucursales.map((s: any) => (
-              <Link
-                key={s.id}
-                to={`/sucursal/perfil/${s.id}`}
-                style={{ textDecoration: 'none' }}>
-                <IonItem button>
-                  <IonIcon slot="start" icon={storefrontOutline} />
-                  <IonLabel>{s.nombre}</IonLabel>
-                  <IonIcon slot="end" icon={arrowForwardOutline} />
-                </IonItem>
-              </Link>
-            ))}
+            {sucursales.map((s: any) => {
+              if (
+                s.nombre.toLowerCase().includes(searchText.toLocaleLowerCase())
+              ) {
+                return (
+                  <Link
+                    key={s.id}
+                    to={`/sucursal/perfil/${s.id}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <IonItem button>
+                      <IonIcon slot="start" icon={storefrontOutline} />
+                      <IonLabel>{s.nombre}</IonLabel>
+                      <IonIcon slot="end" icon={arrowForwardOutline} />
+                    </IonItem>
+                  </Link>
+                );
+              }
+            })}
           </IonList>
         )}
       </IonContent>

@@ -93,9 +93,9 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 
   return (
     <IonSegment className="ion-justify-content-between bg-color">
-      <div>
-        <input type="file" name="file" onChange={handleFileInputChange} />
-      </div>
+      {/* <div>
+				<input type='file' name='file' onChange={handleFileInputChange} />
+			</div> */}
       <IonButton color="light" className="rounded ">
         <IonIcon icon={cameraOutline} />
       </IonButton>

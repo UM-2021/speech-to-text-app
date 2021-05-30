@@ -1,6 +1,5 @@
-/** @format */
-
 import { Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   IonApp,
   IonBadge,
@@ -46,6 +45,7 @@ import PerfilSucursalPage from './pages/PerfilSucursalPage';
 import PrivateRoute from './helpers/PrivateRoute';
 
 const App: React.FC = () => {
+  const { user } = useSelector((state: any) => state.auth);
   return (
     <IonApp>
       <IonReactRouter>
@@ -62,29 +62,44 @@ const App: React.FC = () => {
             />
             <PrivateRoute exact path="/sucursal" component={Sucursales} />
             <PrivateRoute exact path="/incidentes" component={Incidentes} />
-            <PrivateRoute exact path="/auditoria/:id" component={PreguntasAuditoria} />
+            <PrivateRoute
+              exact
+              path="/auditoria/:id"
+              component={PreguntasAuditoria}
+            />
             <PrivateRoute
               exact
               path="/auditoria/nueva"
               component={SeleccionSucursalParaAuditoria}
             />
-            <PrivateRoute exact path="/auditoria/datos/:id" component={DatosSucursal} />
+            <PrivateRoute
+              exact
+              path="/auditoria/datos/:id"
+              component={DatosSucursal}
+            />
+            <Route exact path="/">
+              <Login />
+            </Route>
           </IonRouterOutlet>
-          <IonTabBar slot="bottom" translucent={true}>
-            <IonTabButton tab="home" href="/home">
-              <IonIcon icon={homeOutline} />
-              <IonLabel>Inicio</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="sucursales" href="/sucursal">
-              <IonIcon icon={listOutline} />
-              <IonLabel>Sucursales</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="incidentes" href="/incidentes">
-              <IonBadge color="danger"></IonBadge>
-              <IonIcon icon={gridOutline} />
-              <IonLabel>Incidentes</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
+          {!user ? (
+            <IonTabBar />
+          ) : (
+            <IonTabBar slot="bottom" translucent={true}>
+              <IonTabButton tab="home" href="/home">
+                <IonIcon icon={homeOutline} />
+                <IonLabel>Inicio</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="sucursales" href="/sucursal">
+                <IonIcon icon={listOutline} />
+                <IonLabel>Sucursales</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="incidentes" href="/incidentes">
+                <IonBadge color="danger"></IonBadge>
+                <IonIcon icon={gridOutline} />
+                <IonLabel>Incidentes</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          )}
         </IonTabs>
       </IonReactRouter>
     </IonApp>

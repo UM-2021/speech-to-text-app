@@ -4,6 +4,9 @@ from django.shortcuts import render
 from rest_framework import viewsets
 
 from api.models import Sucursal, Auditoria
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from .serializers import SucursalSerializer
 
 
@@ -44,10 +47,11 @@ class SucursalViewSet(viewsets.ModelViewSet):
     queryset = Sucursal.objects.all()
     serializer_class = SucursalSerializer
 
-    """
-    def get_ordering(self):
-        ultimasAuditorias=Auditoria.objects.orderby('-fecha_modificacion')[:10]
-        sucursales_id= ultimasAuditorias
-
-        ordering=self.request.GET.get('ordering','') 
-    """
+    @action(methods=['get'], detail=False)
+    def get_ordering(self,request):
+        ultimasAuditorias=Auditoria.objects.order_by('-fecha_modificacion')[:20]
+        ultimasSucursales=[]
+        for i in range(0,len(ultimasAuditorias)):
+            print(ultimasAuditorias[i].sucursal)
+            ultimasSucursales.append(ultimasAuditorias[i].sucursal)
+        return Response([(Sucursal.nombre,Sucursal.id) for Sucursal in ultimasSucursales])

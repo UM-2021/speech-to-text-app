@@ -4,24 +4,21 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { Route, Redirect } from 'react-router-dom';
+import Login from '../pages/Login';
 
 const PrivateRoute: React.FC<any> = ({ children, ...rest }) => {
   const { user } = useSelector((state: any) => state.auth);
   return (
     <Route
       {...rest}
-      render={({ location }) => {
+      render={() => {
         return user ? (
           children
         ) : (
-          <Redirect
-            to={{
-              pathname: '/login',
-              state: {
-                from: location
-              }
-            }}
-          />
+          <>
+            <Redirect to="/login" />
+            <Login />
+          </>
         );
       }}
     />

@@ -72,6 +72,7 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
     dispatch({ type: SEND_RESPUESTAS_REQUEST });
 
     const respuestas = getState().respuestas;
+    const user = getState().auth.user;
 
     respuestas.forEach(async (r: any) => {
       if (r.isAnswered)
@@ -81,10 +82,13 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
             pregunta: r.pregunta,
             respuesta: r.respuesta,
             auditoria: r.auditoria,
-            audio: r?.audio || null
+            audio: r?.audio || null,
+            usuario: user.user_id
           },
           {
-            headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+            headers: {
+              Authorization: `Token ${getState().auth.user.token ?? ''}`
+            }
           }
         );
     });
