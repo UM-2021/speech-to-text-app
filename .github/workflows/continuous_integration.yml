@@ -25,15 +25,12 @@ jobs:
       - name: Docker Run (in background)
         working-directory: server
         run: docker-compose up -d
-      - name: Setup app
-        working-directory: server
-        run: docker exec -i speech-to-text-server python manage.py wait_for_db && python manage.py migrate
+      # - name: Setup app
+      #   working-directory: server
+      #   run: docker exec -i speech-to-text-server python manage.py wait_for_db && python manage.py migrate
       - name: Accessing The Container and Running Tests
         working-directory: server
-        run: docker exec -i speech-to-text-server python manage.py test
-      - name: Docker stop (Backend server)
+        run: docker exec -i speech-to-text-server python manage.py wait_for_db && python manage.py test
+      - name: Clean up
         working-directory: server
-        run: docker stop speech-to-text-server
-      - name: Docker stop (DB)
-        working-directory: server
-        run: docker stop server_db_1
+        run: docker-compose down
