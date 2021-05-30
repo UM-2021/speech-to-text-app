@@ -53,5 +53,5 @@ jobs:
         run: python manage.py migrate
         working-directory: ./server
       - name: Run tests
-        run: echo pwd && python manage.py test
+        run: pwd && python manage.py test
         working-directory: ./server
