@@ -45,10 +45,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest-django
-        working-directory: server
+        working-directory: ./server
+      - name: Check location
+        run: pwd && ls -l
+        working-directory: ./server
       - name: Run migrations
         run: python manage.py migrate
-        working-directory: server
+        working-directory: ./server
       - name: Run tests
-        run: python manage.py test
-        working-directory: server
+        run: echo pwd && python manage.py test
+        working-directory: ./server
