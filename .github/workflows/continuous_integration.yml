@@ -1,36 +1,43 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: CI
+name: Backend tests
 
 on:
   push:
     branches:
       - fix/github-action
-  pull_request:
-    branches:
-      - dev
-    paths:
-      - "server/**"
 
 jobs:
-  Tests:
+  build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Docker Build
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: psycopg2 prerequisites
+        run: sudo apt-get install libpq-dev
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-django
         working-directory: server
-        run: docker-compose build
-      - name: Docker Run (in background)
+      - name: Run migrations
+        run: python manage.py migrate
         working-directory: server
-        run: docker-compose up -d
-      # - name: Setup app
-      #   working-directory: server
-      #   run: docker exec -i speech-to-text-server python manage.py wait_for_db && python manage.py migrate
-      - name: Accessing The Container and Running Tests
+      - name: Run tests
+        run: python manage.py test
         working-directory: server
-        run: docker-compose run app sh -c "python manage.py test"
-      - name: Clean up
-        working-directory: server
-        run: docker-compose down
