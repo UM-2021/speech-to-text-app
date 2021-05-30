@@ -84,11 +84,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'server.wsgi.application'
 
 
-
-
-
-
-#HTTP
+# HTTP
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Database
@@ -100,7 +96,7 @@ DATABASES = {
         "NAME": os.environ.get("DATABASE_NAME", os.path.join(BASE_DIR, "db.sqlite3")),
         'USER': os.environ.get('DATABASE_USER', 'ingdesw'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'password'),
-        'HOST': os.environ.get('DATABASE_HOST','db'),
+        'HOST': os.environ.get('DATABASE_HOST', 'db'),
         "PORT": os.environ.get("DATABASE_PORT", "5432"),
     }
 }
@@ -142,7 +138,7 @@ USE_TZ = True
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-"""REST_FRAMEWORK = {
+REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
