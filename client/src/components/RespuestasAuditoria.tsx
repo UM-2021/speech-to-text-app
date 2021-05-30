@@ -22,6 +22,7 @@ const RespuestasAuditoria: React.FC = () => {
   const respuestas = useSelector((state: any) => state.respuestas);
 
   if (loading || sucursalLoading) return <Loader />;
+
   return (
     <>
       <IonChip>
@@ -50,7 +51,7 @@ const RespuestasAuditoria: React.FC = () => {
               {pregunta.pregunta}
             </IonLabel>
             <br />
-            {respuestas.length === preguntas.length && (
+            {respuestas && respuestas.length === preguntas.length && (
               <IonLabel>{respuestas[index].respuesta}</IonLabel>
             )}
           </div>
