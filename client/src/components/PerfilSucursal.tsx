@@ -20,7 +20,7 @@ import './PerfilSucursal.css';
 
 const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
   const dispatch = useDispatch();
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const { loading, error, sucursal } = useSelector((state: any) => state.sucursal);
 
   useEffect(() => {
