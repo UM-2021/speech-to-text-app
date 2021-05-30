@@ -17,7 +17,7 @@ interface IPregunta {
   opciones?: any;
 }
 
-const Pregunta: React.FC<IPregunta> =({ id, tipo, pregunta, opciones, auditoriaId }) => {
+const Pregunta: React.FC<IPregunta> = ({ id, tipo, pregunta, opciones, auditoriaId }) => {
   const dispatch = useDispatch();
 
   const respuestas = useSelector((state: any) => state.respuestas);
@@ -38,17 +38,14 @@ const Pregunta: React.FC<IPregunta> =({ id, tipo, pregunta, opciones, auditoriaI
           <i>Respuesta: </i>
         </h5>
         <div>
-          {respuestas.filter(
-            (r: any) => r.pregunta === parseInt(id) && r.isAnswered
-          )[0]?.respuesta || ''}
+          {respuestas.filter((r: any) => r.pregunta === parseInt(id) && r.isAnswered)[0]
+            ?.respuesta || ''}
         </div>
       </div>
 
       <div className="shrink">
         {tipo === 'audi' && <div></div>}
-        {tipo === 'opci' && (
-          <PreguntaOpciones opciones={opciones} preguntaId={id} />
-        )}
+        {tipo === 'opci' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}
         {tipo === 'nume' && <PreguntaNumerica preguntaId={id} />}
         <PreguntaAudio preguntaId={id} />
       </div>

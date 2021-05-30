@@ -1,3 +1,5 @@
+/** @format */
+
 import { Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
@@ -62,21 +64,13 @@ const App: React.FC = () => {
             />
             <PrivateRoute exact path="/sucursal" component={Sucursales} />
             <PrivateRoute exact path="/incidentes" component={Incidentes} />
-            <PrivateRoute
-              exact
-              path="/auditoria/:id"
-              component={PreguntasAuditoria}
-            />
+            <PrivateRoute exact path="/auditoria/:id" component={PreguntasAuditoria} />
             <PrivateRoute
               exact
               path="/auditoria/nueva"
               component={SeleccionSucursalParaAuditoria}
             />
-            <PrivateRoute
-              exact
-              path="/auditoria/datos/:id"
-              component={DatosSucursal}
-            />
+            <PrivateRoute exact path="/auditoria/datos/:id" component={DatosSucursal} />
             <Route exact path="/">
               <Login />
             </Route>

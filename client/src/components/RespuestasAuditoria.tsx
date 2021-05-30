@@ -1,10 +1,12 @@
+/** @format */
+
 import {
   IonAvatar,
   IonChip,
   IonIcon,
   IonLabel,
   IonList,
-  IonListHeader,
+  IonListHeader
 } from '@ionic/react';
 
 import { navigateCircleOutline } from 'ionicons/icons';

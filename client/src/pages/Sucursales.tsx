@@ -21,9 +21,7 @@ import Loader from '../components/Loader';
 
 const Sucursales: React.FC = () => {
   const dispatch = useDispatch();
-  const { loading, error, sucursales } = useSelector(
-    (state: any) => state.sucursales
-  );
+  const { loading, error, sucursales } = useSelector((state: any) => state.sucursales);
 
   const [searchText, setSearchText] = useState<string>('');
 
@@ -50,22 +48,18 @@ const Sucursales: React.FC = () => {
           showCancelButton="focus"
           showClearButton="focus"
           value={searchText}
-          onIonChange={(e) => setSearchText(e.detail.value!)}
-        ></IonSearchbar>
+          onIonChange={e => setSearchText(e.detail.value!)}></IonSearchbar>
         {loading ? (
           <Loader />
         ) : (
           <IonList>
             {sucursales.map((s: any) => {
-              if (
-                s.nombre.toLowerCase().includes(searchText.toLocaleLowerCase())
-              ) {
+              if (s.nombre.toLowerCase().includes(searchText.toLocaleLowerCase())) {
                 return (
                   <Link
                     key={s.id}
                     to={`/sucursal/perfil/${s.id}`}
-                    style={{ textDecoration: 'none' }}
-                  >
+                    style={{ textDecoration: 'none' }}>
                     <IonItem button>
                       <IonIcon slot="start" icon={storefrontOutline} />
                       <IonLabel>{s.nombre}</IonLabel>
