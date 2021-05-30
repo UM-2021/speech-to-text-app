@@ -1,9 +1,11 @@
 name: Backend tests
 
 on:
-  push:
+  pull_request:
     branches:
-      - fix/github-action
+      - dev
+    paths:
+      - "server/**"
 
 jobs:
   build:
