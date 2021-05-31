@@ -21,6 +21,12 @@ class RespuestaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class MinRespuestaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Respuesta
+        exclude = ('audio', )
+
+
 class MediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
