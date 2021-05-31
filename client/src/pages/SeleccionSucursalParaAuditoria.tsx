@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 import { fetchSucursales } from '../actions/sucursalesActions';
 import Loader from '../components/Loader';
+import PageWrapper from '../components/PageWrapper';
 
 interface IBaseSucursal {
 	id: string;
@@ -31,7 +32,7 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 		dispatch(fetchSucursales());
 	}, [dispatch]);
 	return (
-		<IonPage>
+		<PageWrapper>
 			<IonHeader translucent>
 				<IonToolbar className='toolbar'>
 					<IonButtons slot='start'>
@@ -71,7 +72,7 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 					</IonList>
 				)}
 			</IonContent>
-		</IonPage>
+		</PageWrapper>
 	);
 };
 

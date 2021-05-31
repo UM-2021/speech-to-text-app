@@ -25,6 +25,7 @@ import {
   postRespuestas,
 } from '../actions/auditoriasActions';
 import { RESPUESTAS_RESET } from '../actions/types';
+import PageWrapper from '../components/PageWrapper';
 
 interface IRespuesta {
   respuesta: string;
@@ -97,7 +98,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({
   if (loading) return <Loader />;
   else
     return (
-      <IonPage>
+      <PageWrapper>
         <IonHeader>
           <IonToolbar>
             <IonTitle>Nueva Auditoría</IonTitle>
@@ -165,7 +166,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({
             </IonSlides>
           )}
         </IonContent>
-      </IonPage>
+      </PageWrapper>
     );
 };
 

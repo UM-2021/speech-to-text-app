@@ -4,11 +4,12 @@ import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import './DatosSucursal.css';
 import PerfilSucursal from '../components/PerfilSucursal';
+import PageWrapper from '../components/PageWrapper';
 
 const DatosSucursal: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
 	let history = useHistory();
 	return (
-		<IonPage>
+		<PageWrapper>
 			<IonHeader>
 				<IonToolbar>
 					<IonTitle>Nueva Auditoría</IonTitle>
@@ -33,7 +34,7 @@ const DatosSucursal: React.FC<RouteComponentProps<{ id: string }>> = ({ match })
 					Comenzar
 				</IonButton>
 			</IonFooter>
-		</IonPage>
+		</PageWrapper>
 	);
 };
 

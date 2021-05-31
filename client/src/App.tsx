@@ -42,7 +42,6 @@ import PreguntasAuditoria from './pages/PreguntasAuditoria';
 import SeleccionSucursalParaAuditoria from './pages/SeleccionSucursalParaAuditoria';
 import DatosSucursal from './pages/DatosSucursal';
 import PerfilSucursalPage from './pages/PerfilSucursalPage';
-import PrivateRoute from './helpers/PrivateRoute';
 
 const App: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
@@ -54,31 +53,31 @@ const App: React.FC = () => {
             <Route exact path="/login">
               <Login />
             </Route>
-            <PrivateRoute exact path="/home" component={Home} />
-            <PrivateRoute
+            <Route exact path="/home" component={Home} />
+            <Route
               exact
               path="/sucursal/perfil/:id"
               component={PerfilSucursalPage}
             />
-            <PrivateRoute exact path="/sucursal" component={Sucursales} />
-            <PrivateRoute exact path="/incidentes" component={Incidentes} />
-            <PrivateRoute
+            <Route exact path="/sucursal" component={Sucursales} />
+            <Route exact path="/incidentes" component={Incidentes} />
+            <Route
               exact
               path="/auditoria/:id"
               component={PreguntasAuditoria}
             />
-            <PrivateRoute
+            <Route
               exact
               path="/auditoria/nueva"
               component={SeleccionSucursalParaAuditoria}
             />
-            <PrivateRoute
+            <Route
               exact
               path="/auditoria/datos/:id"
               component={DatosSucursal}
             />
             <Route exact path="/">
-              <Login />
+              <Redirect to='/home' />
             </Route>
           </IonRouterOutlet>
           {!user ? (

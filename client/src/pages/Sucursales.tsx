@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchSucursales } from '../actions/sucursalesActions';
 import Loader from '../components/Loader';
+import PageWrapper from '../components/PageWrapper';
 
 interface IBaseSucursal {
   id: string;
@@ -36,7 +37,7 @@ const Sucursales: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <IonPage>
+    <PageWrapper>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Sucursales</IonTitle>
@@ -82,7 +83,7 @@ const Sucursales: React.FC = () => {
           </IonList>
         )}
       </IonContent>
-    </IonPage>
+    </PageWrapper>
   );
 };
 

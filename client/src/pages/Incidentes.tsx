@@ -10,6 +10,7 @@ import {
 	IonToolbar
 } from '@ionic/react';
 import { alertCircleOutline, arrowForwardOutline } from 'ionicons/icons';
+import PageWrapper from '../components/PageWrapper';
 
 const Incidentes: React.FC = () => {
 	const incidentes = [
@@ -36,7 +37,7 @@ const Incidentes: React.FC = () => {
 	];
 
 	return (
-		<IonPage>
+		<PageWrapper>
 			<IonHeader>
 				<IonToolbar>
 					<IonTitle>Incidentes asignados</IonTitle>
@@ -60,7 +61,7 @@ const Incidentes: React.FC = () => {
 					))}
 				</IonList>
 			</IonContent>
-		</IonPage>
+		</PageWrapper>
 	);
 };
 
