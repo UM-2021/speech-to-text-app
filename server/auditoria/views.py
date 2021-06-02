@@ -7,9 +7,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
-    MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
+    MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer, MinRespuestaSerializer
 from base64 import b64decode
 from django.forms.models import model_to_dict
+from django.shortcuts import get_object_or_404
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 
@@ -18,36 +19,55 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     queryset = Auditoria.objects.all()
     serializer_class = AuditoriaSerializer
 
-
     def create(self, request):
-        datosSerializados = AuditoriaSerializer(data=request.data)
-        if datosSerializados.is_valid():
-            if not Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')) is None:#existe auditoria de esa sucursal
-                ultimaAuditoria=Auditoria.objects.filter(sucursal__exact=datosSerializados.validated_data.get('sucursal')).order_by('-fecha_creacion')[0]
-                if not ultimaAuditoria.finalizada: #si la ultima no esta finalizada
-                    dict=model_to_dict(ultimaAuditoria)
-                    dict['id']=ultimaAuditoria.id    #a ver si esta wea funciona NO FUNCIONA
-                    return Response(dict,status=status.HTTP_206_PARTIAL_CONTENT)
-            datosSerializados.save()
-            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)  #todo fijarse ese serialize
-        return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = AuditoriaSerializer(data=request.data)
+        if serializer.is_valid():
+            sucursal_id = serializer.validated_data.get('sucursal')
+            is_auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id, finalizada=False).exists()
 
-    @action(methods=['get'], detail=True)
-    def respuestas(self, request, pk=None):
-        Respuestas = Respuesta.objects.filter(auditoria__exact=pk)
-        Responses =[]
+            if is_auditoria:
+                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
+                                             .order_by('-fecha_creacion')[0]
+                serializer2 = AuditoriaSerializer(auditoria, many=False)
+                return Response(serializer2.data, status=status.HTTP_201_CREATED)
 
-        for respuesta in Respuestas:
-            dic=model_to_dict(respuesta)
-            dic.pop('audio')
-            respuestaSerializada=RespuestaSerializer(data=dic)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)  # todo fijarse ese serialize
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            if not respuestaSerializada.is_valid():
+    @action(methods=['GET'], detail=True)
+    def respuestas(self, request, pk):
+        # Check if Auditoria exists.
+        auditoria = get_object_or_404(Auditoria, id=pk)
 
-                return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
-            if  respuestaSerializada.is_valid():
-                Responses.append(dic)
-        return Response(Responses,status=status.HTTP_200_OK)
+        respuestas = Respuesta.objects.filter(auditoria__exact=pk)
+        serializer = MinRespuestaSerializer(respuestas, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['GET'], detail=True)
+    def resultado(self, request, pk):
+        # Check if Auditoria exists.
+        auditoria = get_object_or_404(Auditoria, id=pk)
+
+        respuestas = Respuesta.objects.filter(auditoria__exact=pk)
+        preguntas = Pregunta.objects.all()
+
+        auditoria.finalizada = len(preguntas) == len(respuestas)
+
+        preguntas_digefe = [p for p in preguntas if p.categoria == 'DIGEFE']
+
+        aprobada = True
+        for preg in preguntas_digefe:
+            respuesta = next((r for r in respuestas if r.pregunta.id == preg.id), None)
+            if not respuesta or preg.respuesta_correcta != respuesta.respuesta:
+                aprobada = False
+
+        auditoria.aprobada = aprobada
+        auditoria.save()
+
+        serializer = AuditoriaSerializer(auditoria, many=False)
+        return Response(serializer.data)
 
 
 class PreguntaViewSet(viewsets.ModelViewSet):
@@ -55,8 +75,8 @@ class PreguntaViewSet(viewsets.ModelViewSet):
     serializer_class = PreguntaSerializer
 
     @action(methods=['get'], detail=True)
-    def seccion(self, request,pk=None):
-        Preguntas =Pregunta.objects.filter(seccion__exact=pk)
+    def seccion(self, request, pk=None):
+        Preguntas = Pregunta.objects.filter(seccion__exact=pk)
         return Response([(Pregunta.pregunta, Pregunta.id) for Pregunta in Preguntas])
 
 
@@ -64,27 +84,26 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
+    def create(self, request):
+        audio = request.data.get("audio")
+        data = request.data
 
+        if audio is not None:
+            audio = audio.replace('data:audio/mpeg;base64,', '')
+            audio_data = b64decode(audio)
+            nombre_audio = str(datetime.now())  # todo: cambiar nombre
 
-    def create(self,request):
-        audio1=request.data.get("audio")
-        if audio1 != None:
-            audio_received = audio1
-            clear_audio_data = audio_received.replace('data:audio/mpeg;base64,', '')
-            audio_data = b64decode(clear_audio_data)
-            nombreAudio= str(datetime.now()) #todo cambiar nombre
-            datos=request.data.copy()
-            datos['audio']=ContentFile(content=audio_data, name=nombreAudio + '.mp3')
-            respuestaSerializada = RespuestaSerializer(data=datos)
+            datos = data.copy()
+            datos['audio'] = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
+
+            serializer = RespuestaSerializer(data=datos)
         else:
-            respuestaSerializada = RespuestaSerializer(data=request.data)
+            serializer = RespuestaSerializer(data=data)
 
-        if respuestaSerializada.is_valid():
-            respuestaSerializada.save()
-            return Response(respuestaSerializada.data,status=status.HTTP_201_CREATED)
-        return Response(respuestaSerializada.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MediaViewSet(viewsets.ModelViewSet):
@@ -146,8 +165,3 @@ class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
             return Response(respuesta_con_audio_json, status=status.HTTP_201_CREATED)
 
         return Response(serializer_global.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class IncidenteViewSet(viewsets.ModelViewSet):
-    queryset = Incidente.objects.all()
-    serializer_class = IncidenteSerializer

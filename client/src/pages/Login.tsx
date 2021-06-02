@@ -11,29 +11,32 @@ import {
 	IonLabel,
 	IonIcon,
 	IonGrid,
-	IonButton
+	IonButton,
+	IonToast
 } from '@ionic/react';
 import { personCircle } from 'ionicons/icons';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { login } from '../actions/authActions';
 import Loader from '../components/Loader';
 
-const Login: React.FC = () => {
+const Login: React.FC<any> = () => {
 	let history = useHistory();
 	const dispatch = useDispatch();
-	const [email, setEmail] = useState('');
+	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
+	const { user, loading, error: errorLogin } = useSelector((state: any) => state.auth);
+
+	useEffect(() => {
+		if (errorLogin) setError(true);
+		if (user) history.push('/home');
+	}, [user, history, errorLogin]);
 
 	const onSubmit = (e: any) => {
 		e.preventDefault();
-		// TODO: Checks
-		setLoading(true);
-		dispatch(login(email, password));
-		setLoading(false);
-		history.push('/home');
+		dispatch(login(username, password));
 	};
 
 	return (
@@ -44,6 +47,13 @@ const Login: React.FC = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent fullscreen>
+				<IonToast
+					isOpen={error}
+					message={errorLogin}
+					position='top'
+					duration={3000}
+					onDidDismiss={() => setError(false)}
+				/>
 				{loading ? (
 					<Loader />
 				) : (
@@ -65,10 +75,10 @@ const Login: React.FC = () => {
 							<IonRow>
 								<IonCol>
 									<IonItem>
-										<IonLabel position='floating'> Email</IonLabel>
+										<IonLabel position='floating'>Username</IonLabel>
 										<IonInput
-											value={email}
-											onIonChange={(e: any) => setEmail(e.detail.value)}
+											value={username}
+											onIonChange={(e: any) => setUsername(e.detail.value)}
 										/>
 									</IonItem>
 								</IonCol>
@@ -76,7 +86,7 @@ const Login: React.FC = () => {
 							<IonRow>
 								<IonCol>
 									<IonItem>
-										<IonLabel position='floating'> Password</IonLabel>
+										<IonLabel position='floating'>Password</IonLabel>
 										<IonInput
 											type='password'
 											value={password}

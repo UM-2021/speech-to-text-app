@@ -9,9 +9,9 @@ from rest_framework.authtoken.models import Token
 
 class Sucursal(models.Model):
     nombre = models.CharField(max_length=50)
-    numero = models.CharField(max_length=10)
+    numero_de_sag = models.CharField(max_length=10)
     departamento = models.CharField(max_length=20)
-    bardrio = models.CharField(max_length=20)
+    barrio = models.CharField(max_length=20)
     direccion = models.CharField(max_length=100)
     telefono = models.CharField(max_length=50, unique=True)
     celular = models.CharField(max_length=50)
@@ -23,8 +23,8 @@ class Sucursal(models.Model):
     # Campos agregados por nosotros
     esta_habilitado = models.BooleanField(default=False)
     ciudad = models.CharField(max_length=40)
-    coord_lat = models.FloatField(null=True)
-    coord_lng = models.FloatField(null=True)
+    coord_lat = models.FloatField(null=True, blank=True)
+    coord_lng = models.FloatField(null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
@@ -36,10 +36,8 @@ class Auditoria(models.Model):
     sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
-    puntuacion = models.IntegerField(null=True, blank=True, default=0)
     finalizada = models.BooleanField(default=False)
-    # Campos agregados por nosotros
-    usuario = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+    aprobada = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
@@ -48,26 +46,26 @@ class Auditoria(models.Model):
 class Pregunta(models.Model):
     pregunta = models.CharField(max_length=255)
     SECCION = [
-        ('AF', 'Afuera'),
-        ('AD', 'Adentro'),
-        ('CA', 'Caja')
+        ('Afuera', 'Afuera'),
+        ('Adentro', 'Adentro'),
+        ('Caja', 'Caja')
     ]
 
     CATEGORIAS = [
-        ('IN', 'Informativa'),
-        ('DG', 'DIGEFE'),
-        ('EX', 'Extranormativa')
+        ('Informativa', 'Informativa'),
+        ('DIGEFE', 'DIGEFE'),
+        ('Extranormativa', 'Extranormativa')
     ]
 
     TIPOS = [
-        ('audi', 'Audio'),
-        ('nume', 'Numerica'),
-        ('opci', 'Opciones')
+        ('Audio', 'Audio'),
+        ('Numerica', 'Numerica'),
+        ('Opciones', 'Opciones')
     ]
-    seccion= models.CharField(max_length=2,choices=SECCION,default=SECCION[0][0])
-    categoria = models.CharField(max_length=2, choices=CATEGORIAS)
-    tipo = models.CharField(max_length=4, choices=TIPOS, default=TIPOS[0][0])
-    respuesta_ok = models.CharField(max_length=255, null=True)
+    seccion = models.CharField(max_length=7, choices=SECCION, default=SECCION[0][0])
+    categoria = models.CharField(max_length=14, choices=CATEGORIAS)
+    tipo = models.CharField(max_length=8, choices=TIPOS, default=TIPOS[0][0])
+    respuesta_correcta = models.CharField(max_length=255, null=True)
     # Campos agregados por nosotros
     opciones = ArrayField(models.CharField(max_length=25), null=True, blank=True)
 
@@ -76,11 +74,11 @@ class Pregunta(models.Model):
 
 
 class Respuesta(models.Model):
-    respuesta = models.CharField(max_length=128,null=True)
-    notas = models.TextField(max_length=256, null=True, blank=True)
-    auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    usuario = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+    auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
+    respuesta = models.CharField(max_length=128, null=True, blank=True)
+    notas = models.TextField(max_length=256, null=True, blank=True)
     audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
     # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -92,18 +90,14 @@ class Respuesta(models.Model):
 
 class Media(models.Model):
     """ Las categorias hay que cambiarlas, puse esto temporalmente"""
-    JUNIOR = 'JR'
-    MID_LEVEL = 'MID'
-    SENIOR = 'SR'
-    LEVEL = (
-        (JUNIOR, 'Junior'),
-        (MID_LEVEL, 'Mid-level'),
-        (SENIOR, 'Senior')
+    TIPO = (
+        ('Audio', 'Audio'),
+        ('Image', 'Image')
     )
 
     url = models.URLField(max_length=255)
     respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=3, choices=LEVEL)
+    tipo = models.CharField(max_length=5, choices=TIPO)
     # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
@@ -113,8 +107,10 @@ class Media(models.Model):
 
 
 class Incidente(models.Model):
-    reporta = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='reportado')
-    asignado = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    reporta = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
+                                null=True, related_name='incidentes_reportados')
+    asignado = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
+                                 null=True, related_name='incidentes_asignados')
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     accion = models.CharField(max_length=255)
 

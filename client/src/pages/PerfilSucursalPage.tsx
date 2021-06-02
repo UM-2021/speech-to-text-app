@@ -11,6 +11,7 @@ import {
 import { arrowBack, eyeOutline } from 'ionicons/icons';
 import React from 'react';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
+import PageWrapper from '../components/PageWrapper';
 import PerfilSucursal from '../components/PerfilSucursal';
 
 
@@ -18,7 +19,7 @@ import PerfilSucursal from '../components/PerfilSucursal';
 const PerfilSucursalPage: React.FC<RouteComponentProps<{id: string}>> = ({ match }) => {
 	let history = useHistory();
 	return (
-		<IonPage>
+		<PageWrapper>
 			<IonHeader>
 				<IonToolbar>
 					<IonButtons slot='start'>
@@ -41,7 +42,7 @@ const PerfilSucursalPage: React.FC<RouteComponentProps<{id: string}>> = ({ match
 				</IonHeader>
 				<PerfilSucursal id={match.params.id} />
 			</IonContent>
-		</IonPage>
+		</PageWrapper>
 	);
 };
 

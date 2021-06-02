@@ -1,7 +1,6 @@
 import {
   IonContent,
   IonHeader,
-  IonPage,
   IonTitle,
   IonToolbar,
   IonIcon,
@@ -17,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchSucursales } from '../actions/sucursalesActions';
 import Loader from '../components/Loader';
+import PageWrapper from '../components/PageWrapper';
 
 import './Home.css';
 
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <IonPage>
+    <PageWrapper>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Inicio</IonTitle>
@@ -83,7 +83,7 @@ const Home: React.FC = () => {
           )}
         </div>
       </IonContent>
-    </IonPage>
+    </PageWrapper>
   );
 };
 
