@@ -13,6 +13,7 @@ interface IPregunta {
   pregunta: string;
   tipo: string;
   opciones?: any;
+  respuesta: any;
 }
 
 const Pregunta: React.FC<IPregunta> = ({
@@ -21,39 +22,34 @@ const Pregunta: React.FC<IPregunta> = ({
   pregunta,
   opciones,
   auditoriaId,
+  respuesta
 }) => {
   const dispatch = useDispatch();
-
-  const respuestas = useSelector((state: any) => state.respuestas);
-  useEffect(() => {
-    dispatch({
-      type: ADD_RESPUESTA,
-      payload: { pregunta: id, isAnswered: false, auditoria: auditoriaId },
-    });
-  }, [dispatch, id, auditoriaId]);
+  // useEffect(() => {
+  //   dispatch({
+  //     type: ADD_RESPUESTA,
+  //     payload: { pregunta: id, isAnswered: false, auditoria: auditoriaId },
+  //   });
+  // }, [dispatch, id, auditoriaId]);
 
   return (
     <div className="ion-padding flex ion-margin-vertical">
       <div>
         <h3>{pregunta}</h3>
-      </div>
-      <div>
         <h5>
           <i>Respuesta: </i>
         </h5>
         <div>
-          {respuestas.filter(
-            (r: any) => r.pregunta === parseInt(id) && r.isAnswered
-          )[0]?.respuesta || ''}
+          {respuesta.respuesta}
         </div>
       </div>
 
       <div className="shrink">
-        {tipo === 'audi' && <div></div>}
-        {tipo === 'opci' && (
+        {tipo === 'Audio' && <div></div>}
+        {tipo === 'Opciones' && (
           <PreguntaOpciones opciones={opciones} preguntaId={id} />
         )}
-        {tipo === 'nume' && <PreguntaNumerica preguntaId={id} />}
+        {tipo === 'Numerica' && <PreguntaNumerica preguntaId={id} />}
         <PreguntaAudio preguntaId={id} />
       </div>
     </div>
