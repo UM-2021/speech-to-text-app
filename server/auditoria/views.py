@@ -11,6 +11,8 @@ from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, Respu
 from base64 import b64decode
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
+from audio.speech_to_text import get_transcription
+
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 
@@ -27,7 +29,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 
             if is_auditoria:
                 auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
-                                             .order_by('-fecha_creacion')[0]
+                    .order_by('-fecha_creacion')[0]
                 serializer2 = AuditoriaSerializer(auditoria, many=False)
                 return Response(serializer2.data, status=status.HTTP_201_CREATED)
 
@@ -92,10 +94,10 @@ class RespuestaViewSet(viewsets.ModelViewSet):
             audio = audio.replace('data:audio/mpeg;base64,', '')
             audio_data = b64decode(audio)
             nombre_audio = str(datetime.now())  # todo: cambiar nombre
-
             datos = data.copy()
-            datos['audio'] = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
-
+            file = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
+            datos['audio'] = file
+            datos['respuesta'] = get_transcription(file)
             serializer = RespuestaSerializer(data=datos)
         else:
             serializer = RespuestaSerializer(data=data)
