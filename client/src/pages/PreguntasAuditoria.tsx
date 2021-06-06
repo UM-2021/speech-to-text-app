@@ -125,7 +125,6 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 						<Loader />
 					) : (
 						<IonSlides
-							className='slider'
 							pager={true}
 							options={{
 								initialSlide: 0,
@@ -142,6 +141,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 										respuesta={
 											respuestas.filter((r: any) => r.pregunta === p.id)[0] || {}
 										}
+										respuestaCorrecta={p.respuesta_correcta}
 									/>
 								</IonSlide>
 							))}
