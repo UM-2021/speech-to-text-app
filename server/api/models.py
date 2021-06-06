@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-
+from server.storage_backends import PublicMediaStorage
 
 class Sucursal(models.Model):
     nombre = models.CharField(max_length=50)
@@ -79,7 +79,10 @@ class Respuesta(models.Model):
     auditoria = models.ForeignKey(Auditoria, on_delete=models.CASCADE)
     respuesta = models.CharField(max_length=128, null=True, blank=True)
     notas = models.TextField(max_length=256, null=True, blank=True)
-    audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
+    if settings.USE_S3:
+        audio = models.FileField(storage=PublicMediaStorage(), null=True, blank=True)
+    else:
+        audio = models.FileField(upload_to='audios_de_respuesta/', null=True, blank=True)
     # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
