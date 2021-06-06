@@ -1,0 +1,17 @@
+{
+  "appId": "io.idsii.redpagos",
+  "appName": "Redpagos",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {},
+  "server": {
+    "url": "http://testpagos.tk",
+    "cleartext": true
+  }
+}
