@@ -97,7 +97,7 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 export const fetchRespuestas = (auditoria: string) => async (dispatch: any, getState: any) => {
   try {
 		dispatch({ type: FETCH_RESPUESTAS_REQUEST });
-		const { data } = await axios(
+		const { data } = await axiosInstance(
 			`http://localhost:8000/api/auditorias/auditoria/${auditoria}/respuestas/`,
 			{
 				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
