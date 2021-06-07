@@ -21,6 +21,8 @@ class Sucursal(models.Model):
     tipo_de_acceso = models.CharField(max_length=30)
     cantidad_de_cajas = models.IntegerField
     # Campos agregados por nosotros
+    ultimo_responsable = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, \
+                                            null=True, blank=True, default=None, related_name='ultima_sucursal')
     esta_habilitado = models.BooleanField(default=False)
     ciudad = models.CharField(max_length=40)
     coord_lat = models.FloatField(null=True, blank=True)

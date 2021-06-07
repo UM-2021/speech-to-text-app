@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
+from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer, MinRespuestaSerializer
 from base64 import b64decode
@@ -22,12 +22,19 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = AuditoriaSerializer(data=request.data)
         if serializer.is_valid():
-            sucursal_id = serializer.validated_data.get('sucursal')
-            is_auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id, finalizada=False).exists()
+            sucursal = serializer.validated_data.get('sucursal')
+
+            # Ultimo responsable cuando se hace la auditoria.
+            sucursal = get_object_or_404(Sucursal, id=sucursal.id)
+            sucursal.ultimo_responsable = request.user
+            sucursal.save()
+
+            is_auditoria = Auditoria.objects.filter(sucursal=sucursal, finalizada=False).exists()
 
             if is_auditoria:
-                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
+                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal) \
                                              .order_by('-fecha_creacion')[0]
+
                 serializer2 = AuditoriaSerializer(auditoria, many=False)
                 return Response(serializer2.data, status=status.HTTP_201_CREATED)
 
@@ -88,17 +95,16 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         audio = request.data.get("audio")
         data = request.data
 
+        datos = data.copy()
         if audio is not None:
             audio = audio.replace('data:audio/mpeg;base64,', '')
             audio_data = b64decode(audio)
             nombre_audio = str(datetime.now())  # todo: cambiar nombre
 
-            datos = data.copy()
             datos['audio'] = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
 
-            serializer = RespuestaSerializer(data=datos)
-        else:
-            serializer = RespuestaSerializer(data=data)
+        datos['usuario'] = request.user.id
+        serializer = RespuestaSerializer(data=datos)
 
         if serializer.is_valid():
             serializer.save()
