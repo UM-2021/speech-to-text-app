@@ -15,6 +15,7 @@ interface IPregunta {
 	pregunta: string;
 	tipo: string;
 	opciones?: any;
+	categoria: string;
 	respuesta: any;
 	respuestaCorrecta: string | number;
 }
@@ -26,10 +27,10 @@ const Pregunta: React.FC<IPregunta> = ({
 	opciones,
 	auditoriaId,
 	respuesta,
-	respuestaCorrecta
-
+	respuestaCorrecta,
+	categoria
 }) => {
-	const dispatch = useDispatch();
+	// const dispatch = useDispatch();
 	// useEffect(() => {
 	//   dispatch({
 	//     type: ADD_RESPUESTA,
@@ -38,11 +39,20 @@ const Pregunta: React.FC<IPregunta> = ({
 	// }, [dispatch, id, auditoriaId]);
 	const validateAnswer = () => respuestaCorrecta === respuesta?.respuesta.toString() ?? null;
 
-	return (
+  const colors: any = {
+    DIGEFE: 'danger',
+    Informativa: 'success',
+    Extranormativa: 'warning'
+  }
+  
+  return (
 		<div className='ion-padding flex ion-margin-vertical'>
-			<div>
-				<h3>{pregunta}</h3>
-				<h5>
+			<div className="flex-int">
+				<IonChip className='ion-align-self-start' outline color={colors[categoria]}>
+					{categoria}
+				</IonChip>
+					<h3>{pregunta}</h3>
+					<h5>
 					<i>Respuesta: </i>
 				</h5>
 				<IonRow>
@@ -59,31 +69,6 @@ const Pregunta: React.FC<IPregunta> = ({
 					</IonCol>
 				</IonRow>
 			</div>
-
-  const colors: any = {
-    DIGEFE: 'danger',
-    Informativa: 'success',
-    Extranormativa: 'warning'
-  }
-  
-  return (
-		<div className='ion-padding flex ion-margin-vertical'>
-			<div className="flex-int">
-				<IonChip className='ion-align-self-start' outline color={colors[categoria]}>
-					{categoria}
-				</IonChip>
-				<h3>{pregunta}</h3>
-			</div>
-			<div>
-				<h5>
-					<i>Respuesta: </i>
-				</h5>
-				<div>
-					{respuestas.filter((r: any) => r.pregunta === parseInt(id) && r.isAnswered)[0]
-						?.respuesta || ''}
-				</div>
-			</div>
-
 			<div className='shrink'>
 				{tipo === 'Audio' && <div></div>}
 				{tipo === 'Opciones' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}

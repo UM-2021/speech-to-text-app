@@ -138,6 +138,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 										id={p.id}
 										tipo={p.tipo}
 										opciones={p.opciones}
+										categoria={p.categoria}
 										respuesta={
 											respuestas.filter((r: any) => r.pregunta === p.id)[0] || {}
 										}
