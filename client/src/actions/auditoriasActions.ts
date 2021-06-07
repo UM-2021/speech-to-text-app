@@ -6,6 +6,9 @@ import {
 	FETCH_PREGUNTAS_FAILED,
 	FETCH_PREGUNTAS_REQUEST,
 	FETCH_PREGUNTAS_SUCCESS,
+	FETCH_RESPUESTAS_REQUEST,
+	FETCH_RESPUESTAS_SUCCESS,
+	FETCH_RESPUESTAS_FAILED,
 	RESPUESTAS_RESET,
 	SEND_RESPUESTAS_FAILED,
 	SEND_RESPUESTAS_REQUEST,
@@ -86,6 +89,25 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 	} catch (error) {
 		dispatch({
 			type: SEND_RESPUESTAS_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
+};
+
+export const fetchRespuestas = (auditoria: string) => async (dispatch: any, getState: any) => {
+  try {
+		dispatch({ type: FETCH_RESPUESTAS_REQUEST });
+		const { data } = await axios(
+			`http://localhost:8000/api/auditorias/auditoria/${auditoria}/respuestas/`,
+			{
+				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+			}
+		);
+
+		dispatch({ type: FETCH_RESPUESTAS_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: FETCH_RESPUESTAS_FAILED,
 			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
 		});
 	}
