@@ -4,12 +4,18 @@
 }
 
 .flex {
-	max-width: 100%;
+	min-width: 90%;
+	max-width: 90%;
     max-height: 100%;
 	height: 90%;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+}
+
+.flex-int {
+	display: flex;
+	flex-direction: column;
 }
 
 .text-wrap {
@@ -20,7 +26,6 @@
 .shrink {
 	margin-right: auto;
 	margin-left: auto;
-	max-width: 85%;
     width: 100%;
 	display: grid;
 	grid-template-rows: 2fr 1fr;

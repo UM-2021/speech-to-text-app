@@ -139,6 +139,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({
                     pregunta={p.pregunta}
                     id={p.id}
                     tipo={p.tipo}
+                    categoria={p.categoria}
                     opciones={p.opciones}
                   />
                 </IonSlide>
