@@ -6,6 +6,7 @@ import {
 	FETCH_PREGUNTAS_FAILED,
 	FETCH_PREGUNTAS_REQUEST,
 	FETCH_PREGUNTAS_SUCCESS,
+	FETCH_PREGUNTAS_RESET,
 	ADD_RESPUESTA,
 	ADD_RESPUESTA_FIELD,
 	RESPUESTAS_RESET,
@@ -24,6 +25,8 @@ export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
 			return { loading: false, preguntas: [...action.payload] };
 		case FETCH_PREGUNTAS_FAILED:
 			return { ...state, error: action.payload };
+		case FETCH_PREGUNTAS_RESET:
+			return { preguntas: [] };
 		default:
 			return state;
 	}
@@ -32,7 +35,7 @@ export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
 export const auditoriaReducer = (state = { auditoria: {} }, action: any) => {
 	switch (action.type) {
 		case CREATE_OR_GET_AUDITORIA_REQUEST:
-			return { loading: true };
+			return { ...state, loading: true };
 		case CREATE_OR_GET_AUDITORIA_SUCCESS:
 			return { loading: false, success: true, auditoria: action.payload };
 		case CREATE_OR_GET_AUDITORIA_FAILED:
