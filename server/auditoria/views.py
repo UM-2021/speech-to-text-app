@@ -121,6 +121,29 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     queryset = Incidente.objects.all()
     serializer_class = IncidenteSerializer
 
+    def create(self, request):
+        datosSerializados = IncidenteSerializer(data=request.data)
+        datos = request.data.copy()
+        datos["reporta"] = request.user.id
+        datos["pregunta"] = request.data.get('pregunta') #obtiene de donde se manda la request
+        datos["asignado"] = request.data.get('asignado') #obtiene del audio
+        datos["accion"] = request.data.get('accion')   #obtiene del audio
+        datos["sucursal"] = request.data.get('sucursal')   #obtiene de donde se manda la request
+        return Response(datos.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request):
+        datosSerializados = IncidenteSerializer(data=request.data)
+        datos = request.data.copy()
+        datos["reporta"] = request.data.get('reporta')
+        datos["pregunta"] = request.data.get('pregunta')
+        datos["asignado"] = request.data.get('asignado')
+        datos["accion"] = request.data.get('accion')
+        return Response(datos.data, status=status.HTTP_201_CREATED)
+
+    def cerrarAuditoria(self):
+            incidente = Incidente.objects.filter(id__exact=datosSerializados.validated_data.get('id')) # le van apegar a una url que sea auditoria/cierre/{id}, ese id que pasan va a ser por el cual se filtra
+            incidente["aceptado"] = 1
+            return #redirecciona a la url para responder la pregunta incidente["pregnta"] en la sucursal incidente["sucursal"]
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
     def get_queryset(self):

@@ -109,12 +109,14 @@ class Media(models.Model):
 
 
 class Incidente(models.Model):
-    reporta = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
-                                null=True, related_name='incidentes_reportados')
-    asignado = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
-                                 null=True, related_name='incidentes_asignados')
+    reporta = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,null=True, related_name='incidentes_reportados')
+    asignado = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,null=True, related_name='incidentes_asignados')
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     accion = models.CharField(max_length=255)
+    # Campos agregados por nosotros
+    aceptado = models.IntegerField(default=0) #Cambiar bien preguntar a sherman
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, default=0) #Cambiar bien preguntar a sherman
+
 
     def __str__(self):
         return self.accion, self.reporta, self.asignado, self.pregunta
