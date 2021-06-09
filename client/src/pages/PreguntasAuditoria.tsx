@@ -14,7 +14,6 @@ import {
 
 import './PreguntasAuditoria.css';
 import Pregunta from '../components/Pregunta';
-import RespuestasAuditoria from '../components/RespuestasAuditoria';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +25,7 @@ import {
 } from '../actions/auditoriasActions';
 import { RESPUESTAS_RESET } from '../actions/types';
 import PageWrapper from '../components/PageWrapper';
+import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
 
 interface IRespuesta {
 	respuesta: string;
@@ -133,7 +133,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 									<Loader />
 								) : (
 									<div>
-										<RespuestasAuditoria />
+										<RespuestasAuditoriaList sucursal={match.params.id} />
 										<IonButton expand='block' color='primary' onClick={onSubmit}>
 											Enviar
 										</IonButton>

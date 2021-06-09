@@ -11,7 +11,9 @@ import {
 	RESPUESTAS_RESET,
 	FETCH_RESPUESTAS_REQUEST,
 	FETCH_RESPUESTAS_SUCCESS,
-	FETCH_RESPUESTAS_FAILED
+	FETCH_RESPUESTAS_FAILED,
+	SET_RESPUESTA,
+	RESPUESTA_RESET
 } from '../actions/types';
 
 export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
@@ -68,6 +70,17 @@ export const respuestasReducer = (state = { respuestas: [] }, action: any) => {
 			};
 		case RESPUESTAS_RESET:
 			return { respuestas: [] };
+		default:
+			return state;
+	}
+};
+
+export const respuestaReducer = (state = { respuesta: {} }, action: any) => {
+	switch (action.type) {
+		case SET_RESPUESTA:
+			return { respuesta: action.payload };
+		case RESPUESTA_RESET:
+			return { respuesta: {} };
 		default:
 			return state;
 	}
