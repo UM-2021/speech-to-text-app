@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 import {
   CREATE_OR_GET_AUDITORIA_FAILED,
   CREATE_OR_GET_AUDITORIA_REQUEST,
@@ -20,26 +20,12 @@ export const fetchPreguntas = () => async (dispatch: any, getState: any) => {
     dispatch({ type: FETCH_PREGUNTAS_REQUEST });
     let preguntas = getState().preguntas.preguntas;
 
-    // if (!preguntas || preguntas.length === 0) {
-    //   const { data } = await axios(
-    //     'http://10.0.2.2:8000/api/auditorias/pregunta/',
-    //     {
-    //       headers: {
-    //         Authorization: `Token ${getState().auth.user.token ?? ''}`,
-    //       },
-    //     }
-    //   );
-    //   preguntas = data;
-    // }
     if (!preguntas || preguntas.length === 0) {
-      const { data } = await axios(
-        'http://localhost:8000/api/auditorias/pregunta/',
-        {
-          headers: {
-            Authorization: `Token ${getState().auth.user.token ?? ''}`,
-          },
-        }
-      );
+      const { data } = await axiosInstance('/api/auditorias/pregunta/', {
+        headers: {
+          Authorization: `Token ${getState().auth.user.token ?? ''}`,
+        },
+      });
       preguntas = data;
     }
 
@@ -61,15 +47,8 @@ export const fetchAuditoria = (sucursal: string) => async (
 ) => {
   try {
     dispatch({ type: CREATE_OR_GET_AUDITORIA_REQUEST });
-    // const { data } = await axios.post(
-    //   'http://10.0.2.2:8000/api/auditorias/auditoria/',
-    //   { sucursal },
-    //   {
-    //     headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
-    //   }
-    // );
-    const { data } = await axios.post(
-      'http://localhost:8000/api/auditorias/auditoria/',
+    const { data } = await axiosInstance.post(
+      '/api/auditorias/auditoria/',
       { sucursal },
       {
         headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
@@ -92,35 +71,17 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
   try {
     dispatch({ type: SEND_RESPUESTAS_REQUEST });
 
-    const auditoria = getState().auditoria.auditoria.id;
     const respuestas = getState().respuestas;
     const user = getState().auth.user;
 
-    respuestas.respuestas.forEach(async (r: any) => {
-      // if (r.isAnswered)
-      //   await axios.post(
-      //     'http://10.0.2.2:8000/api/auditorias/respuesta/',
-      //     {
-      //       pregunta: r.pregunta,
-      //       respuesta: r.respuesta,
-      //       auditoria: r.auditoria,
-      //       audio: r?.audio || null,
-      //       usuario: user.user_id,
-      //     },
-      //     {
-      //       headers: {
-      //         Authorization: `Token ${getState().auth.user.token ?? ''}`,
-      //       },
-      //     }
-      //   );
-      //cuando este la transcripcion es cambiar esto por solo el respuesta no nulo
-      if (r.respuesta !== null || r.audio !== null)
-        await axios.post(
-          'http://localhost:8000/api/auditorias/respuesta/',
+    respuestas.forEach(async (r: any) => {
+      if (r.isAnswered)
+        await axiosInstance.post(
+          '/api/auditorias/respuesta/',
           {
             pregunta: r.pregunta,
             respuesta: r.respuesta,
-            auditoria: auditoria,
+            auditoria: r.auditoria,
             audio: r?.audio || null,
             usuario: user.user_id,
           },
@@ -151,13 +112,7 @@ export const fetchRespuestas = (auditoria: string) => async (
 ) => {
   try {
     dispatch({ type: FETCH_RESPUESTAS_REQUEST });
-    // const { data } = await axios(
-    //   `http://10.0.2.2:8000/api/auditorias/auditoria/${auditoria}/respuestas/`,
-    //   {
-    //     headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
-    //   }
-    // );
-    const { data } = await axios(
+    const { data } = await axiosInstance(
       `http://localhost:8000/api/auditorias/auditoria/${auditoria}/respuestas/`,
       {
         headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },

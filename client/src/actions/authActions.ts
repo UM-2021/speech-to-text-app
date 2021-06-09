@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 import { LOGIN_FAILED, LOGIN_REQUEST, LOGIN_SUCCESS } from './types';
 
 export const login = (email: string, password: string) => async (
@@ -8,11 +8,7 @@ export const login = (email: string, password: string) => async (
   try {
     dispatch({ type: LOGIN_REQUEST });
 
-    // const { data } = await axios.post('http://10.0.2.2:8000/api/login/', {
-    //   username: email,
-    //   password,
-    // });
-    const { data } = await axios.post('http://localhost:8000/api/login/', {
+    const { data } = await axiosInstance.post('/api/login/', {
       username: email,
       password,
     });
@@ -21,7 +17,7 @@ export const login = (email: string, password: string) => async (
   } catch (error) {
     dispatch({
       type: LOGIN_FAILED,
-      payload: 'Incorrect credentials.',
+      payload: error.message ? error.message : 'Incorrect credentials.',
     });
   }
 };

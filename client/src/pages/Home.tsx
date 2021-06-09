@@ -9,7 +9,6 @@ import {
   IonItem,
   IonLabel,
 } from '@ionic/react';
-import axios from 'axios';
 import { add, storefrontOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
