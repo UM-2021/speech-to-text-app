@@ -5,14 +5,21 @@ from django.core.files.base import ContentFile
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
+from audio.natural_language_processing import split
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer, MinRespuestaSerializer
 from base64 import b64decode
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
+from audio.speech_to_text import get_transcription
+from server.storage_backends import PublicMediaStorage
+from django.core.files.storage import default_storage
+
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
+from server import settings
 
 
 class AuditoriaViewSet(viewsets.ModelViewSet):
@@ -32,8 +39,12 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
             is_auditoria = Auditoria.objects.filter(sucursal=sucursal, finalizada=False).exists()
 
             if is_auditoria:
-                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal) \
-                                             .order_by('-fecha_creacion')[0]
+
+                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
+                    .order_by('-fecha_creacion')[0]
+
+               
+
 
                 serializer2 = AuditoriaSerializer(auditoria, many=False)
                 return Response(serializer2.data, status=status.HTTP_201_CREATED)
@@ -92,25 +103,34 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     serializer_class = RespuestaSerializer
 
     def create(self, request):
-        audio = request.data.get("audio")
-        data = request.data
-
-        datos = data.copy()
-        if audio is not None:
-            audio = audio.replace('data:audio/mpeg;base64,', '')
-            audio_data = b64decode(audio)
-            nombre_audio = str(datetime.now())  # todo: cambiar nombre
-
-            datos['audio'] = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
-
-        datos['usuario'] = request.user.id
-        serializer = RespuestaSerializer(data=datos)
-
+        serializer = RespuestaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(methods=['post'], detail=True,)
+    def transcribir(self, request, pk=None):
+        audio = request.data.get("audio")
+        audio = audio.replace('data:audio/mpeg;base64,', '')
+        audio_data = b64decode(audio)
+        nombre_audio = str(datetime.now())  # todo: cambiar nombre
+        file = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
+        try:
+            resVector = split(get_transcription(file))
+        except:  # no se puedo transcripibr el audio
+            return Response("No se puedo procesar el audio", status=status.HTTP_418_IM_A_TEAPOT)
+        """
+        if settings.USE_S3:
+           # path = PublicMediaStorage.save('/audios', file)
+        else:
+           # path = default_storage.save('files/audios_de_respuesta/', file)
+        # media = MediaSerializer(data={'url': path, 'respuesta': pk, 'tipo': 'Audio'})
+        """
+        print(resVector)
+        if resVector['note'] is not None:
+            return Response({'respuesta': resVector['response'], 'notas': resVector['note']}, status=status.HTTP_200_OK)
+        return Response({'respuesta': resVector['response']}, status=status.HTTP_200_OK)
 
 class MediaViewSet(viewsets.ModelViewSet):
     queryset = Media.objects.all()
