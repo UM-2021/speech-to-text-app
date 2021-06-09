@@ -22,7 +22,7 @@ const Pregunta: React.FC<IPregunta> = ({
   pregunta,
   opciones,
   auditoriaId,
-  respuesta
+  respuesta,
 }) => {
   const dispatch = useDispatch();
   // useEffect(() => {
@@ -39,9 +39,7 @@ const Pregunta: React.FC<IPregunta> = ({
         <h5>
           <i>Respuesta: </i>
         </h5>
-        <div>
-          {respuesta.respuesta}
-        </div>
+        <div>{respuesta.respuesta}</div>
       </div>
 
       <div className="shrink">
