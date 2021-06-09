@@ -5,7 +5,8 @@ from django.core.files.base import ContentFile
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
+
+from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
 from audio.natural_language_processing import split
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer, MinRespuestaSerializer
@@ -28,12 +29,23 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = AuditoriaSerializer(data=request.data)
         if serializer.is_valid():
-            sucursal_id = serializer.validated_data.get('sucursal')
-            is_auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id, finalizada=False).exists()
+            sucursal = serializer.validated_data.get('sucursal')
+
+            # Ultimo responsable cuando se hace la auditoria.
+            sucursal = get_object_or_404(Sucursal, id=sucursal.id)
+            sucursal.ultimo_responsable = request.user
+            sucursal.save()
+
+            is_auditoria = Auditoria.objects.filter(sucursal=sucursal, finalizada=False).exists()
 
             if is_auditoria:
+
                 auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
                     .order_by('-fecha_creacion')[0]
+
+               
+
+
                 serializer2 = AuditoriaSerializer(auditoria, many=False)
                 return Response(serializer2.data, status=status.HTTP_201_CREATED)
 

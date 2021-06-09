@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 import {
 	FETCH_SUCURSALES_FAILED,
 	FETCH_SUCURSALES_REQUEST,
@@ -14,7 +14,7 @@ export const fetchSucursales = () => async (dispatch: any, getState: any) => {
 		let sucursales = getState().sucursales.sucursales;
 
 		if (!sucursales || sucursales.length === 0) {
-			const { data } = await axios('http://localhost:8000/api/sucursales/', {
+			const { data } = await axiosInstance('/api/sucursales/', {
 				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
 			});
 			sucursales = data;
@@ -35,7 +35,7 @@ export const fetchSucursal = (id: any) => async (dispatch: any, getState: any) =
 		let sucursal = getState().sucursal;
 
 		if (!sucursal || sucursal.id !== id) {
-			const { data } = await axios(`http://localhost:8000/api/sucursales/${id}/`, {
+			const { data } = await axiosInstance(`http://localhost:8000/api/sucursales/${id}/`, {
 				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
 			});
 			sucursal = data;
