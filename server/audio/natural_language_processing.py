@@ -15,8 +15,8 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_watson.natural_language_understanding_v1 import Features, SemanticRolesOptions, EntitiesResult
 
-from server.audio.resources import credentials
-from server.audio.resources.nlu_exceptions import UserNotFoundException, ActionNotFoundException
+from audio.resources import credentials
+from audio.resources.nlu_exceptions import UserNotFoundException, ActionNotFoundException
 
 """
 Set containing the possible responses.     
