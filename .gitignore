@@ -389,3 +389,9 @@ storybook-static
 .idea
 server/.env.prod
 server/.env.staging
+client/resources/android/icon
+client/resources/android/splash
+client/resources/ios/icon
+client/resources/ios/splash
+client/resources/windows/icon
+client/resources/windows/splash

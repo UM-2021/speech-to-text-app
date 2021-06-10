@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package io.idsii.redpagos;
 
 import android.os.Bundle;
 
