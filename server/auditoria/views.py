@@ -40,8 +40,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 
             if is_auditoria:
 
-                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
-                    .order_by('-fecha_creacion')[0]
+                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal).order_by('-fecha_creacion')[0]
 
                
 
