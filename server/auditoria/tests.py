@@ -12,6 +12,20 @@ class RespuestaViewTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
 
     # recomiendo no abrir este test
+    def test_audi_no_finalizada(self):
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        audit1 = Auditoria.objects.create(sucursal=test_suc,finalizada=False)
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",
+                                   tipo="Audio")
+        self.client.post('/api/auditorias/respuesta/',
+                         {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id})
+
+        resp1 = self.client.post('/api/auditorias/respuesta/',
+                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,
+                                  'respuesta': "si"})
+        resp2 = self.client.post('/api/auditorias/respuesta/',
+                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,
+                                  'notas': "cosas que pasan"})
 
     def test_create_201(self):
         test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
@@ -26,6 +40,23 @@ class RespuestaViewTestCase(APITestCase):
 
         self.assertEqual(resp1.status_code, 201)
 
+    def test_audi_no_finalizada(self):
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        audit1 = Auditoria.objects.create(id=1,sucursal=test_suc, finalizada=False)
+        audit1.id
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",
+                                       tipo="Audio")
+        self.client.post('/api/auditorias/respuesta/',
+                         {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id})
+
+        resp1 = self.client.post('/api/auditorias/respuesta/',
+                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,
+                                  'respuesta': "si"})
+        resp2 = self.client.post('/api/auditorias/respuesta/',
+                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,
+                                  'notas': "cosas que pasan"})
+        respuestas=Respuesta.objects.filter(auditoria=audit1.id)
+        self.assertEqual(len(respuestas),1)
 
     def test_create_400(self):
         test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")

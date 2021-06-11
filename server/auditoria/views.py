@@ -39,7 +39,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
             is_auditoria = Auditoria.objects.filter(sucursal=sucursal, finalizada=False).exists()
 
             if is_auditoria:
-                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id).order_by('-fecha_creacion').first()
+                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal).order_by('-fecha_creacion').first()
                 serializer2 = AuditoriaSerializer(auditoria, many=False)
                 return Response(serializer2.data, status=status.HTTP_201_CREATED)
 
@@ -99,6 +99,14 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = RespuestaSerializer(data=request.data)
         if serializer.is_valid():
+            is_adui_not_finished=Auditoria.objects.filter(id=request.data.get("auditoria"),finalizada=False).exists()
+            is_respuesta=Respuesta.objects.filter(auditoria=request.data.get("auditoria")).exists()
+            if is_adui_not_finished and  is_respuesta :
+                respuesta=Respuesta.objects.filter(auditoria=request.data.get("auditoria"),pregunta=request.data.get("pregunta"))[0]
+                respuesta.respuesta=request.data.get("respuesta")
+                respuesta.notas=request.data.get("notas")
+                respuesta.save(update_fields=['respuesta','notas'])
+                return Response(RespuestaSerializer(respuesta).data,status=status.HTTP_202_ACCEPTED)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
