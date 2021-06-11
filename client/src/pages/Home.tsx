@@ -9,12 +9,12 @@ import {
   IonItem,
   IonLabel,
 } from '@ionic/react';
-import axios from 'axios';
 import { add, storefrontOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchSucursales } from '../actions/sucursalesActions';
+import { CREATE_OR_GET_AUDITORIA_RESET, FETCH_SUCURSAL_RESET } from '../actions/types';
 import Loader from '../components/Loader';
 import PageWrapper from '../components/PageWrapper';
 
@@ -33,6 +33,8 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchSucursales());
+    dispatch({ type: FETCH_SUCURSAL_RESET });
+    dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
   }, [dispatch]);
 
   return (

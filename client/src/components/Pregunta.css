@@ -4,12 +4,18 @@
 }
 
 .flex {
-	max-width: 100%;
+	min-width: 90%;
+	max-width: 90%;
     max-height: 100%;
 	height: 90%;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+}
+
+.flex-int {
+	display: flex;
+	flex-direction: column;
 }
 
 .text-wrap {
@@ -20,10 +26,47 @@
 .shrink {
 	margin-right: auto;
 	margin-left: auto;
-	max-width: 85%;
     width: 100%;
 	display: grid;
 	grid-template-rows: 2fr 1fr;
 	gap: 20px;
 	align-items: center;
+}
+
+.answer-icon {
+	animation-name: tick;
+	animation-duration: 1s;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-out;
+}
+
+.answer-icon2 {
+	animation-name: tick2;
+	animation-duration: 1s;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-out;
+}
+
+@keyframes tick {
+	0% {
+		transform: scale(.5);
+	}
+	50% {
+		transform: scale(2.5);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes tick2 {
+	0% {
+		transform: scale(.5);
+	}
+	50% {
+		transform: scale(2.5);
+	}
+	100% {
+		transform: scale(1);
+	}
 }

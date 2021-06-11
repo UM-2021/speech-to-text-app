@@ -17,7 +17,7 @@ const RespuestasAuditoria: React.FC = () => {
   const { loading: sucursalLoading, sucursal } = useSelector(
     (state: any) => state.sucursal
   );
-  const respuestas = useSelector((state: any) => state.respuestas);
+  const {respuestas} = useSelector((state: any) => state.respuestas);
 
   if (loading || sucursalLoading) return <Loader />;
   return (

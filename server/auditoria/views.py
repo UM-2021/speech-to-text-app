@@ -1,18 +1,29 @@
+import base64
 import uuid
 from datetime import datetime
-
+from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente
+from rest_framework.views import APIView
+
+from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
+from audio.natural_language_processing import split
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer, MinRespuestaSerializer
 from base64 import b64decode
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
+from audio.speech_to_text import get_transcription
+from server.storage_backends import PrivateMediaStorage
+from django.core.files.storage import default_storage, FileSystemStorage
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
+from server import settings
 
 
 class AuditoriaViewSet(viewsets.ModelViewSet):
@@ -22,12 +33,17 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = AuditoriaSerializer(data=request.data)
         if serializer.is_valid():
-            sucursal_id = serializer.validated_data.get('sucursal')
-            is_auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id, finalizada=False).exists()
+            sucursal = serializer.validated_data.get('sucursal')
+
+            # Ultimo responsable cuando se hace la auditoria.
+            sucursal = get_object_or_404(Sucursal, id=sucursal.id)
+            sucursal.ultimo_responsable = request.user
+            sucursal.save()
+
+            is_auditoria = Auditoria.objects.filter(sucursal=sucursal, finalizada=False).exists()
 
             if is_auditoria:
-                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
-                                             .order_by('-fecha_creacion')[0]
+                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal).order_by('-fecha_creacion').first()
                 serializer2 = AuditoriaSerializer(auditoria, many=False)
                 return Response(serializer2.data, status=status.HTTP_201_CREATED)
 
@@ -85,25 +101,72 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     serializer_class = RespuestaSerializer
 
     def create(self, request):
-        audio = request.data.get("audio")
-        data = request.data
-
-        if audio is not None:
-            audio = audio.replace('data:audio/mpeg;base64,', '')
-            audio_data = b64decode(audio)
-            nombre_audio = str(datetime.now())  # todo: cambiar nombre
-
-            datos = data.copy()
-            datos['audio'] = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
-
-            serializer = RespuestaSerializer(data=datos)
-        else:
-            serializer = RespuestaSerializer(data=data)
-
+        serializer = RespuestaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], detail=True,)
+    def transcribir(self, request, pk=None):
+        audio = request.data.get("audio")
+        if not audio:
+            return Response({"detail": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
+
+        audio = audio.replace('data:audio/mpeg;base64,', '')
+        audio += '======='
+        audio_data = b64decode(audio)
+        nombre_audio = "audio_" + str(datetime.now()) + '.mp3'
+        file = ContentFile(content=audio_data, name=nombre_audio)
+
+        try:
+            resVector = split(get_transcription(file))
+        except:  # no se puedo transcripibr el audio
+            return Response("No se puedo procesar el audio", status=status.HTTP_418_IM_A_TEAPOT)
+
+        if settings.USE_S3:
+            instance = PrivateMediaStorage()
+            path = instance.save(f'audios/{nombre_audio}', file)
+        else:
+            path = default_storage.save('files/audios/', file)
+
+        if resVector['note'] is not None:
+            return Response({'respuesta': resVector['response'], 'notas': resVector['note'], 'url_path': path}, status=status.HTTP_200_OK)
+        return Response({'respuesta': resVector['response'], 'url_path': path}, status=status.HTTP_200_OK)
+
+
+class ImagenView(APIView):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ImagenView, self).dispatch(request, *args, **kwargs)
+
+    @csrf_exempt
+    def post(self, request, pk):
+        queryset = Respuesta.objects.all()
+        respuesta = get_object_or_404(queryset, pk=pk)
+
+        if respuesta.usuario != request.user:
+            return Response({"detail": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        imagen = request.data.get("imagen")
+
+        if not imagen:
+            return Response({"detail": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
+
+        imagen = imagen.replace('data:image/jpeg;base64,', '')
+        imagen += '======='
+        imagen_data = b64decode(imagen)
+        nombre_imagen = str(pk) + "_image_" + str(datetime.now()) + '.jpeg'
+        file = ContentFile(content=imagen_data, name=nombre_imagen)
+        if settings.USE_S3:
+            instance = PrivateMediaStorage()
+            path = instance.save(f'imagenes/{nombre_imagen}', file)
+        else:
+            path = default_storage.save('files/imagenes/', file)
+
+        Media.objects.create(url=path, respuesta=respuesta, tipo='Image')
+        return Response({'respuesta': path}, status=status.HTTP_200_OK)
 
 
 class MediaViewSet(viewsets.ModelViewSet):

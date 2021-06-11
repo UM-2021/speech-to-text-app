@@ -11,9 +11,17 @@ import './PerfilSucursal.css';
 interface ISucursal {
 	id: string;
 	nombre: string;
+	numero_de_sag: string;
+	departamento: string;
+	barrio: string;
 	direccion: string;
-	ciudad: string;
 	telefono: string;
+	celular: string;
+	razon_social: string;
+	rut: string;
+	negocio_anexo: string;
+	tipo_de_acceso: string;
+	ciudad: string;
 }
 
 const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
@@ -58,7 +66,7 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 						<IonLabel color='medium' slot='start'>
 							Nro de SAG
 						</IonLabel>
-						<IonLabel>5342</IonLabel>
+						<IonLabel>{sucursal!.numero_de_sag}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
@@ -82,37 +90,37 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 						<IonLabel color='medium' slot='start'>
 							Último responsable
 						</IonLabel>
-						<IonLabel>Lea</IonLabel>
+						<IonLabel>{sucursal!.ultimo_responsable}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
-							Celular
+							Celular 
 						</IonLabel>
-						<IonLabel>098 435 328</IonLabel>
+						<IonLabel>{sucursal!.celular}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							Razón social
 						</IonLabel>
-						<IonLabel>JC S.A</IonLabel>
+						<IonLabel>{sucursal!.razon_social}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							R.U.T
 						</IonLabel>
-						<IonLabel>1122332255330016</IonLabel>
+						<IonLabel>{sucursal!.rut}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							Tipo de negocio anexo
 						</IonLabel>
-						<IonLabel>Cambio</IonLabel>
+						<IonLabel>{sucursal!.negocio_anexo}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							Acceso al local
 						</IonLabel>
-						<IonLabel>Desde la calle</IonLabel>
+						<IonLabel>{sucursal!.tipo_de_acceso}</IonLabel>
 					</IonItem>
 				</IonList>
 			</div>
