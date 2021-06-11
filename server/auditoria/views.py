@@ -24,7 +24,6 @@ from django.core.files.storage import default_storage, FileSystemStorage
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 from server import settings
-from upload.models import UploadPrivate
 
 
 class AuditoriaViewSet(viewsets.ModelViewSet):
