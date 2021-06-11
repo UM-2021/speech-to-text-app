@@ -66,8 +66,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('respuesta', models.CharField(blank=True, max_length=128, null=True)),
-                ('notas', models.TextField(blank=True, max_length=256, null=True)),
-                ('audio', models.FileField(blank=True, null=True, upload_to='audios_de_respuesta/')),
+                ('notas', models.TextField(blank=True, null=True)),
                 ('fecha_creacion', models.DateTimeField(auto_now_add=True)),
                 ('fecha_modificacion', models.DateTimeField(auto_now=True)),
                 ('auditoria', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Auditoria')),
