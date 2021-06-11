@@ -1,11 +1,19 @@
+from base64 import b64decode
+from datetime import datetime
+
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.generics import get_object_or_404
 
 from api.models import Sucursal, Auditoria
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from server import settings
+from server.storage_backends import PrivateMediaStorage
 
 from .serializers import SucursalSerializer
 
@@ -55,3 +63,28 @@ class SucursalViewSet(viewsets.ModelViewSet):
             print(ultimasAuditorias[i].sucursal)
             ultimasSucursales.append(ultimasAuditorias[i].sucursal)
         return Response([(Sucursal.nombre,Sucursal.id) for Sucursal in ultimasSucursales])
+
+    @action(methods=['post'], detail=True,)
+    def agregar_imagen(self, request, pk):
+        queryset = Sucursal.objects.all()
+        sucursal = get_object_or_404(queryset, pk=pk)
+
+        imagen = request.data.get("imagen")
+
+        if not imagen:
+            return Response({"detail": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
+
+        imagen = imagen.replace('data:image/jpeg;base64,', '')
+        imagen += '======='
+        imagen_data = b64decode(imagen)
+        nombre_imagen = "sucursal_" + str(pk) + "_image_" + str(datetime.now()) + '.jpeg'
+        file = ContentFile(content=imagen_data, name=nombre_imagen)
+        if settings.USE_S3:
+            instance = PrivateMediaStorage()
+            path = instance.save(f'sucursales/imagenes/{nombre_imagen}', file)
+        else:
+            path = default_storage.save('files/imagenes/', file)
+
+        sucursal.path_imagen_url = path
+        sucursal.save()
+        return Response({'respuesta': path}, status=status.HTTP_200_OK)
