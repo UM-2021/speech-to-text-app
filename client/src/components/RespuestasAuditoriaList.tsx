@@ -1,5 +1,5 @@
 import { IonIcon, IonItem, IonLabel, IonList } from '@ionic/react';
-import { arrowForwardOutline, checkmark, close, help } from 'ionicons/icons';
+import { arrowForwardOutline, checkmark, close } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
@@ -12,29 +12,18 @@ import {
 } from '../actions/types';
 import Loader from './Loader';
 
-const RespuestasAuditoriaList: React.FC<{ sucursal: string }> = ({ sucursal }) => {
+const RespuestasAuditoriaList: React.FC<{
+	auditoria: string;
+	preguntas: any;
+	respuestas: any;
+}> = ({ auditoria, preguntas, respuestas }) => {
 	let history = useHistory();
 	const dispatch = useDispatch();
 
-	const { auditoria, loading: loadingAuditoria, success, error: errorAuditoria } = useSelector(
-		(state: any) => state.auditoria
-	);
-	const { preguntas, loading: loadingPreguntas, error: errorPreguntas } = useSelector(
-		(state: any) => state.preguntas
-	);
-	const { respuestas, loading: loadingRespuestas, error: errorRespuestas } = useSelector(
-		(state: any) => state.respuestas
-	);
-
 	const [newPreguntas, setPreguntas] = useState([]);
-	const [respuestasLoaded, setRespuestasLoaded] = useState(false);
 
 	useEffect(() => {
-		if (success && !respuestasLoaded) {
-			dispatch(fetchRespuestas(auditoria.id));
-			setRespuestasLoaded(true);
-		}
-		if (preguntas && preguntas.length > 0) {
+		if (preguntas && preguntas.length > 0 && respuestas) {
 			const newPreguntas = preguntas.map((p: any) => {
 				p.respuesta = {};
 				respuestas.forEach((r: any) => {
@@ -44,18 +33,7 @@ const RespuestasAuditoriaList: React.FC<{ sucursal: string }> = ({ sucursal }) =
 			});
 			setPreguntas(newPreguntas);
 		}
-		
-	}, [preguntas, respuestas, dispatch, auditoria, success]);
-
-	useEffect(() => {
-		dispatch(fetchAuditoria(sucursal));
-		dispatch(fetchPreguntas());
-		return () => {
-			dispatch({ type: FETCH_PREGUNTAS_RESET });
-			dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
-			dispatch({ type: RESPUESTAS_RESET });
-		};
-	}, [dispatch, sucursal]);
+	}, [preguntas, respuestas, dispatch, auditoria]);
 
 	const setRespuesta = (pregunta: string, respuesta: any) => {
 		if (respuesta.pregunta) {
@@ -67,7 +45,6 @@ const RespuestasAuditoriaList: React.FC<{ sucursal: string }> = ({ sucursal }) =
 	const validateAnswer = (pregunta: any) =>
 		pregunta.respuesta_correcta === pregunta.respuesta?.respuesta.toString() ?? null;
 
-	if (loadingAuditoria || loadingPreguntas) return <Loader />;
 	return (
 		<IonList inset>
 			{newPreguntas.map((pregunta: any, index: number) => (

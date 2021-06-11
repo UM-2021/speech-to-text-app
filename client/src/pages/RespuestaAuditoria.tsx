@@ -1,20 +1,17 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItemDivider, IonTitle, IonToolbar } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { RESPUESTA_RESET } from '../actions/types';
 import PageWrapper from '../components/PageWrapper';
 
 const RespuestaAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
-	let history = useHistory();
-	const dispatch = useDispatch();
+	let history = useHistory();	
 
 	const { respuesta } = useSelector((state: any) => state.respuesta);
 
 	const goBack = () => {
 		history.goBack();
-		dispatch({ type: RESPUESTA_RESET });
 	};
 
 	return (

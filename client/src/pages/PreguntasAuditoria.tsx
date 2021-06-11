@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	IonContent,
 	IonHeader,
-	IonPage,
 	IonTitle,
 	IonToolbar,
 	IonSlides,
@@ -23,47 +22,46 @@ import {
 	fetchRespuestas,
 	postRespuestas
 } from '../actions/auditoriasActions';
-import { RESPUESTAS_RESET } from '../actions/types';
+import { CREATE_OR_GET_AUDITORIA_RESET, FETCH_PREGUNTAS_RESET, RESPUESTAS_RESET } from '../actions/types';
 import PageWrapper from '../components/PageWrapper';
 import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
-
-interface IRespuesta {
-	respuesta: string;
-	notas?: string;
-	auditoria: string;
-	pregunta: string;
-	// validez: boolean;
-}
-
-interface IPregunta {
-	id: string;
-	pregunta: string;
-	tipo: string;
-	opciones?: string[];
-}
+import Message from '../components/Message';
 
 const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
 	let history = useHistory();
 	const dispatch = useDispatch();
-	const { loading, error, preguntas } = useSelector((state: any) => state.preguntas);
-	const { loading: auditoriaLoading, auditoria, success } = useSelector((state: any) => state.auditoria);
-	const { respuestas, loading: respuestasLoading } = useSelector((state: any) => state.respuestas);
+	const sucursalId = match.params.id;
+
+	const { preguntas, loading: loadingPreguntas, error: errorPreguntas } = useSelector(
+		(state: any) => state.preguntas
+	);
+	const { auditoria, loading: loadingAuditoria, success, error: errorAuditoria } = useSelector(
+		(state: any) => state.auditoria
+	);
+	const { respuestas, loading: loadingRespuestas, error: errorRespuestas } = useSelector(
+		(state: any) => state.respuestas
+	);
+
 	const [submitted, setSubmitted] = useState(false);
 	const [showLoader, setShowLoader] = useState(false);
 
 	useEffect(() => {
 		if (success) {
 			dispatch(fetchRespuestas(auditoria.id));
-		} else {
-			dispatch(fetchAuditoria(match.params.id));
-			dispatch(fetchPreguntas());
 		}
-	}, [dispatch, match.params.id, success, auditoria]);
+	}, [dispatch, auditoria, success]);
 
-  const onExit = () => {
-    history.goBack();
-    dispatch({ type: RESPUESTAS_RESET });
-  };
+	useEffect(() => {
+		dispatch(fetchAuditoria(sucursalId));
+		dispatch(fetchPreguntas());
+	}, [dispatch, sucursalId]);
+
+	const onExit = () => {
+		history.goBack();
+		dispatch({ type: RESPUESTAS_RESET });
+		dispatch({ type: FETCH_PREGUNTAS_RESET });
+		dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
+	};
 
 	const onSubmit = (e: any) => {
 		e.preventDefault();
@@ -76,7 +74,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 		}, 1500);
 	};
 
-	if (loading) return <Loader />;
+	if (loadingPreguntas || loadingRespuestas || loadingAuditoria) return <Loader />;
 	else
 		return (
 			<PageWrapper>
@@ -102,8 +100,12 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 							<IonTitle size='large'>Nueva Auditoría</IonTitle>
 						</IonToolbar>
 					</IonHeader>
-					{auditoriaLoading ? (
-						<Loader />
+					{errorPreguntas ? (
+						<Message color='danger'>{errorPreguntas}</Message>
+					) : errorAuditoria ? (
+						<Message color='danger'>{errorAuditoria}</Message>
+					) : errorRespuestas ? (
+						<Message color='danger'>{errorRespuestas}</Message>
 					) : (
 						<IonSlides
 							pager={true}
@@ -129,11 +131,15 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 							))}
 
 							<IonSlide>
-								{showLoader ? (
+								{showLoader && success ? (
 									<Loader />
 								) : (
 									<div>
-										<RespuestasAuditoriaList sucursal={match.params.id} />
+										<RespuestasAuditoriaList
+											auditoria={auditoria.id}
+											preguntas={preguntas}
+											respuestas={respuestas}
+										/>
 										<IonButton expand='block' color='primary' onClick={onSubmit}>
 											Enviar
 										</IonButton>
@@ -151,3 +157,19 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 };
 
 export default PreguntasAuditoria;
+
+function useTraceUpdate(props: any) {
+	const prev = useRef(props);
+	useEffect(() => {
+		const changedProps = Object.entries(props).reduce((ps: any, [k, v]) => {
+			if (prev.current[k] !== v) {
+				ps[k] = [prev.current[k], v];
+			}
+			return ps;
+		}, {});
+		if (Object.keys(changedProps).length > 0) {
+			console.log('Changed props:', changedProps);
+		}
+		prev.current = props;
+	});
+}

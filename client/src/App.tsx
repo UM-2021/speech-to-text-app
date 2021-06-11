@@ -56,14 +56,14 @@ const App: React.FC = () => {
 							<Login />
 						</Route>
 						<Route exact path='/home' component={Home} />
-						<Route exact path='/sucursal' component={Sucursales} />
 						<Route exact path='/sucursal/:id/perfil' component={PerfilSucursalPage} />
 						<Route exact path='/sucursal/:id/auditoria' component={Auditoria} />
+						<Route exact path='/sucursal' component={Sucursales} />
 						<Route exact path='/respuesta' component={RespuestaAuditoria} />
 						<Route exact path='/incidentes' component={Incidentes} />
 						<Route exact path='/auditoria/:id' component={PreguntasAuditoria} />
-						<Route exact path='/auditoria/nueva' component={SeleccionSucursalParaAuditoria} />
 						<Route exact path='/auditoria/datos/:id' component={DatosSucursal} />
+						<Route exact path='/auditoria/nueva' component={SeleccionSucursalParaAuditoria} />
 						<Route exact path='/'>
 							<Redirect to='/home' />
 						</Route>

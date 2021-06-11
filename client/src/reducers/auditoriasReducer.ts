@@ -24,7 +24,7 @@ export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
 		case FETCH_PREGUNTAS_SUCCESS:
 			return { loading: false, preguntas: [...action.payload] };
 		case FETCH_PREGUNTAS_FAILED:
-			return { ...state, error: action.payload };
+			return { loading: false, error: action.payload };
 		case FETCH_PREGUNTAS_RESET:
 			return { preguntas: [] };
 		default:
@@ -35,7 +35,7 @@ export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
 export const auditoriaReducer = (state = { auditoria: {} }, action: any) => {
 	switch (action.type) {
 		case CREATE_OR_GET_AUDITORIA_REQUEST:
-			return { ...state, loading: true };
+			return { loading: true };
 		case CREATE_OR_GET_AUDITORIA_SUCCESS:
 			return { loading: false, success: true, auditoria: action.payload };
 		case CREATE_OR_GET_AUDITORIA_FAILED:
@@ -50,7 +50,7 @@ export const auditoriaReducer = (state = { auditoria: {} }, action: any) => {
 export const respuestasReducer = (state = { respuestas: [] }, action: any) => {
 	switch (action.type) {
 		case FETCH_RESPUESTAS_REQUEST:
-			return { ...state, loading: true };
+			return { loading: true };
 		case FETCH_RESPUESTAS_SUCCESS:
 			return { ...state, loading: false, respuestas: action.payload };
 		case FETCH_RESPUESTAS_FAILED:
