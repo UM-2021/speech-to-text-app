@@ -1,24 +1,23 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, RouteComponentProps, useHistory } from 'react-router-dom';
+import { fetchAuditoriaDetails } from '../actions/auditoriasActions';
+import Loader from '../components/Loader';
 import Message from '../components/Message';
 import PageWrapper from '../components/PageWrapper';
 import PerfilSucursal from '../components/PerfilSucursal';
 
-interface Auditoria {
-	finalizada?: boolean;
-	aprobada?: boolean;
-}
-
 const PerfilSucursalPage: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
 	let history = useHistory();
-	// For testing
-	const auditoria: Auditoria = {
-		finalizada: true,
-		aprobada: false
-	};
+	const dispatch = useDispatch();
 
+	const { auditoria, loading, error } = useSelector((state: any) => state.auditoriaDetails);
+
+	useEffect(() => {
+		dispatch(fetchAuditoriaDetails(match.params.id));
+	}, [dispatch, match]);
 	return (
 		<PageWrapper>
 			<IonHeader>
@@ -45,7 +44,11 @@ const PerfilSucursalPage: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 						</IonButtons>
 					</IonToolbar>
 				</IonHeader>
-				{Object.keys(auditoria).length === 0 ? (
+				{loading ? (
+					<Loader />
+				) : error ? (
+					<Message color='danger'>{error}</Message>
+				) : Object.keys(auditoria).length === 0 ? (
 					<Message color='light'>Local no auditado</Message>
 				) : auditoria.aprobada ? (
 					<Message color='success'>Auditoria finalizada: Local habilitado</Message>

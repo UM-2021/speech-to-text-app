@@ -3,6 +3,9 @@ import {
 	CREATE_OR_GET_AUDITORIA_FAILED,
 	CREATE_OR_GET_AUDITORIA_REQUEST,
 	CREATE_OR_GET_AUDITORIA_SUCCESS,
+	GET_AUDITORIA_FAILED,
+	GET_AUDITORIA_REQUEST,
+	GET_AUDITORIA_SUCCESS,
 	FETCH_PREGUNTAS_FAILED,
 	FETCH_PREGUNTAS_REQUEST,
 	FETCH_PREGUNTAS_SUCCESS,
@@ -95,19 +98,32 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 };
 
 export const fetchRespuestas = (auditoria: string) => async (dispatch: any, getState: any) => {
-  try {
+	try {
 		dispatch({ type: FETCH_RESPUESTAS_REQUEST });
-		const { data } = await axiosInstance(
-			`/api/auditorias/auditoria/${auditoria}/respuestas/`,
-			{
-				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
-			}
-		);
+		const { data } = await axiosInstance(`/api/auditorias/auditoria/${auditoria}/respuestas/`, {
+			headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+		});
 
 		dispatch({ type: FETCH_RESPUESTAS_SUCCESS, payload: data });
 	} catch (error) {
 		dispatch({
 			type: FETCH_RESPUESTAS_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
+};
+
+export const fetchAuditoriaDetails = (sucursal: string) => async (dispatch: any, getState: any) => {
+	try {
+		dispatch({ type: GET_AUDITORIA_REQUEST });
+		const { data } = await axiosInstance(`/api/sucursales/${sucursal}/auditoria/`, {
+			headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+		});
+
+		dispatch({ type: GET_AUDITORIA_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: GET_AUDITORIA_FAILED,
 			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
 		});
 	}
