@@ -73,16 +73,17 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 
     const respuestas = getState().respuestas;
     const user = getState().auth.user;
+    const auditoria = getState().auditoria.auditoria.id;
 
-    respuestas.forEach(async (r: any) => {
-      if (r.isAnswered)
+    respuestas.respuestas.forEach(async (r: any) => {
+      if (r.respuesta !== null || r.notas !== null)
         await axiosInstance.post(
           '/api/auditorias/respuesta/',
           {
             pregunta: r.pregunta,
             respuesta: r.respuesta,
-            auditoria: r.auditoria,
-            audio: r?.audio || null,
+            auditoria,
+            notas: r.notas ? r.notas : null,
             usuario: user.user_id,
           },
           {
@@ -113,7 +114,7 @@ export const fetchRespuestas = (auditoria: string) => async (
   try {
     dispatch({ type: FETCH_RESPUESTAS_REQUEST });
     const { data } = await axiosInstance(
-      `http://localhost:8000/api/auditorias/auditoria/${auditoria}/respuestas/`,
+      `/api/auditorias/auditoria/${auditoria}/respuestas/`,
       {
         headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
       }

@@ -16,11 +16,11 @@ import { File } from '@ionic-native/file';
 import { Media, MediaObject } from '@ionic-native/media';
 import { Base64 } from '@ionic-native/base64';
 
-import { NativeAudio } from '@ionic-native/native-audio/';
+// import { NativeAudio } from '@ionic-native/native-audio/';
 import { Plugins, CameraResultType } from '@capacitor/core';
 
 import './PreguntaAudio.css';
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 
 const fs = require('fs');
 const { Camera } = Plugins;
@@ -36,48 +36,52 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
   });
   const [photo, setPhoto] = useState<any>('');
   const [showModal, setShowModal] = useState(false);
-  const { auth } = useSelector((state: any) => state.auth);
+  const auth = useSelector((state: any) => state.auth);
+  const { preguntas } = useSelector((state: any) => state.preguntas);
 
-  const addAnswer = (value: string) => {
-    dispatch({
-      type: ADD_RESPUESTA_FIELD,
-      payload: { pregunta: preguntaId, audio: value },
-    });
-    //enrealidad esto se va a dar cuando vuelva el procesamiento del audio y va a hacer:
-    // dispatch({
-    //   type: ADD_RESPUESTA_FIELD,
-    //   payload: { pregunta: preguntaId, respuesta, notas },
-    // });
+  const addAnswer = (respuesta: string, notas: string) => {
+    const tipo = preguntas.find((p: any) => p.id === preguntaId).tipo;
+    if (tipo === 'Opciones' || tipo === 'Numerica') {
+      dispatch({
+        type: ADD_RESPUESTA_FIELD,
+        payload: { pregunta: preguntaId, notas },
+      });
+    } else {
+      dispatch({
+        type: ADD_RESPUESTA_FIELD,
+        payload: { pregunta: preguntaId, respuesta, notas },
+      });
+    }
   };
 
   // ESTO SE COMENTA PORQUE EN BROWSER NO COMPILA SI NO
-  // const file = File.createFile(
-  //   File.externalRootDirectory,
-  //   'myaudio.mp3',
-  //   true
-  // ).then((file) => {
-  //   setPath(file.toInternalURL());
-  // });
-  // const [mediaObj, setMediaObj] = useState<MediaObject>(
-  //   Media.create(
-  //     File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
-  //   )
-  // );
+  const file = File.createFile(
+    File.externalRootDirectory,
+    'myaudio.mp3',
+    true
+  ).then((file) => {
+    setPath(file.toInternalURL());
+  });
+  const [mediaObj, setMediaObj] = useState<MediaObject>(
+    Media.create(
+      File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
+    )
+  );
 
   const recordAudio = async () => {
-    // if (!activeAudio) {
-    //   mediaObj.startRecord();
-    // } else {
-    //   mediaObj.stopRecord();
-    //   mediaObj.release();
-    //   Base64.encodeFile(path)
-    //     .then((base64File: string) => {
-    //       setStatus(base64File);
-    //     })
-    //     .catch((err) => setStatus('FALSO TODO'));
-    //   // await Base64.encodeFile(path);
-    // }
-    // setActiveAudio(!activeAudio);
+    if (!activeAudio) {
+      mediaObj.startRecord();
+    } else {
+      mediaObj.stopRecord();
+      mediaObj.release();
+      Base64.encodeFile(path)
+        .then((base64File: string) => {
+          setStatus(base64File);
+        })
+        .catch((err) => setStatus('FALSO TODO'));
+      // await Base64.encodeFile(path);
+    }
+    setActiveAudio(!activeAudio);
   };
 
   const getBase64 = (file: any) => {
@@ -104,7 +108,6 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
     });
     const result = await getBase64(e.target.files[0]);
     setAudioFileHandler({ ...audioFileHandler, base64URL: result as string });
-    addAnswer(result as string);
   };
 
   const openModal = () => {
@@ -135,27 +138,28 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
     setPhoto(imageBase64);
   };
 
-  const processPhoto = async (photo: any) => {
-    // aca se va poner la photo en base64 y agregarla a la repsuesta
-    // const res = await getBase64(photo);
-    // console.log(photo);
-    // addAnswer(res.respuesta as string, res.notas as string);
+  const processPhoto = (photo: any) => {
+    // dispatch({
+    //   type: ADD_RESPUESTA_FIELD,
+    //   payload: { photo },
+    // });
   };
 
   const processAudio = async (audio: string) => {
-    // dispatch de una accion que tenga el audio y la pregunta
-    // const { data } = await axios.post(
-    //   `http://10.0.2.2:8000/api/auditorias/respuesta/1/transcripcion`,
-    //   {
-    //     audio,
-    //   },
-    //   {
-    //     headers: {
-    //       Authorization: `Token ${auth.user.token ?? ''}`,
-    //     },
-    //   }
-    // );
-    // console.log(data);
+    console.log(audio);
+    const { data } = await axiosInstance.post(
+      `/api/auditorias/respuesta/${1}/transcribir/`,
+      {
+        audio,
+      },
+      {
+        headers: {
+          Authorization: `Token ${auth.user.token ?? ''}`,
+        },
+      }
+    );
+
+    addAnswer(data.respuesta as string, data.notas as string);
     console.log(photo);
     setShowModal(false);
   };

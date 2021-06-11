@@ -41,14 +41,11 @@ export const fetchSucursal = (id: any) => async (
     let sucursal = getState().sucursal;
 
     if (!sucursal || sucursal.id !== id) {
-      const { data } = await axiosInstance(
-        `http://localhost:8000/api/sucursales/${id}/`,
-        {
-          headers: {
-            Authorization: `Token ${getState().auth.user.token ?? ''}`,
-          },
-        }
-      );
+      const { data } = await axiosInstance(`/api/sucursales/${id}/`, {
+        headers: {
+          Authorization: `Token ${getState().auth.user.token ?? ''}`,
+        },
+      });
       sucursal = data;
     }
 
