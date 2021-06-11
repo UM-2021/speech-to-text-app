@@ -16,5 +16,6 @@ router.register('incidente', views.IncidenteViewSet)
 app_name = 'auditoria'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('respuesta/<int:pk>/imagen/', views.ImagenView.as_view(), name="something")
 ]

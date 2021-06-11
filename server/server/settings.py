@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'auditoria',
     'sucursal',
 
-    'upload',
     'storages',
 ]
 
