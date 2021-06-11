@@ -1,17 +1,16 @@
 {
-  "appId": "io.idsii.redpagos",
-  "appName": "Redpagos",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "build",
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0
-    }
-  },
-  "cordova": {},
-  "server": {
-    "url": "http://192.168.0.108:8100",
-    "cleartext": true
-  }
+	"appId": "io.idsii.redpagos",
+	"appName": "Redpagos",
+	"bundledWebRuntime": false,
+	"npmClient": "npm",
+	"webDir": "build",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 0
+		}
+	},
+	"cordova": {},
+	"server": {
+		"allowNavigation": ["testpagos.tk"]
+	}
 }

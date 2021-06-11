@@ -39,13 +39,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
             is_auditoria = Auditoria.objects.filter(sucursal=sucursal, finalizada=False).exists()
 
             if is_auditoria:
-
-                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id) \
-                    .order_by('-fecha_creacion')[0]
-
-               
-
-
+                auditoria = Auditoria.objects.filter(sucursal__exact=sucursal_id).order_by('-fecha_creacion').first()
                 serializer2 = AuditoriaSerializer(auditoria, many=False)
                 return Response(serializer2.data, status=status.HTTP_201_CREATED)
 
@@ -113,6 +107,9 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     def transcribir(self, request, pk=None):
         audio = request.data.get("audio")
         audio = audio.replace('data:audio/mpeg;base64,', '')
+        missing_padding = len(audio) % 4
+        if missing_padding:
+            audio += b'=' * (4 - missing_padding)
         audio_data = b64decode(audio)
         nombre_audio = str(datetime.now())  # todo: cambiar nombre
         file = ContentFile(content=audio_data, name=f'{nombre_audio}.mp3')
@@ -127,7 +124,6 @@ class RespuestaViewSet(viewsets.ModelViewSet):
            # path = default_storage.save('files/audios_de_respuesta/', file)
         # media = MediaSerializer(data={'url': path, 'respuesta': pk, 'tipo': 'Audio'})
         """
-        print(resVector)
         if resVector['note'] is not None:
             return Response({'respuesta': resVector['response'], 'notas': resVector['note']}, status=status.HTTP_200_OK)
         return Response({'respuesta': resVector['response']}, status=status.HTTP_200_OK)
