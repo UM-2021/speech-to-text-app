@@ -54,6 +54,13 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
     }
   };
 
+  const addPhotoToAnswer = (photo: string) => {
+    dispatch({
+      type: ADD_RESPUESTA_FIELD,
+      payload: { pregunta: preguntaId, photo },
+    });
+  };
+
   // ESTO SE COMENTA PORQUE EN BROWSER NO COMPILA SI NO
   // const file = File.createFile(
   //   File.externalRootDirectory,
@@ -134,15 +141,8 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
       resultType: CameraResultType.Base64,
     });
     var imageBase64 = image.base64String;
-    console.log(imageBase64);
+    addPhotoToAnswer(imageBase64 as string);
     setPhoto(imageBase64);
-  };
-
-  const processPhoto = (photo: any) => {
-    // dispatch({
-    //   type: ADD_RESPUESTA_FIELD,
-    //   payload: { photo },
-    // });
   };
 
   const processAudio = async (audio: string) => {
@@ -158,9 +158,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
         },
       }
     );
-
     addAnswer(data.respuesta as string, data.notas as string);
-    console.log(photo);
     setShowModal(false);
   };
 

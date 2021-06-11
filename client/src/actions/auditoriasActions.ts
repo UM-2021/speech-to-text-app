@@ -76,8 +76,9 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
     const auditoria = getState().auditoria.auditoria.id;
 
     respuestas.respuestas.forEach(async (r: any) => {
-      if (r.respuesta !== null || r.notas !== null)
-        await axiosInstance.post(
+      let resId;
+      if (r.respuesta !== null || r.notas !== null) {
+        const { data } = await axiosInstance.post(
           '/api/auditorias/respuesta/',
           {
             pregunta: r.pregunta,
@@ -85,6 +86,21 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
             auditoria,
             notas: r.notas ? r.notas : null,
             usuario: user.user_id,
+          },
+          {
+            headers: {
+              Authorization: `Token ${getState().auth.user.token ?? ''}`,
+            },
+          }
+        );
+        resId = data.id;
+      }
+
+      if (r.photo !== null)
+        await axiosInstance.post(
+          `/api/auditorias/respuesta/${resId}/imagen`,
+          {
+            photo: r.photo,
           },
           {
             headers: {
