@@ -8,7 +8,7 @@ from .models import Upload, UploadPrivate
 def image_upload(request):
     if request.method == 'POST':
         image_file = request.FILES['image_file']
-        image_type = request.FILES.get('image_type', 'public');
+        image_type = request.FILES.get('image_type', 'public')
         if settings.USE_S3:
             if image_type == 'private':
                 upload = UploadPrivate(file=image_file)
