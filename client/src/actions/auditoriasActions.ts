@@ -95,8 +95,6 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
         );
         resId = data.id;
       }
-      console.log(r);
-      console.log(r.photo);
       if (r.photo !== null)
         await axiosInstance.post(
           `/api/auditorias/respuesta/${resId}/imagen/`,
