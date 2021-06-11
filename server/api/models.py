@@ -31,6 +31,7 @@ class Sucursal(models.Model):
     coord_lng = models.FloatField(null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
+    path_imagen_url = models.CharField(max_length=220, null=True)
 
     def __str__(self):
         return f'Sucursal: {self.nombre} - {self.direccion}.'
