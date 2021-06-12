@@ -1,5 +1,12 @@
 import { combineReducers } from 'redux';
-import { preguntasReducer, auditoriaReducer, respuestasReducer, respuestaReducer, auditoriaDetailsReducer } from './auditoriasReducer';
+import {
+	preguntasReducer,
+	auditoriaReducer,
+	respuestasReducer,
+	respuestaReducer,
+	auditoriaDetailsReducer,
+	sendRespuestasReducer
+} from './auditoriasReducer';
 import { authReducer } from './authReducer';
 import { sucursalesReducer, sucursalReducer } from './sucursalesReducer';
 
@@ -11,5 +18,6 @@ export default combineReducers({
 	preguntas: preguntasReducer,
 	respuestas: respuestasReducer,
 	respuesta: respuestaReducer,
+	sendRespuestas: sendRespuestasReducer,
 	auth: authReducer
 });

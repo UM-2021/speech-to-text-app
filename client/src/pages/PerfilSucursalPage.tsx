@@ -13,11 +13,12 @@ const PerfilSucursalPage: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 	let history = useHistory();
 	const dispatch = useDispatch();
 
-	const { auditoria, loading, error } = useSelector((state: any) => state.auditoriaDetails);
+	const { auditoria, loading, success, error } = useSelector((state: any) => state.auditoriaDetails);
 
 	useEffect(() => {
-		dispatch(fetchAuditoriaDetails(match.params.id));
-	}, [dispatch, match]);
+		if (!success) dispatch(fetchAuditoriaDetails(match.params.id));
+	}, [dispatch, match.params.id, success]);
+
 	return (
 		<PageWrapper>
 			<IonHeader>

@@ -65,17 +65,20 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 	try {
 		dispatch({ type: SEND_RESPUESTAS_REQUEST });
 
-		const respuestas = getState().respuestas;
-		const user = getState().auth.user;
+		const { respuestas } = getState().respuestas;
+		const { auditoria } = getState().auditoria;
+		const { user } = getState().auth;
+
+		console.log(respuestas);
 
 		respuestas.forEach(async (r: any) => {
-			if (r.isAnswered)
-				await axiosInstance.post(
-					'/api/auditorias/respuesta/',
+			if (r.id) {
+				await axiosInstance.put(
+					`/api/auditorias/respuesta/${r.id}/`,
 					{
 						pregunta: r.pregunta,
 						respuesta: r.respuesta,
-						auditoria: r.auditoria,
+						auditoria: auditoria.id,
 						audio: r?.audio || null,
 						usuario: user.user_id
 					},
@@ -85,6 +88,23 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 						}
 					}
 				);
+			} else {
+				await axiosInstance.post(
+					'/api/auditorias/respuesta/',
+					{
+						pregunta: r.pregunta,
+						respuesta: r.respuesta,
+						auditoria: auditoria.id,
+						audio: r?.audio || null,
+						usuario: user.user_id
+					},
+					{
+						headers: {
+							Authorization: `Token ${getState().auth.user.token ?? ''}`
+						}
+					}
+				);
+			}
 		});
 
 		dispatch({ type: SEND_RESPUESTAS_SUCCESS });

@@ -1,16 +1,9 @@
 import { IonIcon, IonItem, IonLabel, IonList } from '@ionic/react';
 import { arrowForwardOutline, checkmark, close } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
-import { fetchAuditoria, fetchPreguntas, fetchRespuestas } from '../actions/auditoriasActions';
-import {
-	CREATE_OR_GET_AUDITORIA_RESET,
-	FETCH_PREGUNTAS_RESET,
-	RESPUESTAS_RESET,
-	SET_RESPUESTA
-} from '../actions/types';
-import Loader from './Loader';
+import { SET_RESPUESTA } from '../actions/types';
 
 const RespuestasAuditoriaList: React.FC<{
 	auditoria: string;

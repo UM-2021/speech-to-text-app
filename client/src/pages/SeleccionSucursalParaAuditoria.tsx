@@ -61,7 +61,7 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 						{sucursales.map((s: any) => (
 							<Link
 								key={s.id}
-								to={`/auditoria/datos/${s.id}`}
+								to={`/auditoria/${s.id}/datos`}
 								style={{ textDecoration: 'none' }}>
 								<IonItem>
 									{s.nombre}

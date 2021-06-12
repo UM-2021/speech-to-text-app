@@ -30,7 +30,7 @@ const DatosSucursal: React.FC<RouteComponentProps<{ id: string }>> = ({ match })
 				<IonButton
 					color='primary'
 					className='block-btn'
-					onClick={() => history.push(`/auditoria/${match.params.id}`)}>
+					onClick={() => history.push(`/auditoria/${match.params.id}/responder`)}>
 					Comenzar
 				</IonButton>
 			</IonFooter>

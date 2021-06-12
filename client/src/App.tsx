@@ -44,6 +44,7 @@ import DatosSucursal from './pages/DatosSucursal';
 import PerfilSucursalPage from './pages/PerfilSucursalPage';
 import Auditoria from './pages/Auditoria';
 import RespuestaAuditoria from './pages/RespuestaAuditoria';
+import ResultadoAuditoria from './pages/ResultadoAuditoria';
 
 const App: React.FC = () => {
 	const { user } = useSelector((state: any) => state.auth);
@@ -61,9 +62,10 @@ const App: React.FC = () => {
 						<Route exact path='/sucursal' component={Sucursales} />
 						<Route exact path='/respuesta' component={RespuestaAuditoria} />
 						<Route exact path='/incidentes' component={Incidentes} />
-						<Route exact path='/auditoria/:id' component={PreguntasAuditoria} />
-						<Route exact path='/auditoria/datos/:id' component={DatosSucursal} />
-						<Route exact path='/auditoria/nueva' component={SeleccionSucursalParaAuditoria} />
+						<Route exact path='/auditoria/:id/datos' component={DatosSucursal} />
+						<Route exact path='/auditoria/:id/responder' component={PreguntasAuditoria} />
+						<Route exact path='/auditoria/:id/resultado' component={ResultadoAuditoria} />
+						<Route exact path='/auditoria' component={SeleccionSucursalParaAuditoria} />
 						<Route exact path='/'>
 							<Redirect to='/home' />
 						</Route>

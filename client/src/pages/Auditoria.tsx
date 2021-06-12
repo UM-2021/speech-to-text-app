@@ -3,7 +3,12 @@ import { arrowBack } from 'ionicons/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { fetchAuditoria, fetchPreguntas, fetchRespuestas } from '../actions/auditoriasActions';
+import {
+	fetchAuditoria,
+	fetchAuditoriaDetails,
+	fetchPreguntas,
+	fetchRespuestas
+} from '../actions/auditoriasActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import PageWrapper from '../components/PageWrapper';
@@ -15,7 +20,7 @@ const Auditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => 
 	const sucursalId = match.params.id;
 
 	const { auditoria, loading: loadingAuditoria, success, error: errorAuditoria } = useSelector(
-		(state: any) => state.auditoria
+		(state: any) => state.auditoriaDetails
 	);
 	const { preguntas, loading: loadingPreguntas, error: errorPreguntas } = useSelector(
 		(state: any) => state.preguntas
@@ -31,7 +36,7 @@ const Auditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => 
 	}, [dispatch, auditoria, success]);
 
 	useEffect(() => {
-		dispatch(fetchAuditoria(sucursalId));
+		dispatch(fetchAuditoriaDetails(sucursalId));
 		dispatch(fetchPreguntas());
 	}, [dispatch, sucursalId]);
 
@@ -41,7 +46,11 @@ const Auditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => 
 			<IonHeader>
 				<IonToolbar>
 					<IonButtons slot='start'>
-						<IonButton color='secondary' onClick={() => history.goBack()}>
+						<IonButton
+							color='secondary'
+							onClick={() => {
+								history.goBack();
+							}}>
 							<IonIcon icon={arrowBack} />
 						</IonButton>
 					</IonButtons>

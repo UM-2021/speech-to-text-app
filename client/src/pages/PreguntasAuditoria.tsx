@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	IonContent,
 	IonHeader,
@@ -8,7 +8,8 @@ import {
 	IonSlide,
 	IonButtons,
 	IonButton,
-	IonToast
+	IonToast,
+	IonAlert
 } from '@ionic/react';
 
 import './PreguntasAuditoria.css';
@@ -22,10 +23,15 @@ import {
 	fetchRespuestas,
 	postRespuestas
 } from '../actions/auditoriasActions';
-import { CREATE_OR_GET_AUDITORIA_RESET, FETCH_PREGUNTAS_RESET, RESPUESTAS_RESET } from '../actions/types';
 import PageWrapper from '../components/PageWrapper';
 import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
 import Message from '../components/Message';
+import {
+	CREATE_OR_GET_AUDITORIA_RESET,
+	FETCH_SUCURSAL_RESET,
+	RESPUESTAS_RESET,
+	SEND_RESPUESTAS_RESET
+} from '../actions/types';
 
 const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
 	let history = useHistory();
@@ -42,8 +48,23 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 		(state: any) => state.respuestas
 	);
 
-	const [submitted, setSubmitted] = useState(false);
-	const [showLoader, setShowLoader] = useState(false);
+	const {
+		success: sendRespuestasSuccess,
+		loading: loadingSendRespuestas,
+		error: errorSendRespuestas
+	} = useSelector((state: any) => state.sendRespuestas);
+
+	const [showAlert, setShowAlert] = useState(false);
+
+	useEffect(
+		() => () => {
+			dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
+			dispatch({ type: RESPUESTAS_RESET });
+			dispatch({ type: FETCH_SUCURSAL_RESET });
+			dispatch({ type: SEND_RESPUESTAS_RESET });
+		},
+		[dispatch]
+	);
 
 	useEffect(() => {
 		if (success) {
@@ -56,22 +77,17 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 		dispatch(fetchPreguntas());
 	}, [dispatch, sucursalId]);
 
+	useEffect(() => {
+		if (sendRespuestasSuccess) history.push(`/auditoria/${auditoria.id}/resultado`);
+	}, [dispatch, sendRespuestasSuccess, history, auditoria]);
+
 	const onExit = () => {
-		history.goBack();
-		dispatch({ type: RESPUESTAS_RESET });
-		dispatch({ type: FETCH_PREGUNTAS_RESET });
-		dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
+		history.push('/home');
 	};
 
 	const onSubmit = (e: any) => {
 		e.preventDefault();
-		setShowLoader(true);
 		dispatch(postRespuestas());
-		setTimeout(() => {
-			setSubmitted(true);
-			setShowLoader(false);
-			history.push('/home');
-		}, 1500);
 	};
 
 	if (loadingPreguntas || loadingRespuestas || loadingAuditoria) return <Loader />;
@@ -82,15 +98,34 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 					<IonToolbar>
 						<IonTitle>Nueva Auditoría</IonTitle>
 						<IonButtons slot='end'>
-							<IonButton color='danger' onClick={onExit}>
+							<IonButton color='danger' onClick={() => setShowAlert(true)}>
 								Salir
 							</IonButton>
 						</IonButtons>
 					</IonToolbar>
 				</IonHeader>
 				<IonContent>
+					<IonAlert
+						isOpen={showAlert}
+						onDidDismiss={() => setShowAlert(false)}
+						header={'¿Estas seguro?'}
+						message={'Todos los cambios no guardados se perderan.'}
+						buttons={[
+							{
+								text: 'Cancelar',
+								role: 'cancel',
+								cssClass: 'secondary'
+							},
+							{
+								text: 'Sí!',
+								handler: () => {
+									onExit();
+								}
+							}
+						]}
+					/>
 					<IonToast
-						isOpen={submitted}
+						isOpen={sendRespuestasSuccess}
 						position='top'
 						message='Auditoría guardada satisfactoriamente!'
 						duration={3000}
@@ -98,6 +133,11 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 					<IonHeader collapse='condense'>
 						<IonToolbar>
 							<IonTitle size='large'>Nueva Auditoría</IonTitle>
+							<IonButtons slot='end'>
+								<IonButton color='danger' onClick={() => setShowAlert(true)}>
+									Salir
+								</IonButton>
+							</IonButtons>
 						</IonToolbar>
 					</IonHeader>
 					{errorPreguntas ? (
@@ -108,44 +148,49 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 						<Message color='danger'>{errorRespuestas}</Message>
 					) : (
 						<IonSlides
-							pager={true}
+							key='slideruniquekey'
+							pager
 							options={{
 								initialSlide: 0,
 								speed: 400
 							}}>
-							{preguntas.map((p: any) => (
-								<IonSlide key={p.id}>
-									<Pregunta
-										auditoriaId={auditoria.id}
-										pregunta={p.pregunta}
-										id={p.id}
-										tipo={p.tipo}
-										opciones={p.opciones}
-										categoria={p.categoria}
-										respuesta={
-											respuestas.filter((r: any) => r.pregunta === p.id)[0] || {}
-										}
-										respuestaCorrecta={p.respuesta_correcta}
-									/>
-								</IonSlide>
-							))}
-
-							<IonSlide>
-								{showLoader && success ? (
+							{preguntas.length > 0 &&
+								preguntas.map((p: any) => (
+									<IonSlide key={p.id}>
+										<Pregunta
+											auditoriaId={auditoria.id}
+											pregunta={p.pregunta}
+											id={p.id}
+											tipo={p.tipo}
+											opciones={p.opciones}
+											categoria={p.categoria}
+											respuesta={
+												respuestas.filter((r: any) => r.pregunta === p.id)[0] || {}
+											}
+											respuestaCorrecta={p.respuesta_correcta}
+										/>
+									</IonSlide>
+								))}
+							<IonSlide key='uniquekey'>
+								{loadingSendRespuestas && success ? (
 									<Loader />
+								) : errorSendRespuestas ? (
+									<Message color='danger'>{errorSendRespuestas}</Message>
 								) : (
-									<div>
+									<div className='flex-result ion-margin-vertical'>
+										<IonButton
+											expand='block'
+											size='large'
+											className='ion-margin'
+											color='primary'
+											onClick={onSubmit}>
+											Enviar
+										</IonButton>
 										<RespuestasAuditoriaList
 											auditoria={auditoria.id}
 											preguntas={preguntas}
 											respuestas={respuestas}
 										/>
-										<IonButton expand='block' color='primary' onClick={onSubmit}>
-											Enviar
-										</IonButton>
-										<IonButton expand='block' color='danger'>
-											Cancelar
-										</IonButton>
 									</div>
 								)}
 							</IonSlide>
@@ -157,19 +202,3 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 };
 
 export default PreguntasAuditoria;
-
-function useTraceUpdate(props: any) {
-	const prev = useRef(props);
-	useEffect(() => {
-		const changedProps = Object.entries(props).reduce((ps: any, [k, v]) => {
-			if (prev.current[k] !== v) {
-				ps[k] = [prev.current[k], v];
-			}
-			return ps;
-		}, {});
-		if (Object.keys(changedProps).length > 0) {
-			console.log('Changed props:', changedProps);
-		}
-		prev.current = props;
-	});
-}
