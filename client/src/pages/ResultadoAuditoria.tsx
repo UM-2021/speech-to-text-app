@@ -32,7 +32,6 @@ const ResultadoAuditoria: React.FC = () => {
 	const dispatch = useDispatch();
 
 	const { user } = useSelector((state: any) => state.auth);
-	// WIP
 	const { preguntas } = useSelector((state: any) => state.preguntas);
 	const { respuestas } = useSelector((state: any) => state.respuestas);
 
@@ -45,7 +44,7 @@ const ResultadoAuditoria: React.FC = () => {
 		dispatch({ type: RESPUESTAS_RESET });
 		dispatch({ type: RESPUESTA_RESET });
 		dispatch({ type: GET_AUDITORIA_RESET });
-		history.push('/home');
+		history.replace('/home');
 	};
 
 	useEffect(() => {

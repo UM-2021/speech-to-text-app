@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	IonContent,
 	IonHeader,
@@ -26,12 +26,6 @@ import {
 import PageWrapper from '../components/PageWrapper';
 import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
 import Message from '../components/Message';
-import {
-	CREATE_OR_GET_AUDITORIA_RESET,
-	FETCH_SUCURSAL_RESET,
-	RESPUESTAS_RESET,
-	SEND_RESPUESTAS_RESET
-} from '../actions/types';
 
 const PreguntasAuditoria: React.FC = () => {
 	let history = useHistory();
@@ -56,46 +50,24 @@ const PreguntasAuditoria: React.FC = () => {
 	} = useSelector((state: any) => state.sendRespuestas);
 
 	const [showAlert, setShowAlert] = useState(false);
-	const slider = useRef(document.createElement('ion-slides'));
 
 	useEffect(() => {
-		const currentSlider = slider.current;
-		return () => {
-			console.log('Workaround ...');
-			const workaround = async () => {
-				let swiper = await currentSlider.getSwiper();
-				swiper.removeAllSlides();
-				swiper.update();
-			};
-			workaround();
-			dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
-			dispatch({ type: RESPUESTAS_RESET });
-			dispatch({ type: FETCH_SUCURSAL_RESET });
-			dispatch({ type: SEND_RESPUESTAS_RESET });
-		};
-	}, [dispatch]);
-
-	useEffect(() => {
-		console.log('Effect 2');
 		if (success) {
-			console.log('Effect 2 success');
 			dispatch(fetchRespuestas(auditoria.id));
 		}
 	}, [dispatch, auditoria?.id, success]);
 
 	useEffect(() => {
-		console.log('Effect 3');
 		dispatch(fetchAuditoria(sucursalId));
 		dispatch(fetchPreguntas());
 	}, [dispatch, sucursalId]);
 
 	useEffect(() => {
-		console.log('Effect 4');
-		if (sendRespuestasSuccess) history.push(`/auditoria/${auditoria.id}/resultado`);
+		if (sendRespuestasSuccess) history.replace(`/auditoria/${auditoria.id}/resultado`);
 	}, [dispatch, sendRespuestasSuccess, history, auditoria?.id]);
 
 	const onExit = () => {
-		history.push('/home');
+		history.replace('/home');
 	};
 
 	const onSubmit = (e: any) => {
@@ -162,8 +134,6 @@ const PreguntasAuditoria: React.FC = () => {
 						<Message color='danger'>{errorRespuestas}</Message>
 					) : (
 						<IonSlides
-							ref={slider}
-							key='slideruniquekey'
 							pager
 							options={{
 								initialSlide: 0,
@@ -171,9 +141,9 @@ const PreguntasAuditoria: React.FC = () => {
 							}}>
 							{preguntas.length > 0 &&
 								preguntas.map((p: any) => (
-									<IonSlide key={`slide-${p.id}`}>
+									<IonSlide key={p.id}>
 										<Pregunta
-											key={`slide-${p.id}`}
+											key={p.id}
 											auditoriaId={auditoria.id}
 											pregunta={p.pregunta}
 											id={p.id}

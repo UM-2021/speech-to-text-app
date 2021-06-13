@@ -32,7 +32,7 @@ const DatosSucursal: React.FC = () => {
 				<IonButton
 					color='primary'
 					className='block-btn'
-					onClick={() => history.push(`/auditoria/${id}/responder`)}>
+					onClick={() => history.replace(`/auditoria/${id}/responder`)}>
 					Comenzar
 				</IonButton>
 			</IonFooter>

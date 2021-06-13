@@ -14,11 +14,11 @@ const PerfilSucursalPage: React.FC = () => {
 	const dispatch = useDispatch();
 	let { id } = useParams<{ id: string }>();
 
-	const { auditoria, loading, success, error } = useSelector((state: any) => state.auditoriaDetails);
+	const { auditoria, loading, error } = useSelector((state: any) => state.auditoriaDetails);
 
 	useEffect(() => {
-		if (!success) dispatch(fetchAuditoriaDetails(id));
-	}, [dispatch, id, success]);
+		dispatch(fetchAuditoriaDetails(id));
+	}, [dispatch, id]);
 
 	return (
 		<PageWrapper>
@@ -42,7 +42,9 @@ const PerfilSucursalPage: React.FC = () => {
 					<IonToolbar>
 						<IonTitle size='large'>SAG</IonTitle>
 						<IonButtons slot='end'>
-							<IonButton color='primary'>Ver Auditoría</IonButton>
+							<Link to={`/sucursal/${id}/auditoria`}>
+								<IonButton color='secondary'>Ver Auditoría</IonButton>
+							</Link>
 						</IonButtons>
 					</IonToolbar>
 				</IonHeader>

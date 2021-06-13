@@ -32,11 +32,11 @@ const Home: React.FC = () => {
 	const { user } = useSelector((state: any) => state.auth);
 
 	useEffect(() => {
+		dispatch(fetchSucursales());
 		dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
 		dispatch({ type: RESPUESTAS_RESET });
 		dispatch({ type: FETCH_SUCURSAL_RESET });
 		dispatch({ type: SEND_RESPUESTAS_RESET });
-		dispatch(fetchSucursales());
 	}, [dispatch]);
 
 	return (
@@ -73,15 +73,15 @@ const Home: React.FC = () => {
 					<div className='ion-margin list-container'>
 						<h3 className='ion-margin list-header'>SAG Recientes</h3>
 						<IonList lines='full' className='list'>
-							{sucursales.map((a: any) => (
+							{sucursales.map((s: any) => (
 								<Link
-									key={a.id}
-									to={`/sucursal/${a.id}/perfil`}
+									key={s.id}
+									to={`/sucursal/${s.id}/perfil`}
 									style={{ textDecoration: 'none' }}>
 									<IonItem className='list-item' button>
 										<IonIcon slot='start' icon={storefrontOutline} />
 										<IonLabel>
-											<h3>{a.nombre}</h3>
+											<h3>{s.nombre}</h3>
 										</IonLabel>
 									</IonItem>
 								</Link>

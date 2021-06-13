@@ -47,7 +47,6 @@ import RespuestaAuditoria from './pages/RespuestaAuditoria';
 import ResultadoAuditoria from './pages/ResultadoAuditoria';
 import {
 	CREATE_OR_GET_AUDITORIA_RESET,
-	FETCH_SUCURSAL_RESET,
 	GET_AUDITORIA_RESET,
 	RESPUESTAS_RESET,
 	RESPUESTA_RESET,
@@ -59,8 +58,6 @@ const App: React.FC = () => {
 	const dispatch = useDispatch();
 
 	const cleanup = () => {
-		console.log('Cleanup...');
-		dispatch({ type: FETCH_SUCURSAL_RESET });
 		dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
 		dispatch({ type: SEND_RESPUESTAS_RESET });
 		dispatch({ type: RESPUESTAS_RESET });

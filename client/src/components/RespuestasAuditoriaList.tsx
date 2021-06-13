@@ -1,5 +1,5 @@
 import { IonIcon, IonItem, IonLabel, IonList } from '@ionic/react';
-import { arrowForwardOutline, atCircle, checkmark, close, helpCircleOutline } from 'ionicons/icons';
+import { arrowForwardOutline, checkmark, close, helpCircleOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';

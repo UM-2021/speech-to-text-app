@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import { fetchAuditoriaDetails, fetchPreguntas, fetchRespuestas } from '../actions/auditoriasActions';
+import { RESPUESTAS_RESET } from '../actions/types';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import PageWrapper from '../components/PageWrapper';
@@ -26,7 +27,7 @@ const Auditoria: React.FC = () => {
 	);
 
 	useEffect(() => {
-		if (success) {
+		if (success && Object.keys(auditoria).includes('id')) {
 			dispatch(fetchRespuestas(auditoria.id));
 		}
 	}, [dispatch, auditoria, success]);
@@ -34,9 +35,11 @@ const Auditoria: React.FC = () => {
 	useEffect(() => {
 		dispatch(fetchAuditoriaDetails(sucursalId));
 		dispatch(fetchPreguntas());
+		return () => {
+			dispatch({ type: RESPUESTAS_RESET });
+		};
 	}, [dispatch, sucursalId]);
 
-	if (loadingAuditoria || loadingPreguntas || loadingRespuestas) return <Loader />;
 	return (
 		<PageWrapper>
 			<IonHeader>
@@ -59,15 +62,22 @@ const Auditoria: React.FC = () => {
 						<IonTitle size='large'>Auditoría</IonTitle>
 					</IonToolbar>
 				</IonHeader>
-				{errorPreguntas && <Message color='danger'>{errorPreguntas}</Message>}
-				{errorAuditoria && <Message color='danger'>{errorAuditoria}</Message>}
-				{errorRespuestas && <Message color='danger'>{errorRespuestas}</Message>}
-				{success && (
+				{loadingAuditoria || loadingPreguntas || loadingRespuestas ? (
+					<Loader />
+				) : errorPreguntas ? (
+					<Message color='danger'>{errorPreguntas}</Message>
+				) : errorAuditoria ? (
+					<Message color='danger'>{errorAuditoria}</Message>
+				) : errorRespuestas ? (
+					<Message color='danger'>{errorRespuestas}</Message>
+				) : success ? (
 					<RespuestasAuditoriaList
 						preguntas={preguntas}
 						respuestas={respuestas}
 						auditoria={auditoria.id}
 					/>
+				) : (
+					<Message color='warning'>Error inesperado.</Message>
 				)}
 			</IonContent>
 		</PageWrapper>
