@@ -1,7 +1,8 @@
 # speect-to-text-app
+
 Proyecto de la materia Ingenieria de Software II.
 
-## Testing en el celular pero con el servidor local.
+## Testing en el celular pero con el servidor local
 
 Para poder acceder al servidor de AWS desde el celular tuve que poner que siempre que la aplicacion se este corriendo desde un celular. Para poder testear con el server local hay que hacer un cambio manual a un archivo.
 
