@@ -1,5 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
 	IonApp,
 	IonBadge,
@@ -45,9 +45,35 @@ import PerfilSucursalPage from './pages/PerfilSucursalPage';
 import Auditoria from './pages/Auditoria';
 import RespuestaAuditoria from './pages/RespuestaAuditoria';
 import ResultadoAuditoria from './pages/ResultadoAuditoria';
+import {
+	CREATE_OR_GET_AUDITORIA_RESET,
+	FETCH_SUCURSAL_RESET,
+	GET_AUDITORIA_RESET,
+	RESPUESTAS_RESET,
+	RESPUESTA_RESET,
+	SEND_RESPUESTAS_RESET
+} from './actions/types';
 
 const App: React.FC = () => {
 	const { user } = useSelector((state: any) => state.auth);
+	const dispatch = useDispatch();
+
+	const cleanup = () => {
+		console.log('Cleanup...');
+		dispatch({ type: FETCH_SUCURSAL_RESET });
+		dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
+		dispatch({ type: SEND_RESPUESTAS_RESET });
+		dispatch({ type: RESPUESTAS_RESET });
+		dispatch({ type: RESPUESTA_RESET });
+		dispatch({ type: GET_AUDITORIA_RESET });
+	};
+
+	const tabChange = (e: any) => {
+		if (e.detail.tab === 'home') {
+			cleanup();
+		}
+	};
+
 	return (
 		<IonApp>
 			<IonReactRouter>
@@ -56,25 +82,43 @@ const App: React.FC = () => {
 						<Route exact path='/login'>
 							<Login />
 						</Route>
-						<Route exact path='/home' component={Home} />
-						<Route exact path='/sucursal/:id/perfil' component={PerfilSucursalPage} />
-						<Route exact path='/sucursal/:id/auditoria' component={Auditoria} />
-						<Route exact path='/sucursal' component={Sucursales} />
-						<Route exact path='/respuesta' component={RespuestaAuditoria} />
-						<Route exact path='/incidentes' component={Incidentes} />
-						<Route exact path='/auditoria/:id/datos' component={DatosSucursal} />
-						<Route exact path='/auditoria/:id/responder' component={PreguntasAuditoria} />
-						<Route exact path='/auditoria/:id/resultado' component={ResultadoAuditoria} />
-						<Route exact path='/auditoria' component={SeleccionSucursalParaAuditoria} />
-						<Route exact path='/'>
-							<Redirect to='/home' />
+						<Route exact path='/home'>
+							<Home />
 						</Route>
+						<Route exact path='/sucursal/:id/perfil'>
+							<PerfilSucursalPage />
+						</Route>
+						<Route exact path='/sucursal/:id/auditoria'>
+							<Auditoria />
+						</Route>
+						<Route exact path='/sucursal'>
+							<Sucursales />
+						</Route>
+						<Route exact path='/respuesta'>
+							<RespuestaAuditoria />
+						</Route>
+						<Route exact path='/incidentes'>
+							<Incidentes />
+						</Route>
+						<Route exact path='/auditoria/:id/datos'>
+							<DatosSucursal />
+						</Route>
+						<Route exact path='/auditoria/:id/responder'>
+							<PreguntasAuditoria />
+						</Route>
+						<Route exact path='/auditoria/:id/resultado'>
+							<ResultadoAuditoria />
+						</Route>
+						<Route exact path='/auditoria'>
+							<SeleccionSucursalParaAuditoria />
+						</Route>
+						<Redirect exact from='/' to='/home' />
 					</IonRouterOutlet>
 					{!user ? (
 						<IonTabBar />
 					) : (
-						<IonTabBar slot='bottom' translucent={true}>
-							<IonTabButton tab='home' href='/home'>
+						<IonTabBar slot='bottom' translucent={true} onIonTabsWillChange={tabChange}>
+							<IonTabButton tab='home' href='/home' onClick={cleanup}>
 								<IonIcon icon={homeOutline} />
 								<IonLabel>Inicio</IonLabel>
 							</IonTabButton>

@@ -22,8 +22,8 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 	else
 		return (
 			<div>
-				<div className='center-content avatar-cont'>
-					<IonAvatar className='center-content avatar'>
+				<div className='center-content avatar-cont-suc'>
+					<IonAvatar className='center-content avatar-suc'>
 						<IonIcon color='primary' icon={storefrontOutline} />
 					</IonAvatar>
 				</div>

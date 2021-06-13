@@ -2,22 +2,18 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToo
 import { arrowBack } from 'ionicons/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RouteComponentProps, useHistory } from 'react-router';
-import {
-	fetchAuditoria,
-	fetchAuditoriaDetails,
-	fetchPreguntas,
-	fetchRespuestas
-} from '../actions/auditoriasActions';
+import { useHistory, useParams } from 'react-router';
+import { fetchAuditoriaDetails, fetchPreguntas, fetchRespuestas } from '../actions/auditoriasActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import PageWrapper from '../components/PageWrapper';
 import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
 
-const Auditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
+const Auditoria: React.FC = () => {
 	let history = useHistory();
 	const dispatch = useDispatch();
-	const sucursalId = match.params.id;
+	let { id } = useParams<{ id: string }>();
+	const sucursalId = id;
 
 	const { auditoria, loading: loadingAuditoria, success, error: errorAuditoria } = useSelector(
 		(state: any) => state.auditoriaDetails

@@ -69,8 +69,6 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 		const { auditoria } = getState().auditoria;
 		const { user } = getState().auth;
 
-		console.log(respuestas);
-
 		respuestas.forEach(async (r: any) => {
 			if (r.id) {
 				await axiosInstance.put(
@@ -108,7 +106,6 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 		});
 
 		dispatch({ type: SEND_RESPUESTAS_SUCCESS });
-		dispatch({ type: RESPUESTAS_RESET });
 	} catch (error) {
 		dispatch({
 			type: SEND_RESPUESTAS_FAILED,

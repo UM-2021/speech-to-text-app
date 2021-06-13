@@ -1,13 +1,15 @@
 import React from 'react';
-import { IonContent, IonButton, IonPage, IonHeader, IonTitle, IonToolbar, IonFooter } from '@ionic/react';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { IonContent, IonButton, IonHeader, IonTitle, IonToolbar, IonFooter } from '@ionic/react';
+import { useHistory, useParams } from 'react-router-dom';
 
 import './DatosSucursal.css';
 import PerfilSucursal from '../components/PerfilSucursal';
 import PageWrapper from '../components/PageWrapper';
 
-const DatosSucursal: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
+const DatosSucursal: React.FC = () => {
 	let history = useHistory();
+	let { id } = useParams<{ id: string }>();
+
 	return (
 		<PageWrapper>
 			<IonHeader>
@@ -21,7 +23,7 @@ const DatosSucursal: React.FC<RouteComponentProps<{ id: string }>> = ({ match })
 						<IonTitle size='large'>Nueva Auditoría</IonTitle>
 					</IonToolbar>
 				</IonHeader>
-				<PerfilSucursal id={match.params.id} />
+				<PerfilSucursal id={id} />
 			</IonContent>
 			<IonFooter className='center-content'>
 				<IonButton color='danger' className='block-btn' onClick={() => history.goBack()}>
@@ -30,7 +32,7 @@ const DatosSucursal: React.FC<RouteComponentProps<{ id: string }>> = ({ match })
 				<IonButton
 					color='primary'
 					className='block-btn'
-					onClick={() => history.push(`/auditoria/${match.params.id}/responder`)}>
+					onClick={() => history.push(`/auditoria/${id}/responder`)}>
 					Comenzar
 				</IonButton>
 			</IonFooter>

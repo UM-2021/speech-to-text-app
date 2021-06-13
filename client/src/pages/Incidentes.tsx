@@ -5,7 +5,6 @@ import {
 	IonItem,
 	IonLabel,
 	IonList,
-	IonPage,
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
@@ -51,7 +50,7 @@ const Incidentes: React.FC = () => {
 				</IonHeader>
 				<IonList>
 					{incidentes.map(i => (
-						<IonItem button>
+						<IonItem button key={i.title}>
 							<IonIcon slot='start' icon={alertCircleOutline} />
 							<IonLabel>
 								<h3>{i.title}</h3>

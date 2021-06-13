@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	IonContent,
 	IonHeader,
@@ -14,7 +14,7 @@ import {
 
 import './PreguntasAuditoria.css';
 import Pregunta from '../components/Pregunta';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -33,10 +33,11 @@ import {
 	SEND_RESPUESTAS_RESET
 } from '../actions/types';
 
-const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
+const PreguntasAuditoria: React.FC = () => {
 	let history = useHistory();
 	const dispatch = useDispatch();
-	const sucursalId = match.params.id;
+	let { id } = useParams<{ id: string }>();
+	const sucursalId = id;
 
 	const { preguntas, loading: loadingPreguntas, error: errorPreguntas } = useSelector(
 		(state: any) => state.preguntas
@@ -55,31 +56,43 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 	} = useSelector((state: any) => state.sendRespuestas);
 
 	const [showAlert, setShowAlert] = useState(false);
+	const slider = useRef(document.createElement('ion-slides'));
 
-	useEffect(
-		() => () => {
+	useEffect(() => {
+		const currentSlider = slider.current;
+		return () => {
+			console.log('Workaround ...');
+			const workaround = async () => {
+				let swiper = await currentSlider.getSwiper();
+				swiper.removeAllSlides();
+				swiper.update();
+			};
+			workaround();
 			dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
 			dispatch({ type: RESPUESTAS_RESET });
 			dispatch({ type: FETCH_SUCURSAL_RESET });
 			dispatch({ type: SEND_RESPUESTAS_RESET });
-		},
-		[dispatch]
-	);
+		};
+	}, [dispatch]);
 
 	useEffect(() => {
+		console.log('Effect 2');
 		if (success) {
+			console.log('Effect 2 success');
 			dispatch(fetchRespuestas(auditoria.id));
 		}
-	}, [dispatch, auditoria, success]);
+	}, [dispatch, auditoria?.id, success]);
 
 	useEffect(() => {
+		console.log('Effect 3');
 		dispatch(fetchAuditoria(sucursalId));
 		dispatch(fetchPreguntas());
 	}, [dispatch, sucursalId]);
 
 	useEffect(() => {
+		console.log('Effect 4');
 		if (sendRespuestasSuccess) history.push(`/auditoria/${auditoria.id}/resultado`);
-	}, [dispatch, sendRespuestasSuccess, history, auditoria]);
+	}, [dispatch, sendRespuestasSuccess, history, auditoria?.id]);
 
 	const onExit = () => {
 		history.push('/home');
@@ -114,7 +127,8 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 							{
 								text: 'Cancelar',
 								role: 'cancel',
-								cssClass: 'secondary'
+								cssClass: 'secondary',
+								handler: () => setShowAlert(false)
 							},
 							{
 								text: 'Sí!',
@@ -126,7 +140,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 					/>
 					<IonToast
 						isOpen={sendRespuestasSuccess}
-						position='top'
+						position='bottom'
 						message='Auditoría guardada satisfactoriamente!'
 						duration={3000}
 					/>
@@ -148,6 +162,7 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 						<Message color='danger'>{errorRespuestas}</Message>
 					) : (
 						<IonSlides
+							ref={slider}
 							key='slideruniquekey'
 							pager
 							options={{
@@ -156,8 +171,9 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 							}}>
 							{preguntas.length > 0 &&
 								preguntas.map((p: any) => (
-									<IonSlide key={p.id}>
+									<IonSlide key={`slide-${p.id}`}>
 										<Pregunta
+											key={`slide-${p.id}`}
 											auditoriaId={auditoria.id}
 											pregunta={p.pregunta}
 											id={p.id}

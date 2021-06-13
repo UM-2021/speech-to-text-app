@@ -10,45 +10,63 @@ import {
 } from '@ionic/react';
 import { checkmark, close } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RouteComponentProps, useHistory } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router';
+import {
+	CREATE_OR_GET_AUDITORIA_RESET,
+	FETCH_SUCURSAL_RESET,
+	RESPUESTAS_RESET,
+	RESPUESTA_RESET,
+	SEND_RESPUESTAS_RESET,
+	GET_AUDITORIA_RESET
+} from '../actions/types';
 import PageWrapper from '../components/PageWrapper';
 import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
 import axiosInstance from '../utils/axios';
 
 import './ResultadoAuditoria.css';
 
-const ResultadoAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
+const ResultadoAuditoria: React.FC = () => {
 	let history = useHistory();
-    const { user } = useSelector((state: any) => state.auth);
-    // WIP
+	let { id } = useParams<{ id: string }>();
+	const dispatch = useDispatch();
+
+	const { user } = useSelector((state: any) => state.auth);
+	// WIP
 	const { preguntas } = useSelector((state: any) => state.preguntas);
 	const { respuestas } = useSelector((state: any) => state.respuestas);
 
-	const [result, setResult] = useState({ aprobada: false, finalizada: false });
+	const [result, setResult] = useState<any>({});
+
+	const cleanup = () => {
+		dispatch({ type: FETCH_SUCURSAL_RESET });
+		dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
+		dispatch({ type: SEND_RESPUESTAS_RESET });
+		dispatch({ type: RESPUESTAS_RESET });
+		dispatch({ type: RESPUESTA_RESET });
+		dispatch({ type: GET_AUDITORIA_RESET });
+		history.push('/home');
+	};
 
 	useEffect(() => {
-		const fetchResult = async (id: any) => {
-			const { data } = await axiosInstance(`/api/auditorias/auditoria/${match.params.id}`, {
+		const fetchResult = async () => {
+			const { data } = await axiosInstance(`/api/auditorias/auditoria/${id}/resultado/`, {
 				headers: {
 					Authorization: `Token ${user.token}`
 				}
 			});
 			setResult(data);
 		};
-		fetchResult(match.params.id);
-	}, [match.params.id, user]);
+
+		if (Object.keys(result).length === 0) fetchResult();
+	}, [id, user, result]);
 
 	return (
 		<PageWrapper>
 			<IonHeader>
 				<IonToolbar>
 					<IonButtons slot='end'>
-						<IonButton
-							color='secondary'
-							onClick={() => {
-								history.push('/home');
-							}}>
+						<IonButton color='secondary' onClick={cleanup}>
 							Terminar
 						</IonButton>
 					</IonButtons>
@@ -75,11 +93,7 @@ const ResultadoAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 						? 'Local habilitado'
 						: 'Local no habilitado'}
 				</div>
-				<RespuestasAuditoriaList
-					auditoria={match.params.id}
-					preguntas={preguntas}
-					respuestas={respuestas}
-				/>
+				<RespuestasAuditoriaList auditoria={id} preguntas={preguntas} respuestas={respuestas} />
 			</IonContent>
 		</PageWrapper>
 	);

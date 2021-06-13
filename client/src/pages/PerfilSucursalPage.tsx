@@ -2,22 +2,23 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToo
 import { arrowBack } from 'ionicons/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, RouteComponentProps, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { fetchAuditoriaDetails } from '../actions/auditoriasActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import PageWrapper from '../components/PageWrapper';
 import PerfilSucursal from '../components/PerfilSucursal';
 
-const PerfilSucursalPage: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
+const PerfilSucursalPage: React.FC = () => {
 	let history = useHistory();
 	const dispatch = useDispatch();
+	let { id } = useParams<{ id: string }>();
 
 	const { auditoria, loading, success, error } = useSelector((state: any) => state.auditoriaDetails);
 
 	useEffect(() => {
-		if (!success) dispatch(fetchAuditoriaDetails(match.params.id));
-	}, [dispatch, match.params.id, success]);
+		if (!success) dispatch(fetchAuditoriaDetails(id));
+	}, [dispatch, id, success]);
 
 	return (
 		<PageWrapper>
@@ -30,7 +31,7 @@ const PerfilSucursalPage: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 					</IonButtons>
 					<IonTitle>SAG</IonTitle>
 					<IonButtons slot='end'>
-						<Link to={`/sucursal/${match.params.id}/auditoria`}>
+						<Link to={`/sucursal/${id}/auditoria`}>
 							<IonButton color='secondary'>Ver Auditoría</IonButton>
 						</Link>
 					</IonButtons>
@@ -59,7 +60,7 @@ const PerfilSucursalPage: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 					<Message color='primary'>Auditoria en curso</Message>
 				) : null}
 
-				<PerfilSucursal id={match.params.id} />
+				<PerfilSucursal id={id} />
 			</IonContent>
 		</PageWrapper>
 	);

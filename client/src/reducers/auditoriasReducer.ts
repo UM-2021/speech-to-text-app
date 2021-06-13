@@ -21,7 +21,8 @@ import {
 	SEND_RESPUESTAS_REQUEST,
 	SEND_RESPUESTAS_SUCCESS,
 	SEND_RESPUESTAS_FAILED,
-	SEND_RESPUESTAS_RESET
+	SEND_RESPUESTAS_RESET,
+	GET_AUDITORIA_RESET
 } from '../actions/types';
 
 export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
@@ -104,6 +105,8 @@ export const auditoriaDetailsReducer = (state = { auditoria: {} }, action: any) 
 			return { loading: false, success: true, auditoria: action.payload };
 		case GET_AUDITORIA_FAILED:
 			return { loading: false, success: false, error: action.payload };
+		case GET_AUDITORIA_RESET:
+			return { auditoria: {} };
 		default:
 			return state;
 	}
