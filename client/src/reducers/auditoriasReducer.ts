@@ -6,12 +6,15 @@ import {
 	FETCH_PREGUNTAS_FAILED,
 	FETCH_PREGUNTAS_REQUEST,
 	FETCH_PREGUNTAS_SUCCESS,
+	FETCH_PREGUNTAS_RESET,
 	ADD_RESPUESTA,
 	ADD_RESPUESTA_FIELD,
 	RESPUESTAS_RESET,
 	FETCH_RESPUESTAS_REQUEST,
 	FETCH_RESPUESTAS_SUCCESS,
-	FETCH_RESPUESTAS_FAILED
+	FETCH_RESPUESTAS_FAILED,
+	SET_RESPUESTA,
+	RESPUESTA_RESET
 } from '../actions/types';
 
 export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
@@ -21,7 +24,9 @@ export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
 		case FETCH_PREGUNTAS_SUCCESS:
 			return { loading: false, preguntas: [...action.payload] };
 		case FETCH_PREGUNTAS_FAILED:
-			return { ...state, error: action.payload };
+			return { loading: false, error: action.payload };
+		case FETCH_PREGUNTAS_RESET:
+			return { preguntas: [] };
 		default:
 			return state;
 	}
@@ -45,7 +50,7 @@ export const auditoriaReducer = (state = { auditoria: {} }, action: any) => {
 export const respuestasReducer = (state = { respuestas: [] }, action: any) => {
 	switch (action.type) {
 		case FETCH_RESPUESTAS_REQUEST:
-			return { ...state, loading: true };
+			return { loading: true };
 		case FETCH_RESPUESTAS_SUCCESS:
 			return { ...state, loading: false, respuestas: action.payload };
 		case FETCH_RESPUESTAS_FAILED:
@@ -68,6 +73,17 @@ export const respuestasReducer = (state = { respuestas: [] }, action: any) => {
 			};
 		case RESPUESTAS_RESET:
 			return { respuestas: [] };
+		default:
+			return state;
+	}
+};
+
+export const respuestaReducer = (state = { respuesta: {} }, action: any) => {
+	switch (action.type) {
+		case SET_RESPUESTA:
+			return { respuesta: action.payload };
+		case RESPUESTA_RESET:
+			return { respuesta: {} };
 		default:
 			return state;
 	}

@@ -65,18 +65,14 @@ const Sucursales: React.FC = () => {
                 s.nombre.toLowerCase().includes(searchText.toLocaleLowerCase())
               ) {
                 return (
-                  <Link
-                    key={s.id}
-                    to={`/sucursal/perfil/${s.id}`}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <IonItem button>
-                      <IonIcon slot="start" icon={storefrontOutline} />
-                      <IonLabel>{s.nombre}</IonLabel>
-                      <IonIcon slot="end" icon={arrowForwardOutline} />
-                    </IonItem>
-                  </Link>
-                );
+					<Link key={s.id} to={`/sucursal/${s.id}/perfil`} style={{ textDecoration: 'none' }}>
+						<IonItem button>
+							<IonIcon slot='start' icon={storefrontOutline} />
+							<IonLabel>{s.nombre}</IonLabel>
+							<IonIcon slot='end' icon={arrowForwardOutline} />
+						</IonItem>
+					</Link>
+				);
               }
             })}
           </IonList>
