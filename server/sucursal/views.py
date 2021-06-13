@@ -38,6 +38,7 @@ class SucursalViewSet(viewsets.ModelViewSet):
             ultimasSucursales.append(ultimasAuditorias[i].sucursal)
         return Response([(Sucursal.nombre, Sucursal.id) for Sucursal in ultimasSucursales])
 
+
     @action(methods=['post'], detail=True,)
     def agregar_imagen(self, request, pk):
         queryset = Sucursal.objects.all()
@@ -62,3 +63,4 @@ class SucursalViewSet(viewsets.ModelViewSet):
         sucursal.path_imagen_url = path
         sucursal.save()
         return Response({'respuesta': path}, status=status.HTTP_200_OK)
+
