@@ -114,8 +114,8 @@ class Incidente(models.Model):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     accion = models.CharField(max_length=255)
     # Campos agregados por nosotros
-    aceptado = models.IntegerField(default=0) #Cambiar bien preguntar a sherman
-    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, default=0) #Cambiar bien preguntar a sherman
+    estatus = models.IntegerField(default=0) #migration
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, default=0) #migration
 
 
     def __str__(self):
