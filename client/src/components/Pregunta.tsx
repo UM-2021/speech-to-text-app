@@ -38,8 +38,8 @@ const Pregunta: React.FC<IPregunta> = ({
   //   });
   // }, [dispatch, id, auditoriaId]);
 
-  //   const validateAnswer = () =>
-  //     respuestaCorrecta === respuesta?.respuesta.toString() ?? null;
+  const validateAnswer = () =>
+    respuestaCorrecta === respuesta?.respuesta.toString() ?? null;
 
   const colors: any = {
     DIGEFE: 'danger',
@@ -68,12 +68,12 @@ const Pregunta: React.FC<IPregunta> = ({
           <IonCol className="ion-align-items-center">
             {Object.keys(respuesta).includes('respuesta') && (
               <IonIcon
-                // className={`${
-                //   validateAnswer() ? 'answer-icon' : 'answer-icon2'
-                // }`}
+                className={`${
+                  validateAnswer() ? 'answer-icon' : 'answer-icon2'
+                }`}
                 size="large"
-                // color={validateAnswer() ? 'success' : 'danger'}
-                // icon={validateAnswer() ? checkmark : close}
+                color={validateAnswer() ? 'success' : 'danger'}
+                icon={validateAnswer() ? checkmark : close}
               />
             )}
           </IonCol>

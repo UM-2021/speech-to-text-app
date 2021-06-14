@@ -8,13 +8,19 @@ import {
   IonLabel,
   IonItem,
 } from '@ionic/react';
-import { cameraOutline, keypadOutline, micOutline } from 'ionicons/icons';
+import {
+  cameraOutline,
+  keypadOutline,
+  micOutline,
+  checkmarkOutline,
+} from 'ionicons/icons';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ADD_RESPUESTA_FIELD } from '../actions/types';
 import { File } from '@ionic-native/file';
 import { Media, MediaObject } from '@ionic-native/media';
 import { Base64 } from '@ionic-native/base64';
+import Loader from '../components/Loader';
 
 // import { NativeAudio } from '@ionic-native/native-audio/';
 import { Plugins, CameraResultType } from '@capacitor/core';
@@ -38,6 +44,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
   const [showModal, setShowModal] = useState(false);
   const auth = useSelector((state: any) => state.auth);
   const { preguntas } = useSelector((state: any) => state.preguntas);
+  const [processingAudio, setProcessingAudio] = useState<boolean>(false);
 
   const addAnswer = (respuesta: string, notas: string) => {
     const tipo = preguntas.find((p: any) => p.id === preguntaId).tipo;
@@ -62,33 +69,33 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
   };
 
   // ESTO SE COMENTA PORQUE EN BROWSER NO COMPILA SI NO
-  const file = File.createFile(
-    File.externalRootDirectory,
-    'myaudio.mp3',
-    true
-  ).then((file) => {
-    setPath(file.toInternalURL());
-  });
-  const [mediaObj, setMediaObj] = useState<MediaObject>(
-    Media.create(
-      File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
-    )
-  );
+  // const file = File.createFile(
+  //   File.externalRootDirectory,
+  //   'myaudio.mp3',
+  //   true
+  // ).then((file) => {
+  //   setPath(file.toInternalURL());
+  // });
+  // const [mediaObj, setMediaObj] = useState<MediaObject>(
+  //   Media.create(
+  //     File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
+  //   )
+  // );
 
   const recordAudio = async () => {
-    if (!activeAudio) {
-      mediaObj.startRecord();
-    } else {
-      mediaObj.stopRecord();
-      mediaObj.release();
-      Base64.encodeFile(path)
-        .then((base64File: string) => {
-          setStatus(base64File);
-        })
-        .catch((err) => setStatus('FALSO TODO'));
-      // await Base64.encodeFile(path);
-    }
-    setActiveAudio(!activeAudio);
+    // if (!activeAudio) {
+    //   mediaObj.startRecord();
+    // } else {
+    //   mediaObj.stopRecord();
+    //   mediaObj.release();
+    //   Base64.encodeFile(path)
+    //     .then((base64File: string) => {
+    //       setStatus(base64File);
+    //     })
+    //     .catch((err) => setStatus(err));
+    //   // await Base64.encodeFile(path);
+    // }
+    // setActiveAudio(!activeAudio);
   };
 
   const getBase64 = (file: any) => {
@@ -117,19 +124,6 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 
   const openModal = () => {
     setShowModal(true);
-    // console.log(audioFileHandler);
-    // NativeAudio.preloadSimple(
-    //   'uniqueId1',
-    //   'C:\\Users\\Usuario\\Desktop\\audiotest.mp3'
-    // ).then();
-  };
-
-  // const [nativeAudio, setNativeAudio] = useState<typeof NativeAudio>(
-  //   new NativeAudioOriginal()
-  // );
-  const reproduceNativeAudio = () => {
-    // nativeAudio.preloadSimple('uniqueId1', audioFileHandler.file).then();
-    // NativeAudio.play('uniqueId1').then();
   };
 
   const takePhoto = async () => {
@@ -144,7 +138,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
   };
 
   const processAudio = async (audio: string) => {
-    // console.log(audio);
+    setProcessingAudio(true);
     const { data } = await axiosInstance.post(
       `/api/auditorias/respuesta/${1}/transcribir/`,
       {
@@ -157,17 +151,18 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
       }
     );
     addAnswer(data.respuesta as string, data.notas as string);
-    setShowModal(false);
+    setProcessingAudio(false);
   };
 
   return (
     <IonSegment className="ion-justify-content-between bg-color">
       <IonButton
-        color="light"
+        color={photo ? 'success' : 'light'}
         className="rounded "
         onClick={async () => await takePhoto()}
       >
         <IonIcon icon={cameraOutline} />
+        {photo && <IonIcon icon={checkmarkOutline} />}
       </IonButton>
       <IonButton
         className="rounded"
@@ -188,9 +183,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
           </IonItemDivider>
 
           <IonItem key="tit">
-            <IonButton onClick={reproduceNativeAudio}>
-              Reproduce Audio
-            </IonButton>
+            <IonButton>Reproduce Audio</IonButton>
           </IonItem>
           <IonItem key="input">
             <div>
@@ -198,12 +191,16 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
             </div>
           </IonItem>
           <IonItem key="process">
-            <IonButton
-              onClick={() => processAudio(audioFileHandler.base64URL)}
-              style={{ width: '50%' }}
-            >
-              Send Audio to Process
-            </IonButton>
+            {processingAudio ? (
+              <Loader />
+            ) : (
+              <IonButton
+                onClick={() => processAudio(audioFileHandler.base64URL)}
+                style={{ width: '50%' }}
+              >
+                Send Audio to Process
+              </IonButton>
+            )}
           </IonItem>
         </IonItemGroup>
         <IonItem key="cancel">
