@@ -36,31 +36,4 @@ class SucursalViewSet(viewsets.ModelViewSet):
         for i in range(0, len(ultimasAuditorias)):
             print(ultimasAuditorias[i].sucursal)
             ultimasSucursales.append(ultimasAuditorias[i].sucursal)
-        return Response([(Sucursal.nombre, Sucursal.id) for Sucursal in ultimasSucursales])
-
-
-    @action(methods=['post'], detail=True,)
-    def agregar_imagen(self, request, pk):
-        queryset = Sucursal.objects.all()
-        sucursal = get_object_or_404(queryset, pk=pk)
-
-        imagen = request.data.get("imagen")
-
-        if not imagen:
-            return Response({"detail": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
-
-        imagen = imagen.replace('data:image/jpeg;base64,', '')
-        imagen += '======='
-        imagen_data = b64decode(imagen)
-        nombre_imagen = "sucursal_" + str(pk) + "_image_" + str(datetime.now()) + '.jpeg'
-        file = ContentFile(content=imagen_data, name=nombre_imagen)
-        if settings.USE_S3:
-            instance = PrivateMediaStorage()
-            path = instance.save(f'sucursales/imagenes/{nombre_imagen}', file)
-        else:
-            path = default_storage.save('files/imagenes/', file)
-
-        sucursal.path_imagen_url = path
-        sucursal.save()
-        return Response({'respuesta': path}, status=status.HTTP_200_OK)
-
+        return Response([(Sucursal.nombre,Sucursal.id) for Sucursal in ultimasSucursales])
