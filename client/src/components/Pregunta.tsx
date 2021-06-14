@@ -1,8 +1,6 @@
 import { IonCol, IonIcon, IonRow, IonChip } from '@ionic/react';
 import { checkmark, close } from 'ionicons/icons';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ADD_RESPUESTA } from '../actions/types';
+import React from 'react';
 
 import './Pregunta.css';
 import PreguntaAudio from './PreguntaAudio';
@@ -30,29 +28,22 @@ const Pregunta: React.FC<IPregunta> = ({
 	respuestaCorrecta,
 	categoria
 }) => {
-	// const dispatch = useDispatch();
-	// useEffect(() => {
-	//   dispatch({
-	//     type: ADD_RESPUESTA,
-	//     payload: { pregunta: id, isAnswered: false, auditoria: auditoriaId },
-	//   });
-	// }, [dispatch, id, auditoriaId]);
 	const validateAnswer = () => respuestaCorrecta === respuesta?.respuesta.toString() ?? null;
 
-  const colors: any = {
-    DIGEFE: 'danger',
-    Informativa: 'success',
-    Extranormativa: 'warning'
-  }
-  
-  return (
+	const colors: any = {
+		DIGEFE: 'danger',
+		Informativa: 'success',
+		Extranormativa: 'warning'
+	};
+
+	return (
 		<div className='ion-padding flex ion-margin-vertical'>
-			<div className="flex-int">
+			<div className='flex-int'>
 				<IonChip className='ion-align-self-start' outline color={colors[categoria]}>
 					{categoria}
 				</IonChip>
-					<h3>{pregunta}</h3>
-					<h5>
+				<h3>{pregunta}</h3>
+				<h5>
 					<i>Respuesta: </i>
 				</h5>
 				<IonRow>
@@ -76,7 +67,7 @@ const Pregunta: React.FC<IPregunta> = ({
 				<PreguntaAudio preguntaId={id} />
 			</div>
 		</div>
-  );
+	);
 };
 
 export default Pregunta;

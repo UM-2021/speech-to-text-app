@@ -2,10 +2,10 @@
 
 ## Prerequisitos
 
--   Python 3.x
--   Docker
--   Docker Compose
--   Pipenv
+- Python 3.x
+- Docker
+- Docker Compose
+- Pipenv
 
 ## Pasos DEV
 

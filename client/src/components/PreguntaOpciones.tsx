@@ -1,5 +1,5 @@
 import { IonButton, IonSegment } from '@ionic/react';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 import { ADD_RESPUESTA_FIELD } from '../actions/types';
 

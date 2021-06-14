@@ -31,7 +31,7 @@ const Login: React.FC<any> = () => {
 
 	useEffect(() => {
 		if (errorLogin) setError(true);
-		if (user) history.push('/home');
+		if (user) history.replace('/home');
 	}, [user, history, errorLogin]);
 
 	const onSubmit = (e: any) => {
@@ -67,7 +67,8 @@ const Login: React.FC<any> = () => {
 							<IonRow>
 								<IonCol className='ion-text-center'>
 									<IonIcon
-										style={{ fontSize: '70px', color: '#0040ff' }}
+										color='primary'
+										style={{ fontSize: '30vw' }}
 										icon={personCircle}
 									/>
 								</IonCol>

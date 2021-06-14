@@ -2,20 +2,19 @@ import React, { useEffect, useState } from 'react';
 import {
 	IonContent,
 	IonHeader,
-	IonPage,
 	IonTitle,
 	IonToolbar,
 	IonSlides,
 	IonSlide,
 	IonButtons,
 	IonButton,
-	IonToast
+	IonToast,
+	IonAlert
 } from '@ionic/react';
 
 import './PreguntasAuditoria.css';
 import Pregunta from '../components/Pregunta';
-import RespuestasAuditoria from '../components/RespuestasAuditoria';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -24,59 +23,59 @@ import {
 	fetchRespuestas,
 	postRespuestas
 } from '../actions/auditoriasActions';
-import { RESPUESTAS_RESET } from '../actions/types';
 import PageWrapper from '../components/PageWrapper';
+import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
+import Message from '../components/Message';
 
-interface IRespuesta {
-	respuesta: string;
-	notas?: string;
-	auditoria: string;
-	pregunta: string;
-	// validez: boolean;
-}
-
-interface IPregunta {
-	id: string;
-	pregunta: string;
-	tipo: string;
-	opciones?: string[];
-}
-
-const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
+const PreguntasAuditoria: React.FC = () => {
 	let history = useHistory();
 	const dispatch = useDispatch();
-	const { loading, error, preguntas } = useSelector((state: any) => state.preguntas);
-	const { loading: auditoriaLoading, auditoria, success } = useSelector((state: any) => state.auditoria);
-	const { respuestas, loading: respuestasLoading } = useSelector((state: any) => state.respuestas);
-	const [submitted, setSubmitted] = useState(false);
-	const [showLoader, setShowLoader] = useState(false);
+	let { id } = useParams<{ id: string }>();
+	const sucursalId = id;
+
+	const { preguntas, loading: loadingPreguntas, error: errorPreguntas } = useSelector(
+		(state: any) => state.preguntas
+	);
+	const { auditoria, loading: loadingAuditoria, success, error: errorAuditoria } = useSelector(
+		(state: any) => state.auditoria
+	);
+	const { respuestas, loading: loadingRespuestas, error: errorRespuestas } = useSelector(
+		(state: any) => state.respuestas
+	);
+
+	const {
+		success: sendRespuestasSuccess,
+		loading: loadingSendRespuestas,
+		error: errorSendRespuestas
+	} = useSelector((state: any) => state.sendRespuestas);
+
+	const [showAlert, setShowAlert] = useState(false);
 
 	useEffect(() => {
 		if (success) {
 			dispatch(fetchRespuestas(auditoria.id));
-		} else {
-			dispatch(fetchAuditoria(match.params.id));
-			dispatch(fetchPreguntas());
 		}
-	}, [dispatch, match.params.id, success, auditoria]);
+	}, [dispatch, auditoria?.id, success]);
 
-  const onExit = () => {
-    history.goBack();
-    dispatch({ type: RESPUESTAS_RESET });
-  };
+	useEffect(() => {
+		dispatch(fetchAuditoria(sucursalId));
+		dispatch(fetchPreguntas());
+	}, [dispatch, sucursalId]);
+
+	useEffect(() => {
+		if (sendRespuestasSuccess) history.replace(`/auditoria/${auditoria.id}/resultado`);
+	}, [dispatch, sendRespuestasSuccess, history, auditoria?.id]);
+
+	const onExit = () => {
+		history.replace('/home');
+	};
 
 	const onSubmit = (e: any) => {
 		e.preventDefault();
-		setShowLoader(true);
 		dispatch(postRespuestas());
-		setTimeout(() => {
-			setSubmitted(true);
-			setShowLoader(false);
-			history.push('/home');
-		}, 1500);
 	};
 
-	if (loading) return <Loader />;
+	if (loadingPreguntas || loadingRespuestas || loadingAuditoria) return <Loader />;
 	else
 		return (
 			<PageWrapper>
@@ -84,62 +83,100 @@ const PreguntasAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ mat
 					<IonToolbar>
 						<IonTitle>Nueva Auditoría</IonTitle>
 						<IonButtons slot='end'>
-							<IonButton color='danger' onClick={onExit}>
+							<IonButton color='danger' onClick={() => setShowAlert(true)}>
 								Salir
 							</IonButton>
 						</IonButtons>
 					</IonToolbar>
 				</IonHeader>
 				<IonContent>
+					<IonAlert
+						isOpen={showAlert}
+						onDidDismiss={() => setShowAlert(false)}
+						header={'¿Estas seguro?'}
+						message={'Todos los cambios no guardados se perderan.'}
+						buttons={[
+							{
+								text: 'Cancelar',
+								role: 'cancel',
+								cssClass: 'secondary',
+								handler: () => setShowAlert(false)
+							},
+							{
+								text: 'Sí!',
+								handler: () => {
+									onExit();
+								}
+							}
+						]}
+					/>
 					<IonToast
-						isOpen={submitted}
-						position='top'
+						isOpen={sendRespuestasSuccess}
+						position='bottom'
 						message='Auditoría guardada satisfactoriamente!'
 						duration={3000}
 					/>
 					<IonHeader collapse='condense'>
 						<IonToolbar>
 							<IonTitle size='large'>Nueva Auditoría</IonTitle>
+							<IonButtons slot='end'>
+								<IonButton color='danger' onClick={() => setShowAlert(true)}>
+									Salir
+								</IonButton>
+							</IonButtons>
 						</IonToolbar>
 					</IonHeader>
-					{auditoriaLoading ? (
-						<Loader />
+					{errorPreguntas ? (
+						<Message color='danger'>{errorPreguntas}</Message>
+					) : errorAuditoria ? (
+						<Message color='danger'>{errorAuditoria}</Message>
+					) : errorRespuestas ? (
+						<Message color='danger'>{errorRespuestas}</Message>
 					) : (
 						<IonSlides
-							pager={true}
+							pager
 							options={{
 								initialSlide: 0,
 								speed: 400
 							}}>
-							{preguntas.map((p: any) => (
-								<IonSlide key={p.id}>
-									<Pregunta
-										auditoriaId={auditoria.id}
-										pregunta={p.pregunta}
-										id={p.id}
-										tipo={p.tipo}
-										opciones={p.opciones}
-										categoria={p.categoria}
-										respuesta={
-											respuestas.filter((r: any) => r.pregunta === p.id)[0] || {}
-										}
-										respuestaCorrecta={p.respuesta_correcta}
-									/>
-								</IonSlide>
-							))}
-
-							<IonSlide>
-								{showLoader ? (
+							{preguntas.length > 0 &&
+								preguntas.map((p: any) => (
+									<IonSlide key={p.id}>
+										<Pregunta
+											key={p.id}
+											auditoriaId={auditoria.id}
+											pregunta={p.pregunta}
+											id={p.id}
+											tipo={p.tipo}
+											opciones={p.opciones}
+											categoria={p.categoria}
+											respuesta={
+												respuestas.filter((r: any) => r.pregunta === p.id)[0] || {}
+											}
+											respuestaCorrecta={p.respuesta_correcta}
+										/>
+									</IonSlide>
+								))}
+							<IonSlide key='uniquekey'>
+								{loadingSendRespuestas && success ? (
 									<Loader />
+								) : errorSendRespuestas ? (
+									<Message color='danger'>{errorSendRespuestas}</Message>
 								) : (
-									<div>
-										<RespuestasAuditoria />
-										<IonButton expand='block' color='primary' onClick={onSubmit}>
+									<div className='flex-result ion-margin-vertical'>
+										<IonButton
+											expand='block'
+											size='large'
+											className='ion-margin'
+											color='primary'
+											onClick={onSubmit}>
 											Enviar
 										</IonButton>
-										<IonButton expand='block' color='danger'>
-											Cancelar
-										</IonButton>
+										<RespuestasAuditoriaList
+											auditoria={auditoria.id}
+											preguntas={preguntas}
+											respuestas={respuestas}
+										/>
 									</div>
 								)}
 							</IonSlide>

@@ -7,3 +7,4 @@ ibm-watson==5.1.0
 ibm-cloud-sdk-core==3.10.0
 boto3==1.17.58
 django-storages==1.11.1
+Pillow==8.2.0

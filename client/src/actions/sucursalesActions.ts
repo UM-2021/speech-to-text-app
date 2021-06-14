@@ -11,16 +11,11 @@ import {
 export const fetchSucursales = () => async (dispatch: any, getState: any) => {
 	try {
 		dispatch({ type: FETCH_SUCURSALES_REQUEST });
-		let sucursales = getState().sucursales.sucursales;
+		const { data } = await axiosInstance('/api/sucursales/', {
+			headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+		});
 
-		if (!sucursales || sucursales.length === 0) {
-			const { data } = await axiosInstance('/api/sucursales/', {
-				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
-			});
-			sucursales = data;
-		}
-
-		dispatch({ type: FETCH_SUCURSALES_SUCCESS, payload: sucursales });
+		dispatch({ type: FETCH_SUCURSALES_SUCCESS, payload: data });
 	} catch (error) {
 		dispatch({
 			type: FETCH_SUCURSALES_FAILED,
@@ -32,16 +27,12 @@ export const fetchSucursales = () => async (dispatch: any, getState: any) => {
 export const fetchSucursal = (id: any) => async (dispatch: any, getState: any) => {
 	try {
 		dispatch({ type: FETCH_SUCURSAL_REQUEST });
-		let sucursal = getState().sucursal;
 
-		if (!sucursal || sucursal.id !== id) {
-			const { data } = await axiosInstance(`http://localhost:8000/api/sucursales/${id}/`, {
-				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
-			});
-			sucursal = data;
-		}
+		const { data } = await axiosInstance(`/api/sucursales/${id}/`, {
+			headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+		});
 
-		dispatch({ type: FETCH_SUCURSAL_SUCCESS, payload: sucursal });
+		dispatch({ type: FETCH_SUCURSAL_SUCCESS, payload: data });
 	} catch (error) {
 		dispatch({
 			type: FETCH_SUCURSAL_FAILED,
