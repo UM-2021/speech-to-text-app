@@ -8,25 +8,25 @@ import PreguntaNumerica from './PreguntaNumerica';
 import PreguntaOpciones from './PreguntaOpciones';
 
 interface IPregunta {
-	id: string;
-	auditoriaId: string;
-	pregunta: string;
-	tipo: string;
-	opciones?: any;
-	categoria: string;
-	respuesta: any;
-	respuestaCorrecta: string | number;
+  id: string;
+  auditoriaId: string;
+  pregunta: string;
+  tipo: string;
+  opciones?: any;
+  categoria: string;
+  respuesta: any;
+  respuestaCorrecta: string | number;
 }
 
 const Pregunta: React.FC<IPregunta> = ({
-	id,
-	tipo,
-	pregunta,
-	opciones,
-	auditoriaId,
-	respuesta,
-	respuestaCorrecta,
-	categoria
+  id,
+  tipo,
+  pregunta,
+  opciones,
+  auditoriaId,
+  respuesta,
+  respuestaCorrecta,
+  categoria,
 }) => {
 	const validateAnswer = () => respuestaCorrecta === respuesta?.respuesta.toString() ?? null;
 
