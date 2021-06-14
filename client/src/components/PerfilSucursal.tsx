@@ -5,24 +5,9 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSucursal } from '../actions/sucursalesActions';
 import Loader from './Loader';
+import Message from './Message';
 
 import './PerfilSucursal.css';
-
-interface ISucursal {
-	id: string;
-	nombre: string;
-	numero_de_sag: string;
-	departamento: string;
-	barrio: string;
-	direccion: string;
-	telefono: string;
-	celular: string;
-	razon_social: string;
-	rut: string;
-	negocio_anexo: string;
-	tipo_de_acceso: string;
-	ciudad: string;
-}
 
 const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 	const dispatch = useDispatch();
@@ -33,11 +18,12 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 	}, [dispatch, id]);
 
 	if (loading) return <Loader />;
+	if (error) return <Message color='danger'>{error}</Message>;
 	else
 		return (
 			<div>
-				<div className='center-content avatar-cont'>
-					<IonAvatar className='center-content avatar'>
+				<div className='center-content avatar-cont-suc'>
+					<IonAvatar className='center-content avatar-suc'>
 						<IonIcon color='primary' icon={storefrontOutline} />
 					</IonAvatar>
 				</div>
@@ -94,7 +80,7 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
-							Celular 
+							Celular
 						</IonLabel>
 						<IonLabel>{sucursal!.celular}</IonLabel>
 					</IonItem>

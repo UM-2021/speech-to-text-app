@@ -56,7 +56,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         # Check if Auditoria exists.
         auditoria = get_object_or_404(Auditoria, id=pk)
 
-        respuestas = Respuesta.objects.filter(auditoria__exact=pk)
+        respuestas = Respuesta.objects.filter(auditoria=auditoria)
         serializer = MinRespuestaSerializer(respuestas, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -66,7 +66,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         # Check if Auditoria exists.
         auditoria = get_object_or_404(Auditoria, id=pk)
 
-        respuestas = Respuesta.objects.filter(auditoria__exact=pk)
+        respuestas = Respuesta.objects.filter(auditoria=auditoria)
         preguntas = Pregunta.objects.all()
 
         auditoria.finalizada = len(preguntas) == len(respuestas)
