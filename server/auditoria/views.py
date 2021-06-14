@@ -142,8 +142,8 @@ class IncidenteViewSet(viewsets.ModelViewSet):
             incidente.save()
             return #redirecciona a la url para responder la pregunta incidente["pregnta"] en la sucursal incidente["sucursal"]
 
-    def solucionarIncidente(incidente_id):
-            incidente = Incidente.objects.filter(id__exact=datosSerializados.validated_data.get('id')) # le van apegar a una url que sea auditoria/cierre/{id}, ese id que pasan va a ser por el cual se filtra
+    def solucionarIncidente(self,request,pk):
+            incidente = Incidente.objects.filter(id__exact=pk) # le van apegar a una url que sea auditoria/cierre/{id}, ese id que pasan va a ser por el cual se filtra
             incidente["estatus"] = 1
             return #redirecciona a la url para responder la pregunta incidente["pregnta"] en la sucursal incidente["sucursal"]
 
