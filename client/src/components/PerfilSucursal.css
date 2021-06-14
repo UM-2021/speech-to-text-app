@@ -4,11 +4,11 @@
     align-items: center;
 }
 
-.avatar-cont {
+.avatar-cont-suc {
     padding: 3rem 0;
 }
 
-.avatar {
+.avatar-suc {
     background-color: var(--ion-color-secondary);
     border-radius: 50%;
     font-size: 26px;

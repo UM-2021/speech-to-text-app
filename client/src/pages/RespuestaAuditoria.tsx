@@ -1,12 +1,21 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonItemDivider, IonTitle, IonToolbar } from '@ionic/react';
+import {
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonHeader,
+	IonIcon,
+	IonItemDivider,
+	IonTitle,
+	IonToolbar
+} from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { RouteComponentProps, useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import PageWrapper from '../components/PageWrapper';
 
-const RespuestaAuditoria: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
-	let history = useHistory();	
+const RespuestaAuditoria: React.FC = () => {
+	let history = useHistory();
 
 	const { respuesta } = useSelector((state: any) => state.respuesta);
 

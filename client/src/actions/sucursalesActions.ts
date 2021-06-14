@@ -9,52 +9,34 @@ import {
 } from './types';
 
 export const fetchSucursales = () => async (dispatch: any, getState: any) => {
-  try {
-    dispatch({ type: FETCH_SUCURSALES_REQUEST });
-    let sucursales = getState().sucursales.sucursales;
+	try {
+		dispatch({ type: FETCH_SUCURSALES_REQUEST });
+		const { data } = await axiosInstance('/api/sucursales/', {
+			headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+		});
 
-    if (!sucursales || sucursales.length === 0) {
-      const { data } = await axiosInstance('/api/sucursales/', {
-        headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
-      });
-      sucursales = data;
-    }
-
-    dispatch({ type: FETCH_SUCURSALES_SUCCESS, payload: sucursales });
-  } catch (error) {
-    dispatch({
-      type: FETCH_SUCURSALES_FAILED,
-      payload:
-        error.response && error.response.data.detail
-          ? error.response.data.detail
-          : error.message,
-    });
-  }
+		dispatch({ type: FETCH_SUCURSALES_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: FETCH_SUCURSALES_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
 };
 
-export const fetchSucursal = (id: any) => async (
-  dispatch: any,
-  getState: any
-) => {
-  try {
-    dispatch({ type: FETCH_SUCURSAL_REQUEST });
-    let sucursal = getState().sucursal;
+export const fetchSucursal = (id: any) => async (dispatch: any, getState: any) => {
+	try {
+		dispatch({ type: FETCH_SUCURSAL_REQUEST });
 
-    if (!sucursal || sucursal.id !== id) {
-      const { data } = await axiosInstance(`/api/sucursales/${id}/`, {
-        headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
-      });
-      sucursal = data;
-    }
+		const { data } = await axiosInstance(`/api/sucursales/${id}/`, {
+			headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+		});
 
-    dispatch({ type: FETCH_SUCURSAL_SUCCESS, payload: sucursal });
-  } catch (error) {
-    dispatch({
-      type: FETCH_SUCURSAL_FAILED,
-      payload:
-        error.response && error.response.data.detail
-          ? error.response.data.detail
-          : error.message,
-    });
-  }
+		dispatch({ type: FETCH_SUCURSAL_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: FETCH_SUCURSAL_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
 };
