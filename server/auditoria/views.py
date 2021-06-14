@@ -145,6 +145,31 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     queryset = Incidente.objects.all()
     serializer_class = IncidenteSerializer
 
+    def create(self, request):
+        datosSerializados = IncidenteSerializer(data=request.data)
+        datos = request.data.copy()
+        datos["reporta"] = request.user.id #Usuario logeado
+        datos["pregunta"] = request.data.get('pregunta') #obtiene de donde se manda la request
+        datos["asignado"] = request.data.get('asignado') #obtiene del audio
+        datos["accion"] = request.data.get('accion')   #obtiene del audio
+        datos["sucursal"] = request.data.get('sucursal')   #obtiene de donde se manda la request
+        datos["pregnta"] = request.data.get('pregnta')   #obtiene de donde se manda la request
+        datosSerializados = IncidenteSerializer(data=datos)
+        if datosSerializados.is_valid():
+            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
+        return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(method=get)
+    def cerrarIncidente(self,request,pk):
+            incidente = Incidente.objects.filter(id__exact=pk) # le van apegar a una url que sea auditoria/cierre/{id}, ese id que pasan va a ser por el cual se filtra
+            incidente["estatus"] = 2
+            incidente.save()
+            return #redirecciona a la url para responder la pregunta incidente["pregnta"] en la sucursal incidente["sucursal"]
+
+    def solucionarIncidente(incidente_id):
+            incidente = Incidente.objects.filter(id__exact=datosSerializados.validated_data.get('id')) # le van apegar a una url que sea auditoria/cierre/{id}, ese id que pasan va a ser por el cual se filtra
+            incidente["estatus"] = 1
+            return #redirecciona a la url para responder la pregunta incidente["pregnta"] en la sucursal incidente["sucursal"]
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
     def get_queryset(self):
