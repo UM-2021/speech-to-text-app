@@ -119,6 +119,13 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         nombre_audio = "audio_" + str(datetime.now()) + '.mp3'
         file = ContentFile(content=audio_data, name=nombre_audio)
 
+        if settings.DEBUG == 1:
+            if settings.USE_S3:
+                instance = PrivateMediaStorage()
+                path = instance.save(f'audios/debug/{nombre_audio}', file)
+            else:
+                path = default_storage.save('files/audios/', file)
+
         try:
             resVector = split(get_transcription(file))
         except:  # no se puedo transcripibr el audio
