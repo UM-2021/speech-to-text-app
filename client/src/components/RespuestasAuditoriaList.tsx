@@ -1,16 +1,11 @@
 import { IonIcon, IonItem, IonLabel, IonList } from '@ionic/react';
-import { arrowForwardOutline, checkmark, close } from 'ionicons/icons';
+import { arrowForwardOutline, checkmark, close, helpCircleOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
-import { fetchAuditoria, fetchPreguntas, fetchRespuestas } from '../actions/auditoriasActions';
-import {
-	CREATE_OR_GET_AUDITORIA_RESET,
-	FETCH_PREGUNTAS_RESET,
-	RESPUESTAS_RESET,
-	SET_RESPUESTA
-} from '../actions/types';
-import Loader from './Loader';
+import { SET_RESPUESTA } from '../actions/types';
+
+import './RespuestasAuditoriaList.css';
 
 const RespuestasAuditoriaList: React.FC<{
 	auditoria: string;
@@ -45,20 +40,32 @@ const RespuestasAuditoriaList: React.FC<{
 	const validateAnswer = (pregunta: any) =>
 		pregunta.respuesta_correcta === pregunta.respuesta?.respuesta.toString() ?? null;
 
+	const colors: any = {
+		DIGEFE: 'var(--ion-color-danger)',
+		Informativa: 'var(--ion-color-success)',
+		Extranormativa: 'var(--ion-color-warning)'
+	};
+
 	return (
-		<IonList inset>
+		<IonList inset key='ukey'>
 			{newPreguntas.map((pregunta: any, index: number) => (
 				<IonItem key={index} onClick={() => setRespuesta(pregunta.pregunta, pregunta.respuesta)}>
-					<IonLabel color='medium' slot='start' style={{ flexGrow: 2 }}>
-						{pregunta.pregunta}
-					</IonLabel>
-					{pregunta?.respuesta && Object.keys(pregunta.respuesta).includes('respuesta') && (
+					{pregunta?.respuesta && Object.keys(pregunta.respuesta).includes('respuesta') ? (
 						<IonIcon
+							slot='start'
 							size='small'
 							color={validateAnswer(pregunta) ? 'success' : 'danger'}
 							icon={validateAnswer(pregunta) ? checkmark : close}
 						/>
+					) : (
+						<IonIcon slot='start' size='small' icon={helpCircleOutline} />
 					)}
+					<IonLabel slot='start' style={{ flexGrow: 2 }}>
+						{pregunta.pregunta}
+						<div>
+							<small style={{ color: colors[pregunta.categoria] }}>{pregunta.categoria}</small>
+						</div>
+					</IonLabel>
 					<IonIcon slot='end' icon={arrowForwardOutline} />
 				</IonItem>
 			))}

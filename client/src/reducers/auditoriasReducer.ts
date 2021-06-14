@@ -14,7 +14,15 @@ import {
 	FETCH_RESPUESTAS_SUCCESS,
 	FETCH_RESPUESTAS_FAILED,
 	SET_RESPUESTA,
-	RESPUESTA_RESET
+	RESPUESTA_RESET,
+	GET_AUDITORIA_REQUEST,
+	GET_AUDITORIA_SUCCESS,
+	GET_AUDITORIA_FAILED,
+	SEND_RESPUESTAS_REQUEST,
+	SEND_RESPUESTAS_SUCCESS,
+	SEND_RESPUESTAS_FAILED,
+	SEND_RESPUESTAS_RESET,
+	GET_AUDITORIA_RESET
 } from '../actions/types';
 
 export const preguntasReducer = (state = { preguntas: [] }, action: any) => {
@@ -84,6 +92,36 @@ export const respuestaReducer = (state = { respuesta: {} }, action: any) => {
 			return { respuesta: action.payload };
 		case RESPUESTA_RESET:
 			return { respuesta: {} };
+		default:
+			return state;
+	}
+};
+
+export const auditoriaDetailsReducer = (state = { auditoria: {} }, action: any) => {
+	switch (action.type) {
+		case GET_AUDITORIA_REQUEST:
+			return { loading: true };
+		case GET_AUDITORIA_SUCCESS:
+			return { loading: false, success: true, auditoria: action.payload };
+		case GET_AUDITORIA_FAILED:
+			return { loading: false, success: false, error: action.payload };
+		case GET_AUDITORIA_RESET:
+			return { auditoria: {} };
+		default:
+			return state;
+	}
+};
+
+export const sendRespuestasReducer = (state = {}, action: any) => {
+	switch (action.type) {
+		case SEND_RESPUESTAS_REQUEST:
+			return { loading: true };
+		case SEND_RESPUESTAS_SUCCESS:
+			return { loading: false, success: true };
+		case SEND_RESPUESTAS_FAILED:
+			return { loading: false, success: false, error: action.payload };
+		case SEND_RESPUESTAS_RESET:
+			return {};
 		default:
 			return state;
 	}

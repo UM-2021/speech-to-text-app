@@ -56,7 +56,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         # Check if Auditoria exists.
         auditoria = get_object_or_404(Auditoria, id=pk)
 
-        respuestas = Respuesta.objects.filter(auditoria__exact=pk)
+        respuestas = Respuesta.objects.filter(auditoria=auditoria)
         serializer = MinRespuestaSerializer(respuestas, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -66,7 +66,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         # Check if Auditoria exists.
         auditoria = get_object_or_404(Auditoria, id=pk)
 
-        respuestas = Respuesta.objects.filter(auditoria__exact=pk)
+        respuestas = Respuesta.objects.filter(auditoria=auditoria)
         preguntas = Pregunta.objects.all()
 
         auditoria.finalizada = len(preguntas) == len(respuestas)
@@ -118,6 +118,13 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         audio_data = b64decode(audio)
         nombre_audio = "audio_" + str(datetime.now()) + '.mp3'
         file = ContentFile(content=audio_data, name=nombre_audio)
+
+        if settings.DEBUG == 1:
+            if settings.USE_S3:
+                instance = PrivateMediaStorage()
+                path = instance.save(f'audios/debug/{nombre_audio}', file)
+            else:
+                path = default_storage.save('files/audios/', file)
 
         try:
             resVector = split(get_transcription(file))

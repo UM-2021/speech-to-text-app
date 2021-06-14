@@ -24,13 +24,13 @@
 }
 
 .shrink {
-  margin-right: auto;
-  margin-left: auto;
-  width: 100%;
-  display: grid;
-  grid-template-rows: 2fr 1fr;
-  gap: 20px;
-  align-items: center;
+	margin-right: auto;
+	margin-left: auto;
+    width: 100%;
+	display: grid;
+	grid-template-rows: 2fr 1fr;
+	gap: 10px;
+	align-items: center;
 }
 
 .answer-icon {
