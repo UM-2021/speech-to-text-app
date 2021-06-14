@@ -88,17 +88,20 @@ class MediaTestCase(TestCase):
 
 class IncidenteTestCase(TestCase):
     def test_save(self):
+        suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="dg", tipo="audi")
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
         usr2 = get_user_model().objects.create(username="Nacho", email="nacho@gmail.com", password="123456")
-        Incidente.objects.create(reporta=usr, asignado=usr2, pregunta=preg, accion='TOMA ACCION EN INCIDENTE')
+
+        Incidente.objects.create(asignado=usr2, pregunta=preg, accion='TOMA ACCION EN INCIDENTE',sucursal=suc)
         self.assertIsNotNone(Incidente.objects.get(accion="TOMA ACCION EN INCIDENTE"))
 
     def test_update(self):
+        suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="dg", tipo="audi")
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
         usr2 = get_user_model().objects.create(username="Nacho", email="nacho@gmail.com", password="123456")
-        inc = Incidente.objects.create(reporta=usr, asignado=usr2, pregunta=preg, accion='TOMA ACCION EN INCIDENTE')
+        inc = Incidente.objects.create(asignado=usr2, pregunta=preg, accion='TOMA ACCION EN INCIDENTE',sucursal=suc)
         inc.accion = 'ACCION NUEVA pa'
         inc.save(update_fields=['accion'])
         self.assertFalse(Incidente.objects.filter(accion='TOMA ACCION EN INCIDENTE').exists())

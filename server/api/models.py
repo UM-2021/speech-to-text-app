@@ -114,8 +114,14 @@ class Incidente(models.Model):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
     accion = models.CharField(max_length=255)
     # Campos agregados por nosotros
-    estatus = models.IntegerField(default=0) #migration
-    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, default=0) #migration
+    status = (
+        ('Resuelto', 'Resuelto'),
+        ('Pendiente', 'Pendiente'),
+        ('Confirmado', 'Confirmado')
+
+    )
+    status = models.CharField(max_length=10,choices=status, default='Pendiente')
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE,null=False)
 
 
     def __str__(self):
