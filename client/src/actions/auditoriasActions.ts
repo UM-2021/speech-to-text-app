@@ -18,60 +18,51 @@ import {
 } from './types';
 
 export const fetchPreguntas = () => async (dispatch: any, getState: any) => {
-  try {
-    dispatch({ type: FETCH_PREGUNTAS_REQUEST });
-    let preguntas = getState().preguntas.preguntas;
+	try {
+		dispatch({ type: FETCH_PREGUNTAS_REQUEST });
+		let preguntas = getState().preguntas.preguntas;
 
-    if (!preguntas || preguntas.length === 0) {
-      const { data } = await axiosInstance('/api/auditorias/pregunta/', {
-        headers: {
-          Authorization: `Token ${getState().auth.user.token ?? ''}`,
-        },
-      });
-      preguntas = data;
-    }
+		if (!preguntas || preguntas.length === 0) {
+			const { data } = await axiosInstance('/api/auditorias/pregunta/', {
+				headers: {
+					Authorization: `Token ${getState().auth.user.token ?? ''}`
+				}
+			});
+			preguntas = data;
+		}
 
-    dispatch({ type: FETCH_PREGUNTAS_SUCCESS, payload: preguntas });
-  } catch (error) {
-    dispatch({
-      type: FETCH_PREGUNTAS_FAILED,
-      payload:
-        error.response && error.response.data.detail
-          ? error.response.data.detail
-          : error.message,
-    });
-  }
+		dispatch({ type: FETCH_PREGUNTAS_SUCCESS, payload: preguntas });
+	} catch (error) {
+		dispatch({
+			type: FETCH_PREGUNTAS_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
 };
 
-export const fetchAuditoria = (sucursal: string) => async (
-  dispatch: any,
-  getState: any
-) => {
-  try {
-    dispatch({ type: CREATE_OR_GET_AUDITORIA_REQUEST });
-    const { data } = await axiosInstance.post(
-      '/api/auditorias/auditoria/',
-      { sucursal },
-      {
-        headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
-      }
-    );
+export const fetchAuditoria = (sucursal: string) => async (dispatch: any, getState: any) => {
+	try {
+		dispatch({ type: CREATE_OR_GET_AUDITORIA_REQUEST });
+		const { data } = await axiosInstance.post(
+			'/api/auditorias/auditoria/',
+			{ sucursal },
+			{
+				headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+			}
+		);
 
-    dispatch({ type: CREATE_OR_GET_AUDITORIA_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: CREATE_OR_GET_AUDITORIA_FAILED,
-      payload:
-        error.response && error.response.data.detail
-          ? error.response.data.detail
-          : error.message,
-    });
-  }
+		dispatch({ type: CREATE_OR_GET_AUDITORIA_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: CREATE_OR_GET_AUDITORIA_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
 };
 
 export const postRespuestas = () => (dispatch: any, getState: any) => {
-  try {
-    dispatch({ type: SEND_RESPUESTAS_REQUEST });
+	try {
+		dispatch({ type: SEND_RESPUESTAS_REQUEST });
 
 		const { respuestas } = getState().respuestas;
 		const { auditoria } = getState().auditoria;
@@ -87,7 +78,7 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 						auditoria: auditoria.id,
 						audio: r?.audio || null,
 						usuario: user.user_id,
-            notas: r?.notas || ''
+						notas: r?.notas || ''
 					},
 					{
 						headers: {
@@ -112,18 +103,33 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 					}
 				);
 			}
-      if (r.photo !== null)
-        await axiosInstance.post(
-          `/api/auditorias/respuesta/${resId}/imagen/`,
-          {
-            imagen: r.photo,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getState().auth.user.token ?? ''}`,
-            },
-          }
-        );
+			if (r.photo !== null) {
+				let resId;
+				if (!r.id) {
+					const { data } = await axiosInstance(
+						`/api/auditorias/auditoria/${auditoria.id}/respuestas/`,
+						{
+							headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+						}
+					);
+					const { id } = data.find((rs: any) => rs.pregunta === r.pregunta);
+					resId = id;
+				} else {
+					resId = r.id;
+				}
+
+				await axiosInstance.post(
+					`/api/auditorias/respuesta/${resId}/imagen/`,
+					{
+						imagen: r.photo
+					},
+					{
+						headers: {
+							Authorization: `Token ${getState().auth.user.token ?? ''}`
+						}
+					}
+				);
+			}
 		});
 
 		dispatch({ type: SEND_RESPUESTAS_SUCCESS });
@@ -141,17 +147,14 @@ export const fetchRespuestas = (auditoria: string) => async (dispatch: any, getS
 		const { data } = await axiosInstance(`/api/auditorias/auditoria/${auditoria}/respuestas/`, {
 			headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
 		});
-    
-    dispatch({ type: FETCH_RESPUESTAS_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: FETCH_RESPUESTAS_FAILED,
-      payload:
-        error.response && error.response.data.detail
-          ? error.response.data.detail
-          : error.message,
-    });
-  }
+
+		dispatch({ type: FETCH_RESPUESTAS_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: FETCH_RESPUESTAS_FAILED,
+			payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+		});
+	}
 };
 
 export const fetchAuditoriaDetails = (sucursal: string) => async (dispatch: any, getState: any) => {
