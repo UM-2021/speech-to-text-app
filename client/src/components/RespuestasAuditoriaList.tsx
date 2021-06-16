@@ -37,8 +37,14 @@ const RespuestasAuditoriaList: React.FC<{
 		}
 	};
 
-	const validateAnswer = (pregunta: any) =>
-		pregunta.respuesta_correcta === pregunta.respuesta?.respuesta.toString() ?? null;
+	const validateAnswer = (pregunta: any) => {
+		if ('respuesta' in pregunta?.respuesta)
+			return (
+				pregunta.respuesta_correcta.toLowerCase() ===
+					pregunta.respuesta?.respuesta.toString().toLowerCase() ?? null
+			);
+		return false;
+	};
 
 	const colors: any = {
 		DIGEFE: 'var(--ion-color-danger)',

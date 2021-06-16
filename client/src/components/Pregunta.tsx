@@ -28,7 +28,14 @@ const Pregunta: React.FC<IPregunta> = ({
   respuestaCorrecta,
   categoria,
 }) => {
-	const validateAnswer = () => respuestaCorrecta === respuesta?.respuesta.toString() ?? null;
+		const validateAnswer = () => {
+			if ('respuesta' in respuesta)
+				return (
+					respuestaCorrecta.toString().toLowerCase() ===
+						respuesta?.respuesta.toString().toLowerCase() ?? null
+				);
+			return false;
+		};
 
 	const colors: any = {
 		DIGEFE: 'danger',

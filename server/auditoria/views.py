@@ -76,7 +76,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         aprobada = True
         for preg in preguntas_digefe:
             respuesta = next((r for r in respuestas if r.pregunta.id == preg.id), None)
-            if not respuesta or preg.respuesta_correcta != respuesta.respuesta:
+            if not respuesta or str(preg.respuesta_correcta).lower() != str(respuesta.respuesta).lower():
                 aprobada = False
 
         auditoria.aprobada = aprobada
