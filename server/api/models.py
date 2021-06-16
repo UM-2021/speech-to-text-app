@@ -23,8 +23,8 @@ class Sucursal(models.Model):
     tipo_de_acceso = models.CharField(max_length=30)
     cantidad_de_cajas = models.IntegerField
     # Campos agregados por nosotros
-    ultimo_responsable = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, \
-                                            null=True, blank=True, default=None, related_name='ultima_sucursal')
+    ultimo_responsable = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
+                                           null=True, blank=True, default=None, related_name='ultima_sucursal')
     esta_habilitado = models.BooleanField(default=False)
     ciudad = models.CharField(max_length=40)
     coord_lat = models.FloatField(null=True, blank=True)
@@ -45,7 +45,8 @@ class Auditoria(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     finalizada = models.BooleanField(default=False)
-    aprobada = models.BooleanField(default=False)
+    digefe_aprobada = models.BooleanField(default=False)
+    extra_aprobada = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
@@ -73,7 +74,7 @@ class Pregunta(models.Model):
     seccion = models.CharField(max_length=7, choices=SECCION, default=SECCION[0][0])
     categoria = models.CharField(max_length=14, choices=CATEGORIAS)
     tipo = models.CharField(max_length=8, choices=TIPOS, default=TIPOS[0][0])
-    respuesta_correcta = models.CharField(max_length=255, null=True)
+    respuestas_correctas = ArrayField(models.CharField(max_length=255, null=True))
     # Campos agregados por nosotros
     opciones = ArrayField(models.CharField(max_length=25), null=True, blank=True)
 
