@@ -10,6 +10,9 @@ import {
   IonSearchbar,
   IonButtons,
   IonButton,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from '@ionic/react';
 import { arrowForwardOutline, storefrontOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
@@ -113,49 +116,52 @@ const Sucursales: React.FC = () => {
           <Message color="danger">{error}</Message>
         ) : (
           <>
-            <IonToolbar>
-              <IonButtons>
-                <IonButton
-                  style={{ width: '100%' }}
-                  expand="block"
-                  fill={showApproved ? 'solid' : 'outline'}
-                  onClick={() => setShowApproved(!showApproved)}
-                  color="secondary"
-                >
-                  Aprobadas
-                </IonButton>
-                <IonButton
-                  style={{ width: '100%' }}
-                  expand="block"
-                  fill={showUnapproved ? 'solid' : 'outline'}
-                  onClick={() => setShowUnapproved(!showUnapproved)}
-                  color="danger"
-                >
-                  DESAPROBADAS
-                </IonButton>
-              </IonButtons>
-            </IonToolbar>
-            <IonToolbar>
-              <IonButtons>
-                <IonButton
-                  style={{ width: '100%' }}
-                  expand="block"
-                  fill={showInCourse ? 'solid' : 'outline'}
-                  onClick={() => setShowInCourse(!showInCourse)}
-                  color="primary"
-                >
-                  EN CURSO
-                </IonButton>
-                <IonButton
-                  style={{ width: '100%' }}
-                  expand="block"
-                  fill={showUnaudited ? 'solid' : 'outline'}
-                  onClick={() => setShowUnaudited(!showUnaudited)}
-                >
-                  SIN AUDITORIA
-                </IonButton>
-              </IonButtons>
-            </IonToolbar>
+            <IonGrid>
+              <IonRow>
+                <IonCol>
+                  <IonButton
+                    style={{ width: '100%', margin: '0' }}
+                    fill={showApproved ? 'solid' : 'outline'}
+                    onClick={() => setShowApproved(!showApproved)}
+                    color="secondary"
+                  >
+                    Aprobadas
+                  </IonButton>
+                </IonCol>
+                <IonCol>
+                  <IonButton
+                    style={{ width: '100%', margin: '0' }}
+                    fill={showUnapproved ? 'solid' : 'outline'}
+                    onClick={() => setShowUnapproved(!showUnapproved)}
+                    color="danger"
+                  >
+                    DESAPROBADAS
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonButton
+                    style={{ width: '100%', margin: '0' }}
+                    fill={showInCourse ? 'solid' : 'outline'}
+                    onClick={() => setShowInCourse(!showInCourse)}
+                    color="primary"
+                  >
+                    EN CURSO
+                  </IonButton>
+                </IonCol>
+                <IonCol>
+                  <IonButton
+                    style={{ width: '100%', margin: '0' }}
+                    fill={showUnaudited ? 'solid' : 'outline'}
+                    onClick={() => setShowUnaudited(!showUnaudited)}
+                    color="light"
+                  >
+                    SIN AUDITORIA
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
             <IonList>
               {showApproved &&
                 getApprovedSucursales(sucursales, auditorias.auditorias)
