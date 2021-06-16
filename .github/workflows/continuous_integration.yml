@@ -54,7 +54,7 @@ jobs:
         run: python manage.py migrate
         working-directory: ./server
       - name: Create files folder
-        run: mkdir -p files/audios
+        run: mkdir -p ./mediafiles/files/audios
         working-directory: ./server
       - name: Run tests
         run: python manage.py test
