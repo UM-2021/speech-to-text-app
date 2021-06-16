@@ -21,7 +21,7 @@ jobs:
       DATABASE_ENGINE: django.db.backends.postgresql
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DJANGO_ALLOWED_HOSTS: localhost 127.0.0.1 [::1]
-      USE_S3: FALSE
+      USE_S3: TRUE
     services:
       postgres:
         image: postgres:10.8
