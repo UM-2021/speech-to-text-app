@@ -1,5 +1,6 @@
-import { MediaObject } from '@ionic-native/media';
-import React, { useState } from 'react';
+import { IonCol, IonIcon, IonRow, IonChip } from '@ionic/react';
+import { checkmark, close } from 'ionicons/icons';
+import React from 'react';
 
 import './Pregunta.css';
 import PreguntaAudio from './PreguntaAudio';
@@ -7,45 +8,70 @@ import PreguntaNumerica from './PreguntaNumerica';
 import PreguntaOpciones from './PreguntaOpciones';
 
 interface IPregunta {
-	id: string;
-	pregunta: string;
-	tipo: string;
-	opciones?: any;
+  id: string;
+  auditoriaId: string;
+  pregunta: string;
+  tipo: string;
+  opciones?: any;
+  categoria: string;
+  respuesta: any;
+  respuestaCorrecta: string | number;
 }
 
-const Pregunta: React.FC<IPregunta & { submitResponse: (payload: any) => void }> = ({
-	id,
-	tipo,
-	pregunta,
-	opciones,
-	submitResponse
+const Pregunta: React.FC<IPregunta> = ({
+  id,
+  tipo,
+  pregunta,
+  opciones,
+  auditoriaId,
+  respuesta,
+  respuestaCorrecta,
+  categoria,
 }) => {
-	const [respuesta, setRespuesta] = useState('');
-	const handleResponse = async (a: string, audio?: MediaObject) => {
-		setRespuesta(a);
-		const payload = {
-			pregunta: id, 
-			respuesta: a
-		}
-		submitResponse(payload);
+		const validateAnswer = () => {
+			if ('respuesta' in respuesta)
+				return (
+					respuestaCorrecta.toString().toLowerCase() ===
+						respuesta?.respuesta.toString().toLowerCase() ?? null
+				);
+			return false;
+		};
+
+	const colors: any = {
+		DIGEFE: 'danger',
+		Informativa: 'success',
+		Extranormativa: 'warning'
 	};
 
 	return (
 		<div className='ion-padding flex ion-margin-vertical'>
-			<div>
+			<div className='flex-int'>
+				<IonChip className='ion-align-self-start' outline color={colors[categoria]}>
+					{categoria}
+				</IonChip>
 				<h3>{pregunta}</h3>
-			</div>
-			<div>
 				<h5>
 					<i>Respuesta: </i>
 				</h5>
-				<div>{respuesta}</div>
+				<IonRow>
+					<IonCol className='ion-align-items-center'>{respuesta.respuesta}</IonCol>
+					<IonCol className='ion-align-items-center'>
+						{Object.keys(respuesta).includes('respuesta') && (
+							<IonIcon
+								className={`${validateAnswer() ? 'answer-icon' : 'answer-icon2'}`}
+								size='large'
+								color={validateAnswer() ? 'success' : 'danger'}
+								icon={validateAnswer() ? checkmark : close}
+							/>
+						)}
+					</IonCol>
+				</IonRow>
 			</div>
 			<div className='shrink'>
-				{tipo === 'audi' && <div></div>}
-				{tipo === 'opci' && <PreguntaOpciones opciones={opciones} submitResponse={handleResponse} />}
-				{tipo === 'nume' && <PreguntaNumerica submitResponse={handleResponse} />}
-				<PreguntaAudio submitResponse={handleResponse} />
+				{tipo === 'Audio' && <div></div>}
+				{tipo === 'Opciones' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}
+				{tipo === 'Numerica' && <PreguntaNumerica preguntaId={id} />}
+				<PreguntaAudio preguntaId={id} />
 			</div>
 		</div>
 	);

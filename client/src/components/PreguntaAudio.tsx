@@ -1,143 +1,220 @@
-import { IonButton, IonIcon, IonInput, IonSegment } from '@ionic/react';
-import { cameraOutline, keypadOutline, micOutline } from 'ionicons/icons';
+import {
+  IonButton,
+  IonIcon,
+  IonSegment,
+  IonModal,
+  IonItemGroup,
+  IonItemDivider,
+  IonLabel,
+  IonItem,
+} from '@ionic/react';
+import {
+  cameraOutline,
+  keypadOutline,
+  micOutline,
+  checkmarkOutline,
+} from 'ionicons/icons';
 import React, { useState } from 'react';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { ADD_RESPUESTA_FIELD } from '../actions/types';
 import { File } from '@ionic-native/file';
 import { Media, MediaObject } from '@ionic-native/media';
+import { Base64 } from '@ionic-native/base64';
+import Loader from '../components/Loader';
+
+// import { NativeAudio } from '@ionic-native/native-audio/';
+import { Plugins, CameraResultType } from '@capacitor/core';
 
 import './PreguntaAudio.css';
+import axiosInstance from '../utils/axios';
 
-const PreguntaAudio: React.FC<{ submitResponse: (s: string) => void }> = ({ submitResponse }) => {
-	const [text, setText] = useState('');
+const fs = require('fs');
+const { Camera } = Plugins;
 
-	const [path, setPath] = useState<string>('anterior');
+const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
+  const dispatch = useDispatch();
+  const [status, setStatus] = useState('');
+  const [path, setPath] = useState<string>('anterior');
+  const [activeAudio, setActiveAudio] = useState<boolean>(false);
+  const [audioFileHandler, setAudioFileHandler] = useState<any>({
+    file: null,
+    base64URL: '',
+  });
+  const [photo, setPhoto] = useState<any>('');
+  const [showModal, setShowModal] = useState(false);
+  const auth = useSelector((state: any) => state.auth);
+  const { preguntas } = useSelector((state: any) => state.preguntas);
+  const [processingAudio, setProcessingAudio] = useState<boolean>(false);
 
-	const [blob, setBlob] = useState<Blob>(new Blob());
+  const addAnswer = (respuesta: string, notas: string) => {
+    const tipo = preguntas.find((p: any) => p.id === preguntaId).tipo;
+    if (tipo === 'Opciones' || tipo === 'Numerica') {
+      dispatch({
+        type: ADD_RESPUESTA_FIELD,
+        payload: { pregunta: preguntaId, notas },
+      });
+    } else {
+      dispatch({
+        type: ADD_RESPUESTA_FIELD,
+        payload: { pregunta: preguntaId, respuesta, notas },
+      });
+    }
+  };
 
-	const [availableAudio, setAvailableAudio] = useState<boolean>(true);
+  const addPhotoToAnswer = (photo: string) => {
+    dispatch({
+      type: ADD_RESPUESTA_FIELD,
+      payload: { pregunta: preguntaId, photo },
+    });
+  };
 
-	// const file = File.createFile(File.externalRootDirectory, 'myaudio.mp3', true).then(file => {
-	// 	setPath(file.toInternalURL());
-	// });
-	// const [mediaObj, setMediaObj] = useState<MediaObject>(
-	// 	Media.create(File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3')
-	// );
+  // ESTO SE COMENTA PORQUE EN BROWSER NO COMPILA SI NO
+  const file = File.createFile(
+    File.externalRootDirectory,
+    'myaudio.mp3',
+    true
+  ).then((file) => {
+    setPath(file.toInternalURL());
+  });
+  const [mediaObj, setMediaObj] = useState<MediaObject>(
+    Media.create(
+      File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
+    )
+  );
 
-	const recordAudio = () => {
-		// mediaObj.startRecord();
-	};
+  const recordAudio = async () => {
+    if (!activeAudio) {
+      mediaObj.startRecord();
+    } else {
+      mediaObj.stopRecord();
+      mediaObj.release();
+      Base64.encodeFile(path)
+        .then((base64File: string) => {
+          setStatus(base64File);
+        })
+        .catch((err) => setStatus(err));
+      // await Base64.encodeFile(path);
+    }
+    setActiveAudio(!activeAudio);
+  };
 
-	const stopRecording = async () => {
-		// mediaObj.stopRecord();
-		// mediaObj.release();
-		// await makeFileIntoBlob(path);
-	};
-	// const makeFileIntoBlob = (mypath: string) => {
-	// 	return new Promise((resolve, reject) => {
-	// 		let fileName,
-	// 			fileExtension = '';
-	// 		File.resolveLocalFilesystemUrl(mypath)
-	// 			.then(fileEntry => {
-	// 				let { name, nativeURL } = fileEntry;
-	// 				// get the path..
-	// 				let fnpath = nativeURL.substring(0, nativeURL.lastIndexOf('/'));
-	// 				fileName = name;
-	// 				// if you already know the file extension, just assign it to           // variable below
-	// 				fileExtension = '.mp3';
-	// 				// we are provided the name, so now read the file into a buffer
-	// 				return File.readAsArrayBuffer(fnpath, name);
-	// 			})
-	// 			.then((buffer: ArrayBuffer) => {
-	// 				// get the buffer and make a blob to be saved
-	// 				let medBlob = new Blob([buffer], {
-	// 					type: `audio/${fileExtension}`
-	// 				});
-	// 				// pass back blob and the name of the file for saving
-	// 				// into fire base
-	// 				const opt = { replace: true };
-	// 				File.writeFile(File.externalRootDirectory, 'myaudio.mp3', medBlob, opt);
-	// 				setBlob(medBlob);
-	// 				resolve({ blob: medBlob });
-	// 			})
-	// 			.catch(err => reject(err));
-	// 	});
-	// };
-	return (
-		<IonSegment className='ion-justify-content-between bg-color'>
-			<IonButton color='light' className='rounded '>
-				<IonIcon icon={cameraOutline} />
-			</IonButton>
-			<IonButton className='rounded' onClick={recordAudio}>
-				<IonIcon icon={micOutline} />
-			</IonButton>
-			<IonButton color='light' className='rounded'>
-				<IonInput className='keypad' onIonChange={e => submitResponse(e.detail.value!)} />
-				<IonIcon icon={keypadOutline} />
-			</IonButton>
-		</IonSegment>
-	);
+  const getBase64 = (file: any) => {
+    return new Promise((resolve) => {
+      let baseURL: string | ArrayBuffer | null;
+      baseURL = '';
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // console.log('Called', reader);
+        baseURL = reader.result;
+        resolve(baseURL);
+      };
+    });
+  };
+
+  const handleFileInputChange = async (e: any) => {
+    // TODO: Change to get file from device storage.
+    setAudioFileHandler({
+      ...audioFileHandler,
+      file: e.target.files[0] as string,
+    });
+    const result = await getBase64(e.target.files[0]);
+    setAudioFileHandler({ ...audioFileHandler, base64URL: result as string });
+  };
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const takePhoto = async () => {
+    const image = await Camera.getPhoto({
+      quality: 50,
+      allowEditing: false,
+      resultType: CameraResultType.Base64,
+    });
+    var imageBase64 = image.base64String;
+    addPhotoToAnswer(imageBase64 as string);
+    setPhoto(imageBase64);
+  };
+
+  const processAudio = async (audio: string) => {
+    setProcessingAudio(true);
+    const { data } = await axiosInstance.post(
+      `/api/auditorias/respuesta/${1}/transcribir/`,
+      {
+        audio,
+      },
+      {
+        headers: {
+          Authorization: `Token ${auth.user.token ?? ''}`,
+        },
+      }
+    );
+    addAnswer(data.respuesta as string, data.notas as string);
+    setProcessingAudio(false);
+  };
+
+  return (
+    <IonSegment className="ion-justify-content-between bg-color">
+      <IonButton
+        color={photo ? 'success' : 'light'}
+        className="rounded "
+        onClick={async () => await takePhoto()}
+      >
+        <IonIcon icon={cameraOutline} />
+        {photo && <IonIcon icon={checkmarkOutline} />}
+      </IonButton>
+      <IonButton
+        className="rounded"
+        onClick={recordAudio}
+        color={activeAudio ? 'danger' : ''}
+      >
+        <IonIcon icon={micOutline} />
+      </IonButton>
+      <IonButton color="light" className="rounded" onClick={openModal}>
+        {/* TODO: Can send text response. */}
+        {/* <IonInput className='keypad' onIonChange={e => addAnswer(e.detail.value!)} /> */}
+        <IonIcon icon={keypadOutline} />
+      </IonButton>
+      <IonModal isOpen={showModal}>
+        <IonItemGroup>
+          <IonItemDivider>
+            <IonLabel>AUDIO ACTIONS</IonLabel>
+          </IonItemDivider>
+
+          <IonItem key="tit">
+            <IonButton>Reproduce Audio</IonButton>
+          </IonItem>
+          <IonItem key="input">
+            <div>
+              <input type="file" name="file" onChange={handleFileInputChange} />
+            </div>
+          </IonItem>
+          <IonItem key="process">
+            {processingAudio ? (
+              <Loader />
+            ) : (
+              <IonButton
+                onClick={() => processAudio(audioFileHandler.base64URL)}
+                style={{ width: '50%' }}
+              >
+                Send Audio to Process
+              </IonButton>
+            )}
+          </IonItem>
+        </IonItemGroup>
+        <IonItem key="cancel">
+          <IonButton
+            color="danger"
+            onClick={() => setShowModal(false)}
+            style={{ width: '100%', justifyContent: 'center' }}
+          >
+            Go Back
+          </IonButton>
+        </IonItem>
+      </IonModal>
+    </IonSegment>
+  );
 };
 
 export default PreguntaAudio;
-
-//   function submitForm(contentType, data) {
-// 	axios({
-// 		url: 'http://localhost:8000/api/auditoria/respuesta',
-// 		method: 'POST',
-// 		data: data,
-// 		headers: {
-// 			'Content-Type': contentType
-// 		}
-// 	})
-//    }
-
-//   const sendAudio = () => {
-// 	const toBase64 = file => new Promise((resolve, reject) => {
-// 		const reader = new FileReader();
-// 		reader.readAsDataURL(file);
-// 		reader.onload = () => resolve(reader.result);
-// 		reader.onerror = error => reject(error);
-// 	});
-
-// 	const data = {
-// 		title: title,
-// 		file: await toBase64(file),
-// 		desc: desc
-// 	}
-
-// 	submitForm("application/json", data, (msg) => console.log(msg));
-
-// const reader = new FileReader();
-// reader.onload = () => {
-//   const formData = new FormData();
-//   // formData.append("file", new Blob([reader.result]), file.name);  // Found both online
-//   formData.append(mediaObj, new Blob([reader.result]));  // Tested both with same behavior.
-//   const url = "http://"; // server
-//   axios.post(url, {
-// 	headers: {
-// 	  "Content-Type": `multipart/form-data;`, // boundary=${dat._boundary}`,
-// 	},
-// 	data: formData,
-// 	}
-//   ).then((res) => {
-// 	console.log(res);
-//   });
-// }
-// reader.readAsArrayBuffer(mediaObj);
-// eliminar el audio
-
-// const config = {
-// 	encoding: LINEAR16,
-// 	sampleRateHertz: 16000,
-// 	languageCode: es-AR,
-// };
-// const audio = {
-// 	content: fs.readFileSync(filename).toString('base64'),
-// };
-
-// const request = {
-// 	config: config,
-// 	audio: audio,
-// 	// };
-
-//   };

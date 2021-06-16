@@ -5,11 +5,11 @@ import {
 	IonItem,
 	IonLabel,
 	IonList,
-	IonPage,
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
 import { alertCircleOutline, arrowForwardOutline } from 'ionicons/icons';
+import PageWrapper from '../components/PageWrapper';
 
 const Incidentes: React.FC = () => {
 	const incidentes = [
@@ -36,7 +36,7 @@ const Incidentes: React.FC = () => {
 	];
 
 	return (
-		<IonPage>
+		<PageWrapper>
 			<IonHeader>
 				<IonToolbar>
 					<IonTitle>Incidentes asignados</IonTitle>
@@ -50,7 +50,7 @@ const Incidentes: React.FC = () => {
 				</IonHeader>
 				<IonList>
 					{incidentes.map(i => (
-						<IonItem button>
+						<IonItem button key={i.title}>
 							<IonIcon slot='start' icon={alertCircleOutline} />
 							<IonLabel>
 								<h3>{i.title}</h3>
@@ -60,7 +60,7 @@ const Incidentes: React.FC = () => {
 					))}
 				</IonList>
 			</IonContent>
-		</IonPage>
+		</PageWrapper>
 	);
 };
 

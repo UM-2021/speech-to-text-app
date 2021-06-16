@@ -1,12 +1,8 @@
 # Build de core
 FROM python:3.7-alpine
 
-EXPOSE 80 443
-
-# Copy the start_app scripts
-COPY ./start_app_dev.sh /
-RUN chmod +x /*.sh
-CMD ["/start_app_dev.sh"]
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 # Prepare the app
 RUN mkdir /code/
@@ -17,17 +13,27 @@ RUN apk add --update --no-cache postgresql-client jpeg-dev
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
     gcc libc-dev linux-headers postgresql-dev musl-dev zlib zlib-dev
 
-# Install PipEnv
-RUN pip3 install pipenv
+# install psycopg2 dependencies
+RUN apk update \
+    && apk add postgresql-dev gcc python3-dev musl-dev
 
-COPY Pipfile Pipfile
-COPY Pipfile.lock Pipfile.lock
-
-# Install requirements
-RUN pipenv install --system
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
 # Delete build dependencies temporary files
 RUN apk del .tmp-build-deps
 
+
+# Copy entry point
+COPY ./start_app_dev.sh /
+
 # Copy all source code
-COPY --chown=www-data:www-data . .
+COPY . .
+
+
+#The entrypoint is weird you need to be at server to work and this is not good at all
+RUN chmod +x /*.sh
+ENTRYPOINT ["sh", "./start_app_dev.sh"]
+

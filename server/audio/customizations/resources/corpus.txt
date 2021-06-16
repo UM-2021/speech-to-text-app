@@ -1,0 +1,140 @@
+Los nombres del equipo son: Serrana, Juan Martín, José Pedro, Germán, Mateo, Juan Ignacio, Joaquín, Gastón, Juan Pablo y Javier.
+Las posibles respuestas son: si, no, no aplica, vencido, vigente, vencida, al día, remesa sin habilitación, guardia propia, servicio tercerizado, no tiene, tiene y sin rejas, tiene pero son rejas, gestor propio, habilitación definitiva, habilitación provisoria, en gestión, sin documentación.
+Me compre un nuevo apartamento.
+La carátula es la primera hoja de un trabajo escrito.
+El albañil es la persona que arregla cosas.
+Juan Martín es parte del equipo.
+Remesa sin habilitación significa que no puede funcionar aún.
+El golero atajó un penal hoy.
+Un afiche es un póster.
+Estaría bueno revisar la caja fuerte y el vidrio blindado.
+Habría que llamar al albañil.
+Tendríamos que arreglar la pintura de la pared.
+Hay que hacer un mandado, esto significa que hay que hacer una tarea que nos asignó alguien mas.
+No porque la seguridad no está funcionando bien aún hay que llamar al director para que lo ayude.
+Si porque la caja fuerte esta funcionando bien.
+Semana de Turismo es una semana de vacaciones para los Uruguayos
+capáz significa tal vez
+gomería es un lugar donde se arreglan ruedas
+boletería es un lugar donde se venden tickets o boletos
+inodoro es el water, donde se hace pis
+tránsito
+licencia es tiempo libre de trabajo
+pilot es un abrigo para lluvia
+maestro es Tabarez, un paquete
+habilitación municipal es un permiso que da el gobierno departamental
+llamado es un aviso de que se esta buscando gente
+abombado es una persona tonta
+chota y garcha son cosas malas
+rotativo es algo cambiante
+golpiza es una paliza
+pileta de natación
+flojo es lo opuesto a justo
+desocupado es alguien sin trabajo
+desubicado es alguien fuera de lugar en una situacion
+platal es mucho dinero
+encargue es un pedido que te hace otra persona
+enojado equivalente a furioso
+vidrio blindado es un vidrio resistente
+albañil es una persona que arregla cosas
+pintor es una persona que pinta paredes
+cerrajero es una persona que arregla cerrojos y crea duplicados de llaves
+plomero es una persona que arregla baños y lo que tenga que ver con agua
+caja fuerte
+cochera, garage
+canilla
+camisaco
+libreto
+libretista
+cocinar
+toscano
+ambiente
+encamarse
+grapa
+damasco
+largavistas
+año lectivo
+cochera, estacionamiento
+estacionar
+casilla de correo
+copetín
+empotrado, placard (infl. francesa) baño
+butaca
+casa de salud residencial doméstica
+cajón
+salón de clase
+colectivo
+liceo, secundaria
+basketball, basket (infl. Ingl.) handball (infl. ingl.)
+malla entera, short de baño bañadera
+boliche
+pera
+mamadera
+dos piezas
+vinería
+bife, cachetada, cachetazo
+birome bombacha botín de fútbol chupador maní
+vencido zapallo
+media corta
+mozo
+mucama (muchacha con cama, la que se
+queda dormir en la casa donde trabaja) pick-up
+camisilla, musculosa
+¡mama mía! (infl. ital.)
+pirulos
+cazadora
+chancho
+fósforo
+hawaiana, romanita jogging (infl. ingl.) saco
+estufa a leña cuento
+bife biógrafo citrus
+florecido
+destapobotella, destapador
+tapado sobretodo
+vereda
+Los documentos demuestran que hubo desidia, falta de previsión, descuidos, y poco apego al buen manejo de los dineros públicos.
+Entre los principales hallazgos realizados por el equipo de la AIN se destacan el uso de recursos públicos en contravención a la normativa vigente, uso ineficiente e ineficaz de los recursos públicos, y negligencia.
+También quedaron al descubierto sistemas de controles débiles e inmaduros, que determinaron ineficiencias administrativas y de gestión en general.
+Hubo situaciones en las que se actuó sin una ley habilitante lo que ocasionó que los organismos no cumplieran con sus cometidos específicos.
+Estos informes son el comienzo de un proceso de investigación que cada organismo involucrado procesará en el ámbito jurídico.
+Además conviene aclarar que hoy se presentan únicamente las auditorías procesadas por la AIN.
+Otros organismos del Estado ya están trabajando en  auditorías independientes. Así ocurre, por ejemplo, en ANTEL y el Ministerio de Desarrollo Social.
+Este gobierno ha dado un rol fundamental a la tarea de las auditorías con el objetivo de que los recursos de los todos los uruguayos se administren de manera eficaz, eficiente y transparente.
+Por ello en el Proyecto de Ley de Presupuesto se fortalece este rol y se incluyó un artículo en el que se le encomienda al Tribunal de Cuentas sumarse en esta tarea en coordinación con la AIN.
+Los informes que se dan a conocer hoy son 12 y corresponden a los años 2018 y 2019.
+Cabe destacar que por primera vez se publican de manera completa para que cualquier ciudadano pueda conocer cómo se utilizaron los recursos públicos.
+En las próximas semanas se irán publicando nuevos documentos, que aún se encuentran en proceso de elaboración.
+Definir políticas y metodologías en Seguridad de la Información para la Administración Central y colaborar con su implementación.
+Alcanzar un nivel de operación seguro, responder efectivamente ante incidentes de Seguridad de la Información, asegurando el cumplimiento legal y tomar acciones preventivas y correctivas para la mejora continua.
+Auditar cumplimiento técnico.
+Definir y difundir políticas, metodologías y buenas prácticas en seguridad de la información a ser aplicadas en la Administración Central.
+Asesorar a los organismos sobre los principales riesgos que enfrentan, en la clasificación de la información y en la  adopción de controles de mitigación (técnicos o administrativos) que permitan la reducción del riesgo total.
+Fomentar el desarrollo de Sistemas de Gestión de Seguridad de la Información coordinados dentro de la Administración Central.
+Coordinar grupos de trabajo interinstitucionales de Seguridad de la Información.
+Impulsar mecanismos de sensibilización y prevención en Seguridad de la Información (ciclo de charlas, capacitaciones, desarrollo de comunidades de práctica, gestión del conocimiento, entre otros).
+Coordinar esfuerzos para prevenir y responder ante incidentes de Seguridad de la Información.
+Identificar las principales amenazas (personas maliciosas, fallos en los sistemas, desastres naturales, entre otros) a las que están expuestos los Organismos del Estado.
+Verificar el cumplimiento mediante auditorías técnicas.
+Es una herramienta metodológica para adquirir el conocimiento necesario en un contexto determinado que permita elaborar un panorama lo más exhaustivo posible de los problemas actuales relacionados con la delincuencia e inseguridad en el municipio, localidad o comunidad.
+Una Auditoría Local de Seguridad forma parte del proceso que establece el Manual sobre la aplicación eficaz de las Directrices para la prevención del delito de Naciones Unidas.
+Una Auditoría Local de Seguridad busca incrementar la gobernabilidad y la gobernanza sobre la seguridad y la convivencia, a través del análisis de información cuantitativa y cualitativa utilizada para desarrollar una política de prevención y de seguridad que responda a los problemas encontrados a nivel local y sus causas.
+Toma de decisiones basadas en la evidencia
+Comprensión de problemas sociales a su máximo nivel de desagregación
+Políticas orientadas a la comunidad y a la prevención
+Estrategias de intervención focalizadas para la prevención
+Estrategias de intervención focalizadas para el desmantelamiento de grupos criminales y mercados ilícitos
+Fortalecimiento de la Cultura de la Legalidad
+Evaluación de impacto
+Reducción de la violencia y la delincuencia
+Seguimiento y visión a largo plazo
+La remesa esta sin habilitacion habria que llamar a Gaston para que la habilite, ademas la caja fuerta no esta funcionando bien me parece que esta rota hay que llamar al albañil para que la arregle.
+Me parece que el vidrio es blindado y tiene unos 5 centimetros por lo que cumple con las recomendaciones pero igual hay que llamar al vidriero para que lo valide
+La auditoria fue un exito el local esta habilitado ahora
+la auditoria esta en gestion y el tramite tiene un tiempo maximo de espera hasta el mes que viene
+El local tiene guardia propia y no tiene rejas.
+La habilitacion es provisoria aun estan esperando fecha para que les den la definitiva
+Tienen un gestor propio de datos para hacer analisis de comportamientos de clientes
+El local esta sin documentacion
+El servicio es tercerizado pero quieren crear uno propio
+Todos los papeles estan al dia
+La remesa esta vigente pero la auditoria esta vencida

@@ -9,11 +9,13 @@ router.register('auditoria', views.AuditoriaViewSet)
 router.register('pregunta', views.PreguntaViewSet)
 router.register('respuesta', views.RespuestaViewSet)
 router.register('media', views.MediaViewSet)
+router.register('incidente', views.IncidenteViewSet)
 # router.register(r'usuario', views.UsuarioViewSet)
 # router.register(r'enviar-respuesta', views.RespuestaConAudio)
 
 app_name = 'auditoria'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('respuesta/<int:pk>/imagen/', views.ImagenView.as_view(), name="something")
 ]

@@ -5,34 +5,33 @@ import {
 	IonHeader,
 	IonIcon,
 	IonItem,
+	IonLabel,
 	IonList,
-	IonPage,
 	IonSearchbar,
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
-import axios from 'axios';
-import { arrowBack, arrowForwardOutline } from 'ionicons/icons';
+import { arrowBack, arrowForwardOutline, storefrontOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
-
-interface IBaseSucursal {
-	id: string;
-	nombre: string;
-}
+import { fetchSucursales } from '../actions/sucursalesActions';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import PageWrapper from '../components/PageWrapper';
 
 const SeleccionSucursalParaAuditoria: React.FC = () => {
 	let history = useHistory();
-	const [sucursales, setSucursales] = useState<IBaseSucursal[]>([]);
+	const dispatch = useDispatch();
+	const { loading, error, sucursales } = useSelector((state: any) => state.sucursales);
+	const [searchText, setSearchText] = useState<string>('');
+
 	useEffect(() => {
-		const fetchSucursales = async () => {
-			const { data } = await axios('http://localhost:8000/api/sucursales/');
-			setSucursales(data);
-		};
-		fetchSucursales();
-	}, []);
+		dispatch(fetchSucursales());
+	}, [dispatch]);
+
 	return (
-		<IonPage>
+		<PageWrapper>
 			<IonHeader translucent>
 				<IonToolbar className='toolbar'>
 					<IonButtons slot='start'>
@@ -53,20 +52,35 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 				<IonSearchbar
 					placeholder='Busca una sucursal...'
 					showCancelButton='focus'
-					showClearButton='focus'></IonSearchbar>
-
-				<IonList>
-					{sucursales.map(s => (
-						<Link key={s.id} to={`/auditoria/datos/${s.id}`} style={{ textDecoration: 'none' }}>
-							<IonItem>
-								{s.nombre}
-								<IonIcon slot='end' icon={arrowForwardOutline} />
-							</IonItem>
-						</Link>
-					))}
-				</IonList>
+					showClearButton='focus'
+					value={searchText}
+					onIonChange={e => setSearchText(e.detail.value!)}></IonSearchbar>
+				{loading ? (
+					<Loader />
+				) : error ? (
+					<Message color='danger'>{error}</Message>
+				) : (
+					<IonList>
+						{sucursales
+							.filter((s: any) =>
+								s.nombre.toLowerCase().includes(searchText.toLocaleLowerCase())
+							)
+							.map((s: any) => (
+								<Link
+									key={s.id}
+									to={`/auditoria/${s.id}/datos`}
+									style={{ textDecoration: 'none' }}>
+									<IonItem button>
+										<IonIcon slot='start' icon={storefrontOutline} />
+										<IonLabel>{s.nombre}</IonLabel>
+										<IonIcon slot='end' icon={arrowForwardOutline} />
+									</IonItem>
+								</Link>
+							))}
+					</IonList>
+				)}
 			</IonContent>
-		</IonPage>
+		</PageWrapper>
 	);
 };
 

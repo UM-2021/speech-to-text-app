@@ -1,36 +1,29 @@
 import { IonAvatar, IonChip, IonIcon, IonItem, IonLabel, IonList, IonListHeader } from '@ionic/react';
-import axios from 'axios';
+
 import { navigateCircleOutline, storefrontOutline } from 'ionicons/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSucursal } from '../actions/sucursalesActions';
 import Loader from './Loader';
+import Message from './Message';
 
 import './PerfilSucursal.css';
 
-interface ISucursal {
-	id: string;
-	nombre: string;
-	direccion: string;
-	ciudad: string;
-	telefono: string;
-}
-
 const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
-	const [sucursal, setSucursal] = useState<ISucursal>();
-	const [loading, setLoading] = useState(true);
+	const dispatch = useDispatch();
+	const { loading, error, sucursal } = useSelector((state: any) => state.sucursal);
+
 	useEffect(() => {
-		const fetchSucursal = async () => {
-			const { data } = await axios(`http://localhost:8000/api/sucursales/${id}`);
-			setSucursal(data);
-			setLoading(false);
-		};
-		fetchSucursal();
-	}, [id]);
+		dispatch(fetchSucursal(id));
+	}, [dispatch, id]);
+
 	if (loading) return <Loader />;
+	if (error) return <Message color='danger'>{error}</Message>;
 	else
 		return (
 			<div>
-				<div className='center-content avatar-cont'>
-					<IonAvatar className='center-content avatar'>
+				<div className='center-content avatar-cont-suc'>
+					<IonAvatar className='center-content avatar-suc'>
 						<IonIcon color='primary' icon={storefrontOutline} />
 					</IonAvatar>
 				</div>
@@ -43,7 +36,9 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 								icon={navigateCircleOutline}
 							/>
 						</IonAvatar>
-						<IonLabel>{sucursal!.direccion}, {sucursal!.ciudad}</IonLabel>
+						<IonLabel>
+							{sucursal!.direccion}, {sucursal!.ciudad}
+						</IonLabel>
 					</IonChip>
 				</div>
 
@@ -57,7 +52,7 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 						<IonLabel color='medium' slot='start'>
 							Nro de SAG
 						</IonLabel>
-						<IonLabel>5342</IonLabel>
+						<IonLabel>{sucursal!.numero_de_sag}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
@@ -81,37 +76,37 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 						<IonLabel color='medium' slot='start'>
 							Último responsable
 						</IonLabel>
-						<IonLabel>Lea</IonLabel>
+						<IonLabel>{sucursal!.ultimo_responsable}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							Celular
 						</IonLabel>
-						<IonLabel>098 435 328</IonLabel>
+						<IonLabel>{sucursal!.celular}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							Razón social
 						</IonLabel>
-						<IonLabel>JC S.A</IonLabel>
+						<IonLabel>{sucursal!.razon_social}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							R.U.T
 						</IonLabel>
-						<IonLabel>1122332255330016</IonLabel>
+						<IonLabel>{sucursal!.rut}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							Tipo de negocio anexo
 						</IonLabel>
-						<IonLabel>Cambio</IonLabel>
+						<IonLabel>{sucursal!.negocio_anexo}</IonLabel>
 					</IonItem>
 					<IonItem className=''>
 						<IonLabel color='medium' slot='start'>
 							Acceso al local
 						</IonLabel>
-						<IonLabel>Desde la calle</IonLabel>
+						<IonLabel>{sucursal!.tipo_de_acceso}</IonLabel>
 					</IonItem>
 				</IonList>
 			</div>
