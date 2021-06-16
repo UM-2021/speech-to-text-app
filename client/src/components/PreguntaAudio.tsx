@@ -69,33 +69,33 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
   };
 
   // ESTO SE COMENTA PORQUE EN BROWSER NO COMPILA SI NO
-  const file = File.createFile(
-    File.externalRootDirectory,
-    'myaudio.mp3',
-    true
-  ).then((file) => {
-    setPath(file.toInternalURL());
-  });
-  const [mediaObj, setMediaObj] = useState<MediaObject>(
-    Media.create(
-      File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
-    )
-  );
+  // const file = File.createFile(
+  //   File.externalRootDirectory,
+  //   'myaudio.mp3',
+  //   true
+  // ).then((file) => {
+  //   setPath(file.toInternalURL());
+  // });
+  // const [mediaObj, setMediaObj] = useState<MediaObject>(
+  //   Media.create(
+  //     File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
+  //   )
+  // );
 
   const recordAudio = async () => {
-    if (!activeAudio) {
-      mediaObj.startRecord();
-    } else {
-      mediaObj.stopRecord();
-      mediaObj.release();
-      Base64.encodeFile(path)
-        .then((base64File: string) => {
-          setStatus(base64File);
-        })
-        .catch((err) => setStatus(err));
-      // await Base64.encodeFile(path);
-    }
-    setActiveAudio(!activeAudio);
+    // if (!activeAudio) {
+    //   mediaObj.startRecord();
+    // } else {
+    //   mediaObj.stopRecord();
+    //   mediaObj.release();
+    //   Base64.encodeFile(path)
+    //     .then((base64File: string) => {
+    //       setStatus(base64File);
+    //     })
+    //     .catch((err) => setStatus(err));
+    //   // await Base64.encodeFile(path);
+    // }
+    // setActiveAudio(!activeAudio);
   };
 
   const getBase64 = (file: any) => {
