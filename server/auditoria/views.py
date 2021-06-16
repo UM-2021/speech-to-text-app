@@ -72,18 +72,38 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         auditoria.finalizada = len(preguntas) == len(respuestas)
 
         preguntas_digefe = [p for p in preguntas if p.categoria == 'DIGEFE']
+        preguntas_extra = [p for p in preguntas if p.categoria == 'Extranormativa']
+        preguntas_faltantes = []
 
-        aprobada = True
+        digefe_aprobada = True
         for preg in preguntas_digefe:
             respuesta = next((r for r in respuestas if r.pregunta.id == preg.id), None)
-            if not respuesta or str(preg.respuesta_correcta).lower() != str(respuesta.respuesta).lower():
-                aprobada = False
+            if not respuesta or \
+                    str(respuesta.respuesta).lower() not in \
+                    [str(r).lower() for r in preg.respuestas_correctas]:
+                digefe_aprobada = False
+                preguntas_faltantes.append(preg)
 
-        auditoria.aprobada = aprobada
+        extra_aprobada = True
+        for preg in preguntas_extra:
+            respuesta = next((r for r in respuestas if r.pregunta.id == preg.id), None)
+            if not respuesta or \
+                    str(respuesta.respuesta).lower() not in \
+                    [str(r).lower() for r in preg.respuestas_correctas]:
+                extra_aprobada = False
+                preguntas_faltantes.append(preg)
+
+        auditoria.digefe_aprobada = digefe_aprobada
+        auditoria.extra_aprobada = extra_aprobada
         auditoria.save()
 
         serializer = AuditoriaSerializer(auditoria, many=False)
-        return Response(serializer.data)
+        serializer_pregunta = PreguntaSerializer(preguntas_faltantes, many=True)
+
+        data = serializer.data
+        data['preguntas_faltantes'] = serializer_pregunta.data
+        
+        return Response(data)
 
 
 class PreguntaViewSet(viewsets.ModelViewSet):
@@ -100,12 +120,8 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
-    def create(self, request):
-        serializer = RespuestaSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
 
     @action(methods=['post'], detail=True,)
     def transcribir(self, request, pk=None):
