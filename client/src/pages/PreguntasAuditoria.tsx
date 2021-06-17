@@ -160,7 +160,7 @@ const PreguntasAuditoria: React.FC = () => {
 											respuesta={
 												respuestas.filter((r: any) => r.pregunta === p.id)[0] || {}
 											}
-											respuestaCorrecta={p.respuesta_correcta}
+											respuestasCorrectas={p.respuestas_correctas}
 										/>
 									</IonSlide>
 								))}
