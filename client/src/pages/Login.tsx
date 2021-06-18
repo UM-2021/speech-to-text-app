@@ -1,18 +1,18 @@
 import {
-	IonContent,
-	IonHeader,
-	IonPage,
-	IonTitle,
-	IonToolbar,
-	IonRow,
-	IonCol,
-	IonItem,
-	IonInput,
-	IonLabel,
-	IonIcon,
-	IonGrid,
-	IonButton,
-	IonToast
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonRow,
+  IonCol,
+  IonItem,
+  IonInput,
+  IonLabel,
+  IonIcon,
+  IonGrid,
+  IonButton,
+  IonToast,
 } from '@ionic/react';
 import { personCircle } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
@@ -22,16 +22,18 @@ import { login } from '../actions/authActions';
 import Loader from '../components/Loader';
 
 const Login: React.FC<any> = () => {
-	let history = useHistory();
-	const dispatch = useDispatch();
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const [error, setError] = useState(false);
-	const { user, loading, error: errorLogin } = useSelector((state: any) => state.auth);
+  let history = useHistory();
+  const dispatch = useDispatch();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
+  const { user, loading, error: errorLogin } = useSelector(
+    (state: any) => state.auth
+  );
 
 	useEffect(() => {
 		if (errorLogin) setError(true);
-		if (user) history.push('/home');
+		if (user) history.replace('/home');
 	}, [user, history, errorLogin]);
 
 	const onSubmit = (e: any) => {
@@ -67,7 +69,8 @@ const Login: React.FC<any> = () => {
 							<IonRow>
 								<IonCol className='ion-text-center'>
 									<IonIcon
-										style={{ fontSize: '70px', color: '#0040ff' }}
+										color='primary'
+										style={{ fontSize: '30vw' }}
 										icon={personCircle}
 									/>
 								</IonCol>

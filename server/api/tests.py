@@ -27,23 +27,25 @@ class AuditoriaTestCase(TestCase):
     def test_update(self):
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
         aud = Auditoria.objects.create(sucursal=suc)
-        aud.aprobada = True
-        aud.save(update_fields=['aprobada'])
-        self.assertFalse(Auditoria.objects.filter(aprobada=False).exists())
-        self.assertIsNotNone(Auditoria.objects.filter(aprobada=True))
+        aud.digefe_aprobada = True
+        aud.save(update_fields=['digefe_aprobada'])
+        self.assertFalse(Auditoria.objects.filter(digefe_aprobada=False).exists())
+        self.assertIsNotNone(Auditoria.objects.filter(digefe_aprobada=True))
 
 
 class PreguntaTestCase(TestCase):
     def test_save(self):
-        Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="Dg", tipo="audi")
+        Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
+                                categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
         self.assertIsNotNone(Pregunta.objects.filter(pregunta="El test funciona bien?"))
         self.assertIsNotNone(Pregunta.objects.filter(seccion="Adentro"))
         self.assertIsNotNone(Pregunta.objects.filter(categoria="DIGEFE"))
         self.assertIsNotNone(Pregunta.objects.filter(tipo="Audio"))
 
     def test_update(self):
-        Pregunta.objects.filter(pregunta="El test funciona bien?").update(seccion="CA")
-        self.assertFalse(Pregunta.objects.filter(seccion="Adentro").exists())
+        Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
+                                categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        self.assertFalse(Pregunta.objects.filter(seccion="Afuera").exists())
         self.assertFalse(Pregunta.objects.filter(seccion="Caja").exists())
 
 
@@ -51,7 +53,8 @@ class RespuestaTestCase(TestCase):
     def test_save(self):
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
         aud = Auditoria.objects.create(sucursal=suc)
-        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="dg", tipo="audi")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
+                                       categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
         Respuesta.objects.create(respuesta="Si anda bien", auditoria=aud, pregunta=preg, usuario=usr)
         self.assertTrue(Respuesta.objects.filter(respuesta="Si anda bien").exists())
@@ -59,7 +62,8 @@ class RespuestaTestCase(TestCase):
     def test_update(self):
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
         aud = Auditoria.objects.create(sucursal=suc)
-        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="dg", tipo="audi")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
+                                       categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
         res = Respuesta.objects.create(respuesta="Si anda bien", auditoria=aud, pregunta=preg, usuario=usr)
         res.respuesta = 'anda mal ahora k'
@@ -89,14 +93,16 @@ class MediaTestCase(TestCase):
 class IncidenteTestCase(TestCase):
     def test_save(self):
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
-        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="dg", tipo="audi")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
+                                       categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
         usr2 = get_user_model().objects.create(username="Nacho", email="nacho@gmail.com", password="123456")
-
         Incidente.objects.create(asignado=usr2, pregunta=preg, accion='TOMA ACCION EN INCIDENTE',sucursal=suc)
         self.assertIsNotNone(Incidente.objects.get(accion="TOMA ACCION EN INCIDENTE"))
 
     def test_update(self):
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
+                                       categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="dg", tipo="audi")
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
