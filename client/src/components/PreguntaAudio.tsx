@@ -140,7 +140,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
   const processAudio = async (audio: string) => {
     setProcessingAudio(true);
     const { data } = await axiosInstance.post(
-      `/api/auditorias/respuesta/${1}/transcribir/`,
+      `/api/auditorias/respuesta/transcribir/`,
       {
         audio,
       },
