@@ -1,6 +1,8 @@
 import base64
 import uuid
 from datetime import datetime
+
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
 from django.utils.decorators import method_decorator
@@ -102,7 +104,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 
         data = serializer.data
         data['preguntas_faltantes'] = serializer_pregunta.data
-        
+
         return Response(data)
 
 
@@ -123,12 +125,26 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(usuario=self.request.user)
 
-    @action(methods=['post'], detail=True,)
-    def transcribir(self, request, pk=None):
+    def create(self, request):#todo crear incidentene si en las notas viene uno
+        serializer = RespuestaSerializer(data=request.data)
+        if serializer.is_valid():
+            is_adui_not_finished=Auditoria.objects.filter(id=request.data.get("auditoria"),finalizada=False).exists()
+            is_respuesta=Respuesta.objects.filter(auditoria=request.data.get("auditoria")).exists()
+            if is_adui_not_finished and  is_respuesta :
+                respuesta=Respuesta.objects.filter(auditoria=request.data.get("auditoria"),pregunta=request.data.get("pregunta"))[0]
+                respuesta.respuesta=request.data.get("respuesta")
+                respuesta.notas=request.data.get("notas")
+                respuesta.save(update_fields=['respuesta','notas'])
+                return Response(RespuestaSerializer(respuesta).data,status=status.HTTP_202_ACCEPTED)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'],detail=False)
+    def transcribir(self, request):
         audio = request.data.get("audio")
         if not audio:
             return Response({"detail": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
-
         audio = audio.replace('data:audio/mpeg;base64,', '')
         audio += '======='
         audio_data = b64decode(audio)
@@ -200,6 +216,56 @@ class MediaViewSet(viewsets.ModelViewSet):
 class IncidenteViewSet(viewsets.ModelViewSet):
     queryset = Incidente.objects.all()
     serializer_class = IncidenteSerializer
+
+    def list(self, request):
+        queryset = Incidente.objects.filter(reporta=request.user)
+        serializer = IncidenteSerializer(queryset, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def create(self, request):
+        datos = request.data.copy()
+        datos["reporta"] = request.user.id #Usuario logeado
+        datosSerializados = IncidenteSerializer(data=datos)
+        if datosSerializados.is_valid() and (datos.get('asignado') is not None):
+            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
+        return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['get'], detail=True)
+    def procesando(self, resquest, pk):
+        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/procesando, ese id que pasan va a ser por el cual se filtra
+        if is_incidente:
+            incidente = Incidente.objects.filter(id__exact=pk).first()
+            incidente.status = "Procesando"
+            incidente.save(update_fields=['status'])
+            serializer= IncidenteSerializer(incidente,many=False)
+            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+        return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['get'],detail=True)
+    def resolver(self,resquest,pk):
+        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
+        if is_incidente:
+            incidente = Incidente.objects.filter(id__exact=pk).first()
+            incidente.status = "Resuelto"
+            incidente.save(update_fields=['status'])
+            serializer= IncidenteSerializer(incidente,many=False)
+            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+        return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
+
+
+    @action(methods=['get'],detail=True)
+    def confirmar(self,request,pk):
+        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/confirmar, ese id que pasan va a ser por el cual se filtra
+        if is_incidente:
+            incidente = Incidente.objects.filter(id__exact=pk).first()
+            #todo cmabiar la respuesta de la pregunta
+            incidente.status= 'Confirmado'
+            incidente.save(update_fields=['status'])
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
+
+
 
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
