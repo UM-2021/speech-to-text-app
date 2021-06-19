@@ -93,21 +93,23 @@ class MediaTestCase(TestCase):
 class IncidenteTestCase(TestCase):
     def test_save(self):
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
-        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
-                                       categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        aud = Auditoria.objects.create(sucursal=suc)
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
+        res = Respuesta.objects.create(respuesta="Si anda bien", auditoria=aud, pregunta=preg, usuario=usr)
         usr2 = get_user_model().objects.create(username="Nacho", email="nacho@gmail.com", password="123456")
-        Incidente.objects.create(asignado=usr2, pregunta=preg, accion='TOMA ACCION EN INCIDENTE',sucursal=suc)
+        Incidente.objects.create(asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc)
         self.assertIsNotNone(Incidente.objects.get(accion="TOMA ACCION EN INCIDENTE"))
 
     def test_update(self):
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",
                                        categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
-        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="AD", categoria="dg", tipo="audi")
+        aud = Auditoria.objects.create(sucursal=suc)
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
+        res = Respuesta.objects.create(respuesta="Si anda bien", auditoria=aud, pregunta=preg, usuario=usr)
         usr2 = get_user_model().objects.create(username="Nacho", email="nacho@gmail.com", password="123456")
-        inc = Incidente.objects.create(asignado=usr2, pregunta=preg, accion='TOMA ACCION EN INCIDENTE',sucursal=suc)
+        inc = Incidente.objects.create(asignado=usr2,respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc)
         inc.accion = 'ACCION NUEVA pa'
         inc.save(update_fields=['accion'])
         self.assertFalse(Incidente.objects.filter(accion='TOMA ACCION EN INCIDENTE').exists())
