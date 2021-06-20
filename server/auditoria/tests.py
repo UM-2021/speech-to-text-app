@@ -36,7 +36,6 @@ class RespuestaViewTestCase(APITestCase):
         resp1 = self.client.post('/api/auditorias/respuesta/',
                                  {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,'respuesta':"si",'notas':"Llamar a Gaston"})
         inc=Incidente.objects.filter(asignado=gaston.id)
-        print(inc)
         self.assertIsNotNone(inc)
         self.assertEqual(resp1.status_code, 201)
 
@@ -123,7 +122,7 @@ class IncidenteViewTestCase(APITestCase):
         resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr.id,'accion':"la wea que se tiene que hacer"})
         self.assertEqual(resp1.status_code, 201)
 
-    def test_get_incidente_200(self):
+    def test_get_incidente_200_A(self):
         test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
         usr_1 = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
@@ -132,6 +131,19 @@ class IncidenteViewTestCase(APITestCase):
         resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr_1.id,'accion':"la wea que se tiene que hacer"})
         self.assertEqual(resp1.status_code, 201)
         incident = Incidente.objects.create(reporta=self.user, asignado=usr_1, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=test_suc)
+        incidente_id = str(incident.pk)
+        resp2 = self.client.get(f'/api/auditorias/incidente/{incidente_id}', follow=True)
+        self.assertEqual(resp2.status_code, 200)
+
+    def test_get_incidente_200_B(self):
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        usr_1 = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
+        audit1 = Auditoria.objects.create(id=1, sucursal=test_suc, finalizada=False)
+        res=Respuesta.objects.create(respuesta="Si anda bien", auditoria=audit1, pregunta=preg, usuario=usr_1)
+        resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr_1.id,'accion':"la wea que se tiene que hacer"})
+        self.assertEqual(resp1.status_code, 201)
+        incident = Incidente.objects.create(reporta=usr_1, asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=test_suc)
         incidente_id = str(incident.pk)
         resp2 = self.client.get(f'/api/auditorias/incidente/{incidente_id}', follow=True)
         self.assertEqual(resp2.status_code, 200)
