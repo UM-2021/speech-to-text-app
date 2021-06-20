@@ -99,17 +99,17 @@ class IncidenteViewTestCase(APITestCase):
 
     def test_list(self):
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
+        suc_2 = Sucursal.objects.create(nombre="Tres Cruces", numero_de_sag="2", telefono=456456)
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",tipo="Audio", respuestas_correctas=["Si", "No"])
         aud = Auditoria.objects.create(sucursal=suc)
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
         res = Respuesta.objects.create(respuesta="Si anda bien", auditoria=aud, pregunta=preg, usuario=usr)
         usr2 = get_user_model().objects.create(username="Nacho", email="nacho@gmail.com", password="123456")
         Incidente.objects.create(reporta=usr2,asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc)
-        Incidente.objects.create(reporta=self.user,asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc)
+        Incidente.objects.create(reporta=self.user,asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc_2)
         Incidente.objects.create(reporta=usr2, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',
                                  sucursal=suc)
         resp1 = self.client.get('/api/auditorias/incidente/')
-        #print(resp1.data) solo se generaban 2
         self.assertEqual(resp1.status_code, 200)
 
 
@@ -216,14 +216,14 @@ class IncidenteViewTestCase(APITestCase):
         audit1 = Auditoria.objects.create(id=1, sucursal=suc, finalizada=False)
         res = Respuesta.objects.create(respuesta="Si anda bien", auditoria=audit1, pregunta=preg, usuario=usr2)
         incident=Incidente.objects.create(asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc)
-        resp1 = self.client.get('/api/auditorias/incidente/'+str(incident.id)+'/confirmar',
+        resp1 = self.client.post('/api/auditorias/incidente/'+str(incident.id)+'/confirmar/',
                                  {'pregunta': preg.id, 'asignado': usr2.id, 'accion': "la wea que se tiene que hacer"},follow=True)
-        resp2 = self.client.get('/api/auditorias/incidente/2345678/confirmar',
+        resp2 = self.client.post('/api/auditorias/incidente/2345678/confirmar/',
                                  {'pregunta': preg.id, 'asignado': usr2.id, 'accion': "la wea que se tiene que hacer"},follow=True)
-        resp3 = self.client.get('/api/auditorias/incidente/' +str( incident.id) + '/confirmar',
+        resp3 = self.client.post('/api/auditorias/incidente/' +str( incident.id) + '/confirmar/',
                                  {'pregunta': preg.id, 'accion': "la wea que se tiene que hacer"},follow=True)
         self.assertEqual(resp1.status_code, 202)
-        self.assertEqual(resp2.status_code, 204)
+        self.assertEqual(resp2.status_code, 404)
 
     def test_resolver(self):
         suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")
@@ -232,13 +232,13 @@ class IncidenteViewTestCase(APITestCase):
         audit1 = Auditoria.objects.create(id=1, sucursal=suc, finalizada=False)
         res = Respuesta.objects.create(respuesta="Si anda bien", auditoria=audit1, pregunta=preg, usuario=usr2)
         incidente=Incidente.objects.create(asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc)
-        resp1 = self.client.get('/api/auditorias/incidente/'+str(incidente.id)+'/resolver',
+        resp1 = self.client.post('/api/auditorias/incidente/'+str(incidente.id)+'/resolver/',
                                  {'pregunta': preg.id, 'asignado': usr2.id, 'accion': "la wea que se tiene que hacer"},follow=True)
-        resp2 = self.client.get('/api/auditorias/incidente/1/resolver',
+        resp2 = self.client.post('/api/auditorias/incidente/1/resolver/',
                                  {'pregunta': preg.id, 'asignado': usr2.id, 'accion': "la wea que se tiene que hacer"},follow=True)
-        resp3 = self.client.get('/api/auditorias/incidente/'+ str(incidente.id) + '/resolver',
-                                 {'pregunta': preg.id, 'accion': "la wea que se tiene que hacer"},follow=True)
+        resp3 = self.client.post('/api/auditorias/incidente/' + str(incidente.id) + '/resolver/',
+                                 {'pregunta': preg.id, 'accion': "la wea que se tiene que hacer"}, follow=True)
         self.assertEqual(resp1.status_code, 202)
-        self.assertEqual(resp2.status_code, 204)
+        self.assertEqual(resp2.status_code, 404)
 
 
