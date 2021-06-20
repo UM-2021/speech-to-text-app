@@ -8,27 +8,30 @@ import PreguntaNumerica from './PreguntaNumerica';
 import PreguntaOpciones from './PreguntaOpciones';
 
 interface IPregunta {
-  id: string;
-  auditoriaId: string;
-  pregunta: string;
-  tipo: string;
-  opciones?: any;
-  categoria: string;
-  respuesta: any;
-  respuestaCorrecta: string | number;
+	id: string;
+	auditoriaId: string;
+	pregunta: string;
+	tipo: string;
+	opciones?: any;
+	categoria: string;
+	respuesta: any;
+	respuestasCorrectas: string[] | number[];
 }
 
 const Pregunta: React.FC<IPregunta> = ({
-  id,
-  tipo,
-  pregunta,
-  opciones,
-  auditoriaId,
-  respuesta,
-  respuestaCorrecta,
-  categoria,
+	id,
+	tipo,
+	pregunta,
+	opciones,
+	auditoriaId,
+	respuesta,
+	respuestasCorrectas,
+	categoria
 }) => {
-	const validateAnswer = () => respuestaCorrecta === respuesta?.respuesta.toString() ?? null;
+	const validateAnswer = () =>
+		respuestasCorrectas
+			.map((r: any) => r.toString().toLowerCase())
+			.includes(respuesta.respuesta.toString().toLowerCase() ?? null);
 
 	const colors: any = {
 		DIGEFE: 'danger',

@@ -38,7 +38,9 @@ const RespuestasAuditoriaList: React.FC<{
 	};
 
 	const validateAnswer = (pregunta: any) =>
-		pregunta.respuesta_correcta === pregunta.respuesta?.respuesta.toString() ?? null;
+		pregunta.respuestas_correctas
+			.map((r: any) => r.toString().toLowerCase())
+			.includes(pregunta.respuesta.respuesta.toString().toLowerCase() ?? null);
 
 	const colors: any = {
 		DIGEFE: 'var(--ion-color-danger)',

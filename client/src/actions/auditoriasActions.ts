@@ -103,7 +103,7 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 					}
 				);
 			}
-			if (r.photo !== null) {
+			if (r.photo) {
 				let resId;
 				if (!r.id) {
 					const { data } = await axiosInstance(

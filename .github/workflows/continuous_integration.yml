@@ -20,8 +20,10 @@ jobs:
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
       DATABASE_ENGINE: django.db.backends.postgresql
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DJANGO_ALLOWED_HOSTS: localhost 127.0.0.1 [::1]
-      USE_S3: FALSE
+      USE_S3: TRUE
     services:
       postgres:
         image: postgres:10.8
@@ -51,6 +53,9 @@ jobs:
       - name: Run migrations
         run: python manage.py migrate
         working-directory: ./server
+      - name: Create files folder
+        run: rm -rf ./mediafiles/files/audios && mkdir -p ./mediafiles/files/audios
+        working-directory: ./server
       - name: Run tests
-        run: \python manage.py test
+        run: python manage.py test
         working-directory: ./server
