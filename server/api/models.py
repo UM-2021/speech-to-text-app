@@ -124,7 +124,7 @@ class Media(models.Model):
 class Incidente(models.Model):
     reporta = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,null=True, related_name='incidentes_reportados')
     asignado = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,null=True, related_name='incidentes_asignados')
-    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE,null=False,)
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE,null=False)
     accion = models.CharField(max_length=255)
     # Campos agregados por nosotros
     status = (
@@ -139,7 +139,7 @@ class Incidente(models.Model):
 
 
     def __str__(self):
-        return self.accion, self.reporta, self.asignado, self.pregunta
+        return f'{self.sucursal.nombre} - {self.accion}'
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

@@ -12,7 +12,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import Q
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
 from audio.natural_language_processing import split
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
@@ -218,17 +218,19 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
     def list(self, request):
-        queryset = Incidente.objects.filter(reporta=request.user)
+        queryset = Incidente.objects.filter(Q(reporta=request.user.id)|Q(asignado=request.user.id))
         serializer = IncidenteSerializer(queryset, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+
     def create(self, request):
-        datos = request.data.copy()
+        datos = request.data.copy() 
         datos["reporta"] = request.user.id #Usuario logeado
         datosSerializados = IncidenteSerializer(data=datos)
         if datosSerializados.is_valid() and (datos.get('asignado') is not None):
             return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
         return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     @action(methods=['get'], detail=True)
     def procesando(self, resquest, pk):
