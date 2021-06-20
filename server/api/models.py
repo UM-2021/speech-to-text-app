@@ -129,7 +129,7 @@ class Incidente(models.Model):
     accion = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.accion, self.reporta, self.asignado, self.pregunta
+        return f'{self.sucursal.nombre} - {self.accion}'
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
