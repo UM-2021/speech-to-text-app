@@ -1,6 +1,10 @@
 import { IonSpinner } from '@ionic/react';
 
-const Loader = () => {
+const Loader: React.FC<{ mini?: boolean }> = ({ mini }) => {
+	const sizes = {
+		width: mini ? '20px' : '50px',
+		height: mini ? '20px' : '50px'
+	};
 	return (
 		<div
 			style={{
@@ -10,7 +14,7 @@ const Loader = () => {
 				justifyContent: 'center',
 				alignItems: 'center'
 			}}>
-			<IonSpinner style={{ width: '50px', height: '50px' }} name='crescent' />
+			<IonSpinner style={sizes} name='crescent' />
 		</div>
 	);
 };
