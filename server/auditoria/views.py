@@ -124,44 +124,50 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
-    def perform_create(self,request):
+    def perform_create(self, request):
         serializer = RespuestaSerializer(data=request.data)
         notas = request.data.get("notas")
         if serializer.is_valid():
             is_adui_not_finished = Auditoria.objects.filter(id=request.data.get("auditoria"), finalizada=False).exists()
             is_respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria")).exists()
             if is_adui_not_finished and is_respuesta:
-                respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria"),pregunta=request.data.get("pregunta"))[0]
+                respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria"),
+                                                     pregunta=request.data.get("pregunta"))[0]
                 respuesta.respuesta = request.data.get("respuesta")
                 respuesta.notas = request.data.get("notas")
                 respuesta.save(update_fields=['respuesta', 'notas'])
             else:
-                respuesta=serializer.save()
+                respuesta = serializer.save()
             if notas is not None:
                 vec = split(notas)
-                auditoria=Auditoria.objects.get(id=request.data.get('auditoria'))
-                usuarioE = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user'])).exists()
+                auditoria = Auditoria.objects.get(id=request.data.get('auditoria'))
+                usuarioE = get_user_model().objects.filter(
+                    Q(username=vec['incident']['user']) | Q(first_name=vec['incident']['user'])).exists()
                 if not usuarioE:
-                        return Response("No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta", status = status.HTTP_206_PARTIAL_CONTENT)
+                    return Response(
+                        "No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta",
+                        status=status.HTTP_206_PARTIAL_CONTENT)
                 else:
-                    usuario = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user']))[0]
+                    usuario = get_user_model().objects.filter(
+                        Q(username=vec['incident']['user']) | Q(first_name=vec['incident']['user']))[0]
                 datos_incidente = {
-                    'reporta':request.data.get("usuario"),
-                    'asignado':usuario.id,
-                    'respuesta':respuesta.id,
-                    'accion':vec['incident']['action'],
-                    'status':"Pendiente",
+                    'reporta': request.data.get("usuario"),
+                    'asignado': usuario.id,
+                    'respuesta': respuesta.id,
+                    'accion': vec['incident']['action'],
+                    'status': "Pendiente",
                     'sucursal': auditoria.sucursal.id
                 }
-                IncSer=IncidenteSerializer(data=datos_incidente)
+                IncSer = IncidenteSerializer(data=datos_incidente)
                 if IncSer.is_valid():
                     IncSer.save()
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
-                return Response("No se pudo generar el incidente, pero se guardo la respuesta",status=status.HTTP_206_PARTIAL_CONTENT)
+                return Response("No se pudo generar el incidente, pero se guardo la respuesta",
+                                status=status.HTTP_206_PARTIAL_CONTENT)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=['post'],detail=False)
+    @action(methods=['post'], detail=False)
     def transcribir(self, request):
         audio = request.data.get("audio")
         if not audio:
@@ -190,7 +196,8 @@ class RespuestaViewSet(viewsets.ModelViewSet):
             path = default_storage.save('files/audios/', file)
 
         if resVector['note'] is not None:
-            return Response({'respuesta': resVector['response'], 'notas': resVector['note'], 'url_path': path}, status=status.HTTP_200_OK)
+            return Response({'respuesta': resVector['response'], 'notas': resVector['note'], 'url_path': path},
+                            status=status.HTTP_200_OK)
         return Response({'respuesta': resVector['response'], 'url_path': path}, status=status.HTTP_200_OK)
 
 
@@ -238,7 +245,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
     def list(self, request):
-        queryset_incidente = Incidente.objects.filter(Q(reporta=request.user.id)|Q(asignado=request.user.id))
+        queryset_incidente = Incidente.objects.filter(Q(reporta=request.user.id) | Q(asignado=request.user.id))
         incidente_serializer = IncidenteSerializer(queryset_incidente, many=True)
         # Añadir el nombre de la sucursal
         result = []
@@ -253,8 +260,8 @@ class IncidenteViewSet(viewsets.ModelViewSet):
         return Response(result, status=status.HTTP_200_OK)
 
     def create(self, request):
-        datos = request.data.copy() 
-        datos["reporta"] = request.user.id #Usuario logeado
+        datos = request.data.copy()
+        datos["reporta"] = request.user.id  # Usuario logeado
         datosSerializados = IncidenteSerializer(data=datos)
         if datosSerializados.is_valid() and (datos.get('asignado') is not None):
             return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
@@ -266,10 +273,12 @@ class IncidenteViewSet(viewsets.ModelViewSet):
         except:
             return Response({"detail:" "El ID tiene que ser un integer"}, status=status.HTTP_400_BAD_REQUEST)
 
-        incidente = Incidente.objects.filter(reporta=request.user, pk=pk).first() or Incidente.objects.filter(asignado=request.user, pk=pk).first()
+        incidente = Incidente.objects.filter(reporta=request.user, pk=pk).first() or Incidente.objects.filter(
+            asignado=request.user, pk=pk).first()
 
         if not incidente:
-            return Response({"Detail:" "No se encontró un incidente relacionado al usuario de la request."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"Detail:" "No se encontró un incidente relacionado al usuario de la request."},
+                            status=status.HTTP_404_NOT_FOUND)
 
         serializer = IncidenteSerializer(incidente)
 
@@ -284,33 +293,36 @@ class IncidenteViewSet(viewsets.ModelViewSet):
 
     @action(methods=['post'], detail=True)
     def procesando(self, resquest, pk):
-        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/procesando, ese id que pasan va a ser por el cual se filtra
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/procesando, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
             incidente.status = "Procesando"
             incidente.save(update_fields=['status'])
-            serializer= IncidenteSerializer(incidente,many=False)
-            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
 
     @action(methods=['post'], detail=True)
     def resolver(self, resquest, pk):
-        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
             incidente.status = "Resuelto"
             incidente.save(update_fields=['status'])
-            serializer= IncidenteSerializer(incidente,many=False)
-            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
 
     @action(methods=['post'], detail=True)
-    def confirmar(self,request,pk):
-        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/confirmar, ese id que pasan va a ser por el cual se filtra
+    def confirmar(self, request, pk):
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/confirmar, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
-            #todo cmabiar la respuesta de la pregunta
-            incidente.status= 'Confirmado'
+            # todo cmabiar la respuesta de la pregunta
+            incidente.status = 'Confirmado'
             incidente.save(update_fields=['status'])
             serializer = IncidenteSerializer(incidente, many=False)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
