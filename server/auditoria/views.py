@@ -230,6 +230,25 @@ class IncidenteViewSet(viewsets.ModelViewSet):
             return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
         return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def retrieve(self, request, pk=None):
+        try:
+            int(pk)
+        except:
+            return Response({"detail:" "El ID tiene que ser un integer"}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset = Incidente.objects.filter(reporta=request.user)
+        incidente = get_object_or_404(queryset, pk=pk)
+        serializer = IncidenteSerializer(incidente)
+
+        dict_de_respuesta = {
+            "incidente": serializer.data,
+            "nombre_sucursal": incidente.sucursal.nombre,
+            "nombre_del_usuario_asignado": incidente.asignado.username,
+            "email_del_usuario_asignado": incidente.asignado.email
+        }
+
+        return Response(dict_de_respuesta, status=status.HTTP_200_OK)
+
     @action(methods=['get'], detail=True)
     def procesando(self, resquest, pk):
         is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/procesando, ese id que pasan va a ser por el cual se filtra
@@ -242,7 +261,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
         return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['get'],detail=True)
-    def resolver(self,resquest,pk):
+    def resolver(self, resquest, pk):
         is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
@@ -251,7 +270,6 @@ class IncidenteViewSet(viewsets.ModelViewSet):
             serializer= IncidenteSerializer(incidente,many=False)
             return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
         return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
-
 
     @action(methods=['get'],detail=True)
     def confirmar(self,request,pk):
@@ -264,8 +282,6 @@ class IncidenteViewSet(viewsets.ModelViewSet):
             serializer = IncidenteSerializer(incidente, many=False)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
-
-
 
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):

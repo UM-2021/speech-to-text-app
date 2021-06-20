@@ -92,6 +92,62 @@ class IncidenteViewTestCase(APITestCase):
         resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr.id,'accion':"la wea que se tiene que hacer"})
         self.assertEqual(resp1.status_code, 201)
 
+    def test_get_incidente_200(self):
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        usr_1 = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
+        audit1 = Auditoria.objects.create(id=1, sucursal=test_suc, finalizada=False)
+        res=Respuesta.objects.create(respuesta="Si anda bien", auditoria=audit1, pregunta=preg, usuario=usr_1)
+        resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr_1.id,'accion':"la wea que se tiene que hacer"})
+        self.assertEqual(resp1.status_code, 201)
+        incident = Incidente.objects.create(reporta=self.user, asignado=usr_1, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=test_suc)
+        incidente_id = str(incident.pk)
+        resp2 = self.client.get(f'/api/auditorias/incidente/{incidente_id}', follow=True)
+        self.assertEqual(resp2.status_code, 200)
+
+    def test_get_incidente_404_A(self):
+        # Se pide un incidente cuyo usuario que reporta no es el que hace la request
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        usr_1 = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
+        usr_2 = get_user_model().objects.create(username="Fer", email="fer@gmail.com", password="123456")
+        audit1 = Auditoria.objects.create(id=1, sucursal=test_suc, finalizada=False)
+        res=Respuesta.objects.create(respuesta="Si anda bien", auditoria=audit1, pregunta=preg, usuario=usr_1)
+        resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr_1.id,'accion':"la wea que se tiene que hacer"})
+        self.assertEqual(resp1.status_code, 201)
+        incident = Incidente.objects.create(reporta=usr_1, asignado=usr_2, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=test_suc)
+        incidente_id = str(incident.pk)
+        resp2 = self.client.get(f'/api/auditorias/incidente/{incidente_id}', follow=True)
+        self.assertEqual(resp2.status_code, 404)
+
+    def test_get_incidente_404_B(self):
+        # Se pide un incidente con id inexistente
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        usr_1 = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
+        audit1 = Auditoria.objects.create(id=1, sucursal=test_suc, finalizada=False)
+        res=Respuesta.objects.create(respuesta="Si anda bien", auditoria=audit1, pregunta=preg, usuario=usr_1)
+        resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr_1.id,'accion':"la wea que se tiene que hacer"})
+        self.assertEqual(resp1.status_code, 201)
+        incident = Incidente.objects.create(reporta=self.user, asignado=usr_1, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=test_suc)
+        incidente_id = 44444444  # Un ID arbitrario que no existe
+        resp2 = self.client.get(f'/api/auditorias/incidente/{incidente_id}', follow=True)
+        self.assertEqual(resp2.status_code, 404)
+
+    def test_get_incidente_400(self):
+        # Se pide un incidente con id string
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
+        usr_1 = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
+        audit1 = Auditoria.objects.create(id=1, sucursal=test_suc, finalizada=False)
+        res=Respuesta.objects.create(respuesta="Si anda bien", auditoria=audit1, pregunta=preg, usuario=usr_1)
+        resp1 = self.client.post('/api/auditorias/incidente/', {'sucursal':test_suc.id , 'respuesta':res.id, 'asignado': usr_1.id,'accion':"la wea que se tiene que hacer"})
+        self.assertEqual(resp1.status_code, 201)
+        incident = Incidente.objects.create(reporta=self.user, asignado=usr_1, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=test_suc)
+        incidente_id = "ID Inexistente"
+        resp2 = self.client.get(f'/api/auditorias/incidente/{incidente_id}', follow=True)
+        self.assertEqual(resp2.status_code, 400)
+
     def test_create_400(self):
         test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
         pre = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",
