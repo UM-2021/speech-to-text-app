@@ -2,6 +2,8 @@ import base64
 import uuid
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
@@ -122,21 +124,40 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
-
-    def create(self, request):#todo crear incidentene si en las notas viene uno
+    def perform_create(self,request):
         serializer = RespuestaSerializer(data=request.data)
+        notas = request.data.get("notas")
         if serializer.is_valid():
-            is_adui_not_finished=Auditoria.objects.filter(id=request.data.get("auditoria"),finalizada=False).exists()
-            is_respuesta=Respuesta.objects.filter(auditoria=request.data.get("auditoria")).exists()
-            if is_adui_not_finished and  is_respuesta :
-                respuesta=Respuesta.objects.filter(auditoria=request.data.get("auditoria"),pregunta=request.data.get("pregunta"))[0]
-                respuesta.respuesta=request.data.get("respuesta")
-                respuesta.notas=request.data.get("notas")
-                respuesta.save(update_fields=['respuesta','notas'])
-                return Response(RespuestaSerializer(respuesta).data,status=status.HTTP_202_ACCEPTED)
-            serializer.save()
+            is_adui_not_finished = Auditoria.objects.filter(id=request.data.get("auditoria"), finalizada=False).exists()
+            is_respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria")).exists()
+            if is_adui_not_finished and is_respuesta:
+                respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria"),pregunta=request.data.get("pregunta"))[0]
+                respuesta.respuesta = request.data.get("respuesta")
+                respuesta.notas = request.data.get("notas")
+                respuesta.save(update_fields=['respuesta', 'notas'])
+            else:
+                respuesta=serializer.save()
+            if notas is not None:
+                vec = split(notas)
+                auditoria=Auditoria.objects.get(id=request.data.get('auditoria'))
+                usuarioE = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user'])).exists()
+                if not usuarioE:
+                        return Response("No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta", status = status.HTTP_206_PARTIAL_CONTENT)
+                else:
+                    usuario = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user']))[0]
+                datos_incidente = {
+                    'reporta':request.data.get("usuario"),
+                    'asignado':usuario.id,
+                    'respuesta':respuesta.id,
+                    'accion':vec['incident']['action'],
+                    'status':"Pendiente",
+                    'sucursal': auditoria.sucursal.id
+                }
+                IncSer=IncidenteSerializer(data=datos_incidente)
+                if IncSer.is_valid():
+                    IncSer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response("No se pudo generar el incidente, pero se guardo la respuesta",status=status.HTTP_206_PARTIAL_CONTENT)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -157,7 +178,6 @@ class RespuestaViewSet(viewsets.ModelViewSet):
                 path = instance.save(f'audios/debug/{nombre_audio}', file)
             else:
                 path = default_storage.save('files/audios/', file)
-
         try:
             resVector = split(get_transcription(file))
         except:  # no se puedo transcripibr el audio
