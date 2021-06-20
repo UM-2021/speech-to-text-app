@@ -257,8 +257,11 @@ class IncidenteViewSet(viewsets.ModelViewSet):
         except:
             return Response({"detail:" "El ID tiene que ser un integer"}, status=status.HTTP_400_BAD_REQUEST)
 
-        queryset = Incidente.objects.filter(reporta=request.user)
-        incidente = get_object_or_404(queryset, pk=pk)
+        incidente = Incidente.objects.filter(reporta=request.user, pk=pk).first() or Incidente.objects.filter(asignado=request.user, pk=pk).first()
+
+        if not incidente:
+            return Response({"Detail:" "No se encontró un incidente relacionado al usuario de la request."}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = IncidenteSerializer(incidente)
 
         dict_de_respuesta = {
