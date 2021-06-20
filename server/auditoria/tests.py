@@ -26,6 +26,21 @@ class RespuestaViewTestCase(APITestCase):
 
         self.assertEqual(resp1.status_code, 201)
 
+    def test_create_incidente(self):
+        test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
+        test_suc2 = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="2", telefono="2")
+
+        audit1 = Auditoria.objects.create(sucursal=test_suc)
+
+
+        preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",
+                                       tipo="Audio")
+
+        resp1 = self.client.post('/api/auditorias/respuesta/',
+                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id})
+
+        self.assertEqual(resp1.status_code, 201)
+
 
     def test_create_400(self):
         test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1")

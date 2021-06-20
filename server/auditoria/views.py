@@ -1,6 +1,8 @@
 import base64
 import uuid
 from datetime import datetime
+
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
 from django.utils.decorators import method_decorator
@@ -100,11 +102,41 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
-    def create(self, request):
+    def perform_create(self,request):
         serializer = RespuestaSerializer(data=request.data)
+        notas = request.data.get("notas")
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            respuesta=serializer.save()
+            vec = split(notas)
+            sucursalE=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria')).sucursal).exists()
+            if not sucursalE:
+                return Response(
+                    "No se pudo generar un incidente para la sucursal solicitada, pero se guardo la respuesta", status=status.HTTP_206_PARTIAL_CONTENT)
+            else:
+                sucursal=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria')).sucursal)
+            usuario1E=get_user_model().objects.filter(first_name=vec['incident']['user']).exists()
+            usuario2E = get_user_model().objects.filter(username=vec['incident']['user']).exists()
+            usuario=None
+            if not usuario1E:
+               if not usuario2E:
+                   return Response("No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta", status = status.HTTP_206_PARTIAL_CONTENT)
+               else:
+                   usuario = get_user_model().objects.filter(first_name=vec['incident']['user'])
+            else:
+                usuario = get_user_model().objects.filter(username=vec['incident']['user'])
+            datos_incidente = {
+                'reporta':request.user.id,
+                'asignado':usuario.id,
+                'respuesta':respuesta.id,
+                'accion':vec['incident']['action'],
+                'status':"Pendiente",
+                'sucursal':sucursal.id
+            }
+            IncSer=IncidenteSerializer(data=datos_incidente)
+            if IncSer.is_valid():
+                IncSer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response("No se pudo generar el incidente, pero se guardo la respuesta",status=status.HTTP_206_PARTIAL_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['post'], detail=True,)
@@ -125,7 +157,6 @@ class RespuestaViewSet(viewsets.ModelViewSet):
                 path = instance.save(f'audios/debug/{nombre_audio}', file)
             else:
                 path = default_storage.save('files/audios/', file)
-
         try:
             resVector = split(get_transcription(file))
         except:  # no se puedo transcripibr el audio
@@ -137,7 +168,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         else:
             path = default_storage.save('files/audios/', file)
 
-        if resVector['note'] is not None:
+        if resVector['note'] is not None:#en note queda todo el audio que no sea la respuesta
             return Response({'respuesta': resVector['response'], 'notas': resVector['note'], 'url_path': path}, status=status.HTTP_200_OK)
         return Response({'respuesta': resVector['response'], 'url_path': path}, status=status.HTTP_200_OK)
 
