@@ -22,18 +22,16 @@ import {
 	playCircle,
 	pauseCircle,
 	createOutline,
-	close,
-	closeCircle
+	close
 } from 'ionicons/icons';
 import React, { useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ADD_RESPUESTA_FIELD } from '../actions/types';
-import { File, FileEntry } from '@ionic-native/file';
+import { File } from '@ionic-native/file';
 import { Media, MediaObject } from '@ionic-native/media';
 import { Base64 } from '@ionic-native/base64';
 import Loader from '../components/Loader';
 
-// import { NativeAudio } from '@ionic-native/native-audio/';
 import { Plugins, CameraResultType } from '@capacitor/core';
 
 import './PreguntaAudio.css';
@@ -54,7 +52,6 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 	const [notes, setNotes] = useState('');
 
 	const [processingAudio, setProcessingAudio] = useState<boolean>(false);
-	const [file, setFile] = useState<FileEntry | null>(null);
 	const [recording, setRecording] = useState<MediaObject | null>(null);
 	const [progress, setProgress] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
@@ -89,12 +86,11 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 
 	const recordAudio = async (e: any) => {
 		if (!activeAudio) {
-			const fileCreated = await File.createFile(
+			await File.createFile(
 				File.externalApplicationStorageDirectory,
 				'myaudio.m4a',
 				true
 			);
-			setFile(fileCreated);
 			const mediaObj: MediaObject = Media.create(
 				File.externalApplicationStorageDirectory + 'myaudio.m4a'
 			);
@@ -125,25 +121,19 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 	const processAudio = async () => {
 		setProcessingAudio(true);
 		try {
-			// const base64 = await Base64.encodeFile(File.externalApplicationStorageDirectory + 'myaudio.m4a');
-			// const { data } = await axiosInstance.post(
-			// 	`/api/auditorias/respuesta/${1}/transcribir/`,
-			// 	{
-			// 		audio: base64
-			// 	},
-			// 	{
-			// 		headers: {
-			// 			Authorization: `Token ${user.token ?? ''}`
-			// 		}
-			// 	}
-			// );
-			// addAnswer(data.respuesta as string, data.notas as string);
-
-			const data = {
-				respuesta: 'Si',
-				notas:
-					'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consectetur laborum architecto omnis possimus et amet! Quos, nulla magnam aut repudiandae tempora alias veniam illo maiores reprehenderit quidem rem eum magni.'
-			};
+			const base64 = await Base64.encodeFile(File.externalApplicationStorageDirectory + 'myaudio.m4a');
+			const { data } = await axiosInstance.post(
+				`/api/auditorias/respuesta/${1}/transcribir/`,
+				{
+					audio: base64
+				},
+				{
+					headers: {
+						Authorization: `Token ${user.token ?? ''}`
+					}
+				}
+			);
+			addAnswer(data.respuesta as string, data.notas as string);
 			setNotes(notes.concat('\n', data.notas as string));
 		} catch (err) {
 			console.log(err);
