@@ -25,7 +25,6 @@ from django.shortcuts import get_object_or_404
 from audio.speech_to_text import get_transcription
 from server.storage_backends import PrivateMediaStorage
 from django.core.files.storage import default_storage, FileSystemStorage
-
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 from server import settings
 

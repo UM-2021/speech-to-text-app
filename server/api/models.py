@@ -139,11 +139,7 @@ class Incidente(models.Model):
 
 
     def __str__(self):
-<<<<<<< HEAD
-        return f'{self.sucursal.nombre}-{self.accion}'
-=======
         return f'{self.sucursal.nombre} - {self.accion}'
->>>>>>> 97d64bd0c9057f0c0cb04cd0e0e4acdf23c8e567
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
