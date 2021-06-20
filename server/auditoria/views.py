@@ -138,36 +138,36 @@ class RespuestaViewSet(viewsets.ModelViewSet):
                 respuesta.save(update_fields=['respuesta', 'notas'])
             else:
                 respuesta=serializer.save()
-            vec = split(notas)
-            sucursalE=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria')).sucursal).exists()
-            if not sucursalE:
-                return Response(
-                    "No se pudo generar un incidente para la sucursal solicitada, pero se guardo la respuesta", status=status.HTTP_206_PARTIAL_CONTENT)
-            else:
-                sucursal=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria')).sucursal)
-            usuario1E=get_user_model().objects.filter(first_name=vec['incident']['user']).exists()
-            usuario2E = get_user_model().objects.filter(username=vec['incident']['user']).exists()
-            usuario=None
-            if not usuario1E:
-               if not usuario2E:
-                   return Response("No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta", status = status.HTTP_206_PARTIAL_CONTENT)
-               else:
-                   usuario = get_user_model().objects.filter(first_name=vec['incident']['user'])
-            else:
-                usuario = get_user_model().objects.filter(username=vec['incident']['user'])
-            datos_incidente = {
-                'reporta':request.user.id,
-                'asignado':usuario.id,
-                'respuesta':respuesta.id,
-                'accion':vec['incident']['action'],
-                'status':"Pendiente",
-                'sucursal':sucursal.id
-            }
-            IncSer=IncidenteSerializer(data=datos_incidente)
-            if IncSer.is_valid():
-                IncSer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response("No se pudo generar el incidente, pero se guardo la respuesta",status=status.HTTP_206_PARTIAL_CONTENT)
+            if notas is not None:
+                vec = split(notas)
+                sucursalE=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria'))[0].sucursal).exists()
+                if not sucursalE:
+                    return Response("No se pudo generar un incidente para la sucursal solicitada, pero se guardo la respuesta", status=status.HTTP_206_PARTIAL_CONTENT)
+                else:
+                    sucursal=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria'))[0].sucursal)
+                usuario1E=get_user_model().objects.filter(first_name=vec['incident']['user']).exists()
+                usuario2E = get_user_model().objects.filter(username=vec['incident']['user']).exists()
+                if not usuario1E:
+                    if not usuario2E:
+                        return Response("No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta", status = status.HTTP_206_PARTIAL_CONTENT)
+                    else:
+                        usuario = get_user_model().objects.filter(first_name=vec['incident']['user'])
+                else:
+                    usuario = get_user_model().objects.filter(username=vec['incident']['user'])
+                datos_incidente = {
+                    'reporta':request.user.id,
+                    'asignado':usuario.id,
+                    'respuesta':respuesta.id,
+                    'accion':vec['incident']['action'],
+                    'status':"Pendiente",
+                    'sucursal':sucursal.id
+                }
+                IncSer=IncidenteSerializer(data=datos_incidente)
+                if IncSer.is_valid():
+                    IncSer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response("No se pudo generar el incidente, pero se guardo la respuesta",status=status.HTTP_206_PARTIAL_CONTENT)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['post'],detail=False)

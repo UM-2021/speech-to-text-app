@@ -34,7 +34,7 @@ class RespuestaViewTestCase(APITestCase):
 
 
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",
-                                       tipo="Audio")
+                                       tipo="Audio", respuestas_correctas=["Si", "No"])
 
         resp1 = self.client.post('/api/auditorias/respuesta/',
                                  {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id})
