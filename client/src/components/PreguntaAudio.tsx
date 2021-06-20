@@ -3,18 +3,28 @@ import {
   IonIcon,
   IonSegment,
   IonModal,
-  IonItemGroup,
-  IonItemDivider,
-  IonLabel,
-  IonItem,
+  IonPopover,
+  IonCard,
+  IonCardContent,
+  IonRange,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonTitle,
+  IonContent,
+  IonTextarea,
+  IonAlert,
 } from '@ionic/react';
 import {
   cameraOutline,
-  keypadOutline,
   micOutline,
   checkmarkOutline,
+  playCircle,
+  pauseCircle,
+  createOutline,
+  close,
 } from 'ionicons/icons';
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ADD_RESPUESTA_FIELD } from '../actions/types';
 import { File } from '@ionic-native/file';
@@ -22,29 +32,35 @@ import { Media, MediaObject } from '@ionic-native/media';
 import { Base64 } from '@ionic-native/base64';
 import Loader from '../components/Loader';
 
-// import { NativeAudio } from '@ionic-native/native-audio/';
 import { Plugins, CameraResultType } from '@capacitor/core';
 
 import './PreguntaAudio.css';
 import axiosInstance from '../utils/axios';
+import { setTimeout } from 'timers';
 
-const fs = require('fs');
 const { Camera } = Plugins;
 
 const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
   const dispatch = useDispatch();
-  const [status, setStatus] = useState('');
-  const [path, setPath] = useState<string>('anterior');
+  const { preguntas } = useSelector((state: any) => state.preguntas);
+  const { user } = useSelector((state: any) => state.auth);
+
   const [activeAudio, setActiveAudio] = useState<boolean>(false);
-  const [audioFileHandler, setAudioFileHandler] = useState<any>({
-    file: null,
-    base64URL: '',
-  });
   const [photo, setPhoto] = useState<any>('');
   const [showModal, setShowModal] = useState(false);
-  const auth = useSelector((state: any) => state.auth);
-  const { preguntas } = useSelector((state: any) => state.preguntas);
+  const [showAlert, setShowAlert] = useState(false);
+  const [notes, setNotes] = useState('');
+
   const [processingAudio, setProcessingAudio] = useState<boolean>(false);
+  const [recording, setRecording] = useState<MediaObject | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [popoverState, setShowPopover] = useState({
+    showPopover: false,
+    event: undefined,
+  });
+  let timeout: any = useRef(setTimeout(() => {}, 0));
+  let isPopover = useRef(true);
 
   const addAnswer = (respuesta: string, notas: string) => {
     const tipo = preguntas.find((p: any) => p.id === preguntaId).tipo;
@@ -68,62 +84,27 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
     });
   };
 
-  // ESTO SE COMENTA PORQUE EN BROWSER NO COMPILA SI NO
-  // const file = File.createFile(
-  //   File.externalRootDirectory,
-  //   'myaudio.mp3',
-  //   true
-  // ).then((file) => {
-  //   setPath(file.toInternalURL());
-  // });
-  // const [mediaObj, setMediaObj] = useState<MediaObject>(
-  //   Media.create(
-  //     File.externalRootDirectory.replace(/^file:\/\//, '') + 'myaudio.mp3'
-  //   )
-  // );
+  const recordAudio = async (e: any) => {
+    if (!activeAudio) {
+      await File.createFile(
+        File.externalApplicationStorageDirectory,
+        'myaudio.m4a',
+        true
+      );
+      const mediaObj: MediaObject = Media.create(
+        File.externalApplicationStorageDirectory + 'myaudio.m4a'
+      );
+      mediaObj.startRecord();
+      setRecording(mediaObj);
+    } else {
+      recording!.stopRecord();
+      recording!.release();
+      e.persist();
+      setShowPopover({ showPopover: true, event: e });
+      isPopover.current = true;
+    }
 
-  const recordAudio = async () => {
-    // if (!activeAudio) {
-    //   mediaObj.startRecord();
-    // } else {
-    //   mediaObj.stopRecord();
-    //   mediaObj.release();
-    //   Base64.encodeFile(path)
-    //     .then((base64File: string) => {
-    //       setStatus(base64File);
-    //     })
-    //     .catch((err) => setStatus(err));
-    //   // await Base64.encodeFile(path);
-    // }
-    // setActiveAudio(!activeAudio);
-  };
-
-  const getBase64 = (file: any) => {
-    return new Promise((resolve) => {
-      let baseURL: string | ArrayBuffer | null;
-      baseURL = '';
-      let reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        // console.log('Called', reader);
-        baseURL = reader.result;
-        resolve(baseURL);
-      };
-    });
-  };
-
-  const handleFileInputChange = async (e: any) => {
-    // TODO: Change to get file from device storage.
-    setAudioFileHandler({
-      ...audioFileHandler,
-      file: e.target.files[0] as string,
-    });
-    const result = await getBase64(e.target.files[0]);
-    setAudioFileHandler({ ...audioFileHandler, base64URL: result as string });
-  };
-
-  const openModal = () => {
-    setShowModal(true);
+    setActiveAudio(!activeAudio);
   };
 
   const takePhoto = async () => {
@@ -137,21 +118,61 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
     setPhoto(imageBase64);
   };
 
-  const processAudio = async (audio: string) => {
+  const processAudio = async () => {
     setProcessingAudio(true);
-    const { data } = await axiosInstance.post(
-      `/api/auditorias/respuesta/transcribir/`,
-      {
-        audio,
-      },
-      {
-        headers: {
-          Authorization: `Token ${auth.user.token ?? ''}`,
+    try {
+      const base64 = await Base64.encodeFile(
+        File.externalApplicationStorageDirectory + 'myaudio.m4a'
+      );
+      const { data } = await axiosInstance.post(
+        `/api/auditorias/respuesta/${1}/transcribir/`,
+        {
+          audio: base64,
         },
-      }
-    );
-    addAnswer(data.respuesta as string, data.notas as string);
+        {
+          headers: {
+            Authorization: `Token ${user.token ?? ''}`,
+          },
+        }
+      );
+      addAnswer(data.respuesta as string, data.notas as string);
+      setNotes(notes.concat('\n', data.notas as string));
+    } catch (err) {
+      console.log(err);
+    }
     setProcessingAudio(false);
+    setShowPopover({ showPopover: false, event: undefined });
+    isPopover.current = false;
+  };
+
+  const playAudio = () => {
+    if (isPlaying) recording!.pause();
+    else {
+      recording!.play();
+      updateProgress();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const updateProgress = useCallback(() => {
+    recording!.getCurrentPosition().then((current) => {
+      // As the interval u[dates every 100ms, I'm checking the end of file
+      // by seeing if it is in last 250ms just to be sure.
+      if (!isPopover.current || recording!.getDuration() - current < 0.25) {
+        setIsPlaying(false);
+        setProgress(0);
+        recording!.seekTo(0);
+        clearTimeout(timeout.current);
+      } else {
+        setProgress((current / recording!.getDuration()) * 100 || 0);
+        timeout.current = setTimeout(updateProgress, 90);
+      }
+    });
+  }, [recording]);
+
+  const onPopoverDismiss = () => {
+    isPopover.current = false;
+    setShowPopover({ showPopover: false, event: undefined });
   };
 
   return (
@@ -171,47 +192,88 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
       >
         <IonIcon icon={micOutline} />
       </IonButton>
-      <IonButton color="light" className="rounded" onClick={openModal}>
-        {/* TODO: Can send text response. */}
-        {/* <IonInput className='keypad' onIonChange={e => addAnswer(e.detail.value!)} /> */}
-        <IonIcon icon={keypadOutline} />
+      <IonButton
+        color="light"
+        className="rounded"
+        onClick={() => setShowModal(true)}
+      >
+        <IonIcon icon={createOutline} />
       </IonButton>
-      <IonModal isOpen={showModal}>
-        <IonItemGroup>
-          <IonItemDivider>
-            <IonLabel>AUDIO ACTIONS</IonLabel>
-          </IonItemDivider>
-
-          <IonItem key="tit">
-            <IonButton>Reproduce Audio</IonButton>
-          </IonItem>
-          <IonItem key="input">
-            <div>
-              <input type="file" name="file" onChange={handleFileInputChange} />
-            </div>
-          </IonItem>
-          <IonItem key="process">
-            {processingAudio ? (
-              <Loader />
-            ) : (
-              <IonButton
-                onClick={() => processAudio(audioFileHandler.base64URL)}
-                style={{ width: '50%' }}
-              >
-                Send Audio to Process
-              </IonButton>
-            )}
-          </IonItem>
-        </IonItemGroup>
-        <IonItem key="cancel">
-          <IonButton
-            color="danger"
-            onClick={() => setShowModal(false)}
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            Go Back
+      <IonAlert
+        isOpen={showAlert}
+        onDidDismiss={() => setShowAlert(false)}
+        header={'¿Estas seguro?'}
+        message={'El audio se perderá.'}
+        buttons={[
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => setShowAlert(false),
+          },
+          {
+            text: 'Sí!',
+            handler: () => {
+              onPopoverDismiss();
+            },
+          },
+        ]}
+      />
+      <IonPopover
+        backdropDismiss={false}
+        cssClass="my-custom-class"
+        event={popoverState.event}
+        isOpen={popoverState.showPopover}
+        onDidDismiss={onPopoverDismiss}
+      >
+        <IonCard className="card">
+          <IonCardContent className="card-content">
+            <IonIcon
+              icon={isPlaying ? pauseCircle : playCircle}
+              size="large"
+              slot="start"
+              onClick={playAudio}
+            />
+            <IonRange
+              value={progress}
+              disabled
+              className="ion-padding range"
+              color="medium"
+              min={0}
+              max={100}
+              slot="end"
+            ></IonRange>
+          </IonCardContent>
+        </IonCard>
+        <div className="action-btns">
+          <IonButton color="danger" onClick={() => setShowAlert(true)}>
+            Cancelar
           </IonButton>
-        </IonItem>
+          <IonButton onClick={() => processAudio()}>
+            {processingAudio ? <Loader /> : 'Procesar'}
+          </IonButton>
+        </div>
+      </IonPopover>
+      <IonModal isOpen={showModal}>
+        <IonHeader>
+          <IonToolbar>
+            <IonButtons slot="end">
+              <IonButton color="medium" onClick={() => setShowModal(false)}>
+                <IonIcon icon={close} />
+              </IonButton>
+            </IonButtons>
+            <IonTitle>Notas</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+          <IonTextarea
+            autofocus
+            rows={20}
+            placeholder="Agrega una nota..."
+            className="textarea"
+            value={notes}
+            onIonChange={(e) => setNotes(e.detail.value!)}
+          />
+        </IonContent>
       </IonModal>
     </IonSegment>
   );
