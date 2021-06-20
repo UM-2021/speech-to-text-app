@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
-
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
@@ -131,8 +131,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
             is_adui_not_finished = Auditoria.objects.filter(id=request.data.get("auditoria"), finalizada=False).exists()
             is_respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria")).exists()
             if is_adui_not_finished and is_respuesta:
-                respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria"),
-                                                     pregunta=request.data.get("pregunta"))[0]
+                respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria"),pregunta=request.data.get("pregunta"))[0]
                 respuesta.respuesta = request.data.get("respuesta")
                 respuesta.notas = request.data.get("notas")
                 respuesta.save(update_fields=['respuesta', 'notas'])
@@ -140,27 +139,19 @@ class RespuestaViewSet(viewsets.ModelViewSet):
                 respuesta=serializer.save()
             if notas is not None:
                 vec = split(notas)
-                sucursalE=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria'))[0].sucursal).exists()
-                if not sucursalE:
-                    return Response("No se pudo generar un incidente para la sucursal solicitada, pero se guardo la respuesta", status=status.HTTP_206_PARTIAL_CONTENT)
-                else:
-                    sucursal=Sucursal.objects.filter(id=Auditoria.objects.filter(id=request.data.get('auditoria'))[0].sucursal)
-                usuario1E=get_user_model().objects.filter(first_name=vec['incident']['user']).exists()
-                usuario2E = get_user_model().objects.filter(username=vec['incident']['user']).exists()
-                if not usuario1E:
-                    if not usuario2E:
+                auditoria=Auditoria.objects.get(id=request.data.get('auditoria'))
+                usuarioE = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user'])).exists()
+                if not usuarioE:
                         return Response("No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta", status = status.HTTP_206_PARTIAL_CONTENT)
-                    else:
-                        usuario = get_user_model().objects.filter(first_name=vec['incident']['user'])
                 else:
-                    usuario = get_user_model().objects.filter(username=vec['incident']['user'])
+                    usuario = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user']))[0]
                 datos_incidente = {
-                    'reporta':request.user.id,
+                    'reporta':request.data.get("usuario"),
                     'asignado':usuario.id,
                     'respuesta':respuesta.id,
                     'accion':vec['incident']['action'],
                     'status':"Pendiente",
-                    'sucursal':sucursal.id
+                    'sucursal': auditoria.sucursal.id
                 }
                 IncSer=IncidenteSerializer(data=datos_incidente)
                 if IncSer.is_valid():

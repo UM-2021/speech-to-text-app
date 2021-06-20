@@ -23,22 +23,21 @@ class RespuestaViewTestCase(APITestCase):
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro",categoria="DIGEFE", tipo="Audio", respuestas_correctas=["Si", "No"])
 
         resp1 = self.client.post('/api/auditorias/respuesta/', {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id})
-
         self.assertEqual(resp1.status_code, 201)
 
     def test_create_incidente(self):
         test_suc = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="1", telefono="1")
         test_suc2 = Sucursal.objects.create(nombre="Nuevo Centro", numero_de_sag="2", telefono="2")
-
         audit1 = Auditoria.objects.create(sucursal=test_suc)
-
-
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",
                                        tipo="Audio", respuestas_correctas=["Si", "No"])
+        gaston=get_user_model().objects.create(username="Gaston", email="sher@gmail.com", password="123456")
 
         resp1 = self.client.post('/api/auditorias/respuesta/',
-                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id})
-
+                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,'respuesta':"si",'notas':"Llamar a Gaston"})
+        inc=Incidente.objects.filter(asignado=gaston.id)
+        print(inc)
+        self.assertIsNotNone(inc)
         self.assertEqual(resp1.status_code, 201)
 
     def test_audi_no_finalizada(self):
@@ -54,8 +53,7 @@ class RespuestaViewTestCase(APITestCase):
                                  {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,
                                   'respuesta': "si"})
         resp2 = self.client.post('/api/auditorias/respuesta/',
-                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,
-                                  'notas': "cosas que pasan"})
+                                 {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id,'respuesta':"no"})
         respuestas=Respuesta.objects.filter(auditoria=audit1.id)
         self.assertEqual(len(respuestas),1)
 
