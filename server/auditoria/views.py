@@ -222,6 +222,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
         serializer = IncidenteSerializer(queryset, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+    """ 
     def create(self, request):
         datos = request.data.copy()
         datos["reporta"] = request.user.id #Usuario logeado
@@ -229,6 +230,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
         if datosSerializados.is_valid() and (datos.get('asignado') is not None):
             return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
         return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+    """
 
     @action(methods=['get'], detail=True)
     def procesando(self, resquest, pk):
