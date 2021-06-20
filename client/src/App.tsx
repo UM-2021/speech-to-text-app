@@ -57,7 +57,7 @@ import {
 const App: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
-  const { incidentes } = useSelector((state: any) => state.incidentes);
+  const { incidentes, loading } = useSelector((state: any) => state.incidentes);
 
   const cleanup = () => {
     dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
@@ -133,7 +133,9 @@ const App: React.FC = () => {
                 <IonLabel>Sucursales</IonLabel>
               </IonTabButton>
               <IonTabButton tab="incidentes" href="/incidentes">
-                {incidentes && <IonBadge color="danger"></IonBadge>}
+                {!loading && incidentes.length > 0 && (
+                  <IonBadge color="danger"></IonBadge>
+                )}
                 <IonIcon icon={gridOutline} />
                 <IonLabel>Incidentes</IonLabel>
               </IonTabButton>

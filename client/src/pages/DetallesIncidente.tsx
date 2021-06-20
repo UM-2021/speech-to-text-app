@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import {
   IonButton,
-  IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
@@ -28,12 +27,12 @@ export default function DetallesIncidente() {
 
   useEffect(() => {
     dispatch(incidenteDetails(id));
-  }, [dispatch, id]);
+  }, []);
 
   const { incidente, loading } = useSelector((state: any) => state.incidente);
 
   const tomarIncidente = async () => {
-    await axiosInstance.post(`/api/auditorias/incidente/${id}/procesando/`, {
+    await axiosInstance(`/api/auditorias/incidente/${id}/procesando/`, {
       headers: {
         Authorization: `Token ${user.token ?? ''}`,
       },
@@ -42,13 +41,13 @@ export default function DetallesIncidente() {
   };
 
   const resolverIncidente = async () => {
-    if (incidente.asignado === user.user_id)
+    if (incidente.incidente.asignado === user.user_id)
       await axiosInstance.post(`/api/auditorias/incidente/${id}/resolver/`, {
         headers: {
           Authorization: `Token ${user.token ?? ''}`,
         },
       });
-    if (incidente.reporta === user.user_id)
+    if (incidente.incidente.reporta === user.user_id)
       await axiosInstance.post(`/api/auditorias/incidente/${id}/confirmar/`, {
         headers: {
           Authorization: `Token ${user.token ?? ''}`,
@@ -59,7 +58,7 @@ export default function DetallesIncidente() {
 
   return (
     <PageWrapper>
-      {!loading && (
+      {!loading && incidente.incidente && (
         <>
           <IonHeader>
             <IonToolbar>
@@ -89,42 +88,42 @@ export default function DetallesIncidente() {
                 <IonLabel color="medium" slot="start">
                   Estado
                 </IonLabel>
-                <IonLabel>{incidente.status}</IonLabel>
+                <IonLabel>{incidente.incidente.status}</IonLabel>
               </IonItem>
               <IonItem className="">
                 <IonLabel color="medium" slot="start">
                   Sucursal
                 </IonLabel>
-                <IonLabel>Id: {incidente.sucursal}</IonLabel>
+                <IonLabel>{incidente.nombre_sucursal}</IonLabel>
               </IonItem>
               <IonItem className="">
                 <IonLabel color="medium" slot="start">
                   Respuesta
                 </IonLabel>
-                <IonLabel>{incidente.respuesta}</IonLabel>
+                <IonLabel>{incidente.incidente.respuesta}</IonLabel>
               </IonItem>
               <IonItem className="">
                 <IonLabel color="medium" slot="start">
                   Accion
                 </IonLabel>
-                <IonLabel>{incidente.accion}</IonLabel>
+                <IonLabel>{incidente.incidente.accion}</IonLabel>
               </IonItem>
               <IonItem className="">
                 <IonLabel color="medium" slot="start">
                   Responsable
                 </IonLabel>
-                <IonLabel>Id: {incidente.asignado}</IonLabel>
+                <IonLabel>Id: {incidente.nombre_del_usuario_asignado}</IonLabel>
               </IonItem>
               <IonItem className="">
                 <IonLabel color="medium" slot="start">
                   Email
                 </IonLabel>
-                <IonLabel>glopez@redpagos.com</IonLabel>
+                <IonLabel>{incidente.email_del_usuario_asignado}</IonLabel>
               </IonItem>
             </IonList>
           </IonContent>
           <IonFooter className="center-content">
-            {user.user_id !== incidente.reporta && (
+            {user.user_id !== incidente.incidente.reporta && (
               <IonButton
                 color="primary"
                 className="block-btn"
@@ -141,7 +140,9 @@ export default function DetallesIncidente() {
               style={{ width: '45%' }}
               onClick={resolverIncidente}
             >
-              {user.user_id !== incidente.reporta ? 'Resolver' : 'Confirmar'}
+              {user.user_id !== incidente.incidente.reporta
+                ? 'Resolver'
+                : 'Confirmar'}
             </IonButton>
           </IonFooter>
         </>

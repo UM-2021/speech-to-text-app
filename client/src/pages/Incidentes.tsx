@@ -24,7 +24,7 @@ const Incidentes: React.FC = () => {
   const { incidentes, loading } = useSelector((state: any) => state.incidentes);
   useEffect(() => {
     dispatch(fetchIncidentes());
-  }, [dispatch]);
+  }, []);
 
   return (
     <PageWrapper>
