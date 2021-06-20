@@ -53,11 +53,11 @@ import {
   RESPUESTA_RESET,
   SEND_RESPUESTAS_RESET,
 } from './actions/types';
-import { fetchIncidentes } from './actions/incidentesActions';
 
 const App: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
+  const { incidentes } = useSelector((state: any) => state.incidentes);
 
   const cleanup = () => {
     dispatch({ type: CREATE_OR_GET_AUDITORIA_RESET });
@@ -72,12 +72,6 @@ const App: React.FC = () => {
       cleanup();
     }
   };
-  //   const { loading, error, incidentes } = useSelector(
-  //     (state: any) => state.incidentes
-  //   );
-  //   useEffect(() => {
-  //     dispatch(fetchIncidentes());
-  //   }, [dispatch]);
 
   return (
     <IonApp>
@@ -139,8 +133,7 @@ const App: React.FC = () => {
                 <IonLabel>Sucursales</IonLabel>
               </IonTabButton>
               <IonTabButton tab="incidentes" href="/incidentes">
-                {/* {incidentes && <IonBadge color="danger"></IonBadge>} */}
-                <IonBadge color="danger"></IonBadge>
+                {incidentes && <IonBadge color="danger"></IonBadge>}
                 <IonIcon icon={gridOutline} />
                 <IonLabel>Incidentes</IonLabel>
               </IonTabButton>

@@ -11,7 +11,7 @@ import {
 export const fetchIncidentes = () => async (dispatch: any, getState: any) => {
   try {
     dispatch({ type: FETCH_INCIDENTES_REQUEST });
-    const { data } = await axiosInstance('/api/incidente/', {
+    const { data } = await axiosInstance('/api/auditorias/incidente/', {
       headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
     });
 
@@ -34,7 +34,7 @@ export const incidenteDetails = (id: any) => async (
   try {
     dispatch({ type: GET_INCIDENTE_REQUEST });
 
-    const { data } = await axiosInstance(`/api/incidente/${id}/`, {
+    const { data } = await axiosInstance(`/api/auditorias/incidente/${id}/`, {
       headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` },
     });
 
