@@ -13,7 +13,8 @@ import {
 	IonTitle,
 	IonContent,
 	IonTextarea,
-	IonAlert
+	IonAlert,
+	IonToast
 } from '@ionic/react';
 import {
 	cameraOutline,
@@ -40,7 +41,11 @@ import { setTimeout } from 'timers';
 
 const { Camera } = Plugins;
 
-const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
+const PreguntaAudio: React.FC<{ preguntaId: string; notas: string; imagen: any }> = ({
+	preguntaId,
+	notas,
+	imagen
+}) => {
 	const dispatch = useDispatch();
 	const { preguntas } = useSelector((state: any) => state.preguntas);
 	const { user } = useSelector((state: any) => state.auth);
@@ -49,12 +54,13 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 	const [photo, setPhoto] = useState<any>('');
 	const [showModal, setShowModal] = useState(false);
 	const [showAlert, setShowAlert] = useState(false);
-	const [notes, setNotes] = useState('');
+	const [notes, setNotes] = useState(notas || '');
 
 	const [processingAudio, setProcessingAudio] = useState<boolean>(false);
 	const [recording, setRecording] = useState<MediaObject | null>(null);
 	const [progress, setProgress] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
+	const [errorProcessingAudio, setErrorProcessingAudio] = useState(false);
 	const [popoverState, setShowPopover] = useState({
 		showPopover: false,
 		event: undefined
@@ -64,7 +70,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 
 	const addAnswer = (respuesta: string, notas: string) => {
 		const tipo = preguntas.find((p: any) => p.id === preguntaId).tipo;
-		if (tipo === 'Opciones' || tipo === 'Numerica') {
+		if (tipo === 'Opciones' || tipo === 'Numerica' || !respuesta) {
 			dispatch({
 				type: ADD_RESPUESTA_FIELD,
 				payload: { pregunta: preguntaId, notas }
@@ -86,13 +92,9 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 
 	const recordAudio = async (e: any) => {
 		if (!activeAudio) {
-			await File.createFile(
-				File.externalApplicationStorageDirectory,
-				'myaudio.m4a',
-				true
-			);
+			await File.createFile(File.externalApplicationStorageDirectory, 'myaudio.mp3', true);
 			const mediaObj: MediaObject = Media.create(
-				File.externalApplicationStorageDirectory + 'myaudio.m4a'
+				File.externalApplicationStorageDirectory + 'myaudio.mp3'
 			);
 			mediaObj.startRecord();
 			setRecording(mediaObj);
@@ -121,9 +123,9 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 	const processAudio = async () => {
 		setProcessingAudio(true);
 		try {
-			const base64 = await Base64.encodeFile(File.externalApplicationStorageDirectory + 'myaudio.m4a');
+			const base64 = await Base64.encodeFile(File.externalApplicationStorageDirectory + 'myaudio.mp3');
 			const { data } = await axiosInstance.post(
-				`/api/auditorias/respuesta/${1}/transcribir/`,
+				`/api/auditorias/respuesta/transcribir/`,
 				{
 					audio: base64
 				},
@@ -133,10 +135,11 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 					}
 				}
 			);
-			addAnswer(data.respuesta as string, data.notas as string);
+			addAnswer(data.respuesta as string, notes.concat('\n', data.notas as string));
 			setNotes(notes.concat('\n', data.notas as string));
 		} catch (err) {
 			console.log(err);
+			setErrorProcessingAudio(true);
 		}
 		setProcessingAudio(false);
 		setShowPopover({ showPopover: false, event: undefined });
@@ -173,14 +176,26 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 		setShowPopover({ showPopover: false, event: undefined });
 	};
 
+	const addNotes = (e: any) => {
+		setNotes(e.target.value);
+		addAnswer('', e.target.value);
+	};
+
 	return (
 		<IonSegment className='ion-justify-content-between bg-color'>
+			<IonToast
+				isOpen={errorProcessingAudio}
+				position='top'
+				message='Error al procesar el audio, inténtelo de nuevo.'
+				duration={3000}
+				onDidDismiss={() => setErrorProcessingAudio(false)}
+			/>
 			<IonButton
-				color={photo ? 'success' : 'light'}
+				color={photo || imagen?.url ? 'success' : 'light'}
 				className='rounded '
 				onClick={async () => await takePhoto()}>
 				<IonIcon icon={cameraOutline} />
-				{photo && <IonIcon icon={checkmarkOutline} />}
+				{(photo || imagen?.url) && <IonIcon icon={checkmarkOutline} />}
 			</IonButton>
 			<IonButton className='rounded' onClick={recordAudio} color={activeAudio ? 'danger' : ''}>
 				<IonIcon icon={micOutline} />
@@ -236,7 +251,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 						Cancelar
 					</IonButton>
 					<IonButton onClick={() => processAudio()}>
-						{processingAudio ? <Loader /> : 'Procesar'}
+						{processingAudio ? <Loader mini /> : 'Procesar'}
 					</IonButton>
 				</div>
 			</IonPopover>
@@ -258,7 +273,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string }> = ({ preguntaId }) => {
 						placeholder='Agrega una nota...'
 						className='textarea'
 						value={notes}
-						onIonChange={e => setNotes(e.detail.value!)}
+						onIonChange={addNotes}
 					/>
 				</IonContent>
 			</IonModal>

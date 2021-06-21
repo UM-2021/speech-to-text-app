@@ -76,9 +76,8 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 						pregunta: r.pregunta,
 						respuesta: r.respuesta,
 						auditoria: auditoria.id,
-						audio: r?.audio || null,
 						usuario: user.user_id,
-						notas: r?.notas || ''
+						notas: r.notas
 					},
 					{
 						headers: {
@@ -93,8 +92,8 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
 						pregunta: r.pregunta,
 						respuesta: r.respuesta,
 						auditoria: auditoria.id,
-						audio: r?.audio || null,
-						usuario: user.user_id
+						usuario: user.user_id,
+						notas: r.notas
 					},
 					{
 						headers: {

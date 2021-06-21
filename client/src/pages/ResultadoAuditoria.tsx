@@ -8,7 +8,7 @@ import {
 	IonTitle,
 	IonToolbar
 } from '@ionic/react';
-import { checkmark, close } from 'ionicons/icons';
+import { alert, checkmark, close } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
@@ -74,13 +74,17 @@ const ResultadoAuditoria: React.FC = () => {
 			</IonHeader>
 			<IonContent>
 				<div className='center-content avatar-cont'>
-					{result.aprobada ? (
+					{result.digefe_aprobada && result.extra_aprobada ? (
 						<IonAvatar className='center-content avatar avatar-success'>
-							<IonIcon color='white' icon={checkmark} />
+							<IonIcon style={{ color: 'white' }} icon={checkmark} />
+						</IonAvatar>
+					) : result.digefe_aprobada && !result.extra_aprobada ? (
+						<IonAvatar className='center-content avatar avatar-warning'>
+							<IonIcon style={{ color: 'white' }} icon={alert} />
 						</IonAvatar>
 					) : (
 						<IonAvatar className='center-content avatar avatar-danger'>
-							<IonIcon color='white' icon={close} />
+							<IonIcon style={{ color: 'white' }} icon={close} />
 						</IonAvatar>
 					)}
 				</div>
@@ -88,7 +92,9 @@ const ResultadoAuditoria: React.FC = () => {
 				<div className='center-content'>
 					{!result.finalizada
 						? 'Auditoria en curso'
-						: result.aprobada
+						: result.digefe_aprobada && !result.extra_aprobada
+						? 'DIGEFE Aprobado'
+						: result.extra_aprobada
 						? 'Local habilitado'
 						: 'Local no habilitado'}
 				</div>

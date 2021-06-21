@@ -14,16 +14,15 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Q
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
 from audio.natural_language_processing import split
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
-    MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer, MinRespuestaSerializer
+    MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
 from base64 import b64decode
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
 from audio.speech_to_text import get_transcription
-from server.storage_backends import PrivateMediaStorage
+from server.storage_backends import PublicMediaStorage
 from django.core.files.storage import default_storage, FileSystemStorage
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
@@ -61,7 +60,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         auditoria = get_object_or_404(Auditoria, id=pk)
 
         respuestas = Respuesta.objects.filter(auditoria=auditoria)
-        serializer = MinRespuestaSerializer(respuestas, many=True)
+        serializer = RespuestaSerializer(respuestas, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -124,72 +123,37 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
-    def perform_create(self,request):
-        serializer = RespuestaSerializer(data=request.data)
-        notas = request.data.get("notas")
-        if serializer.is_valid():
-            is_adui_not_finished = Auditoria.objects.filter(id=request.data.get("auditoria"), finalizada=False).exists()
-            is_respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria")).exists()
-            if is_adui_not_finished and is_respuesta:
-                respuesta = Respuesta.objects.filter(auditoria=request.data.get("auditoria"),pregunta=request.data.get("pregunta"))[0]
-                respuesta.respuesta = request.data.get("respuesta")
-                respuesta.notas = request.data.get("notas")
-                respuesta.save(update_fields=['respuesta', 'notas'])
-            else:
-                respuesta=serializer.save()
-            if notas is not None:
-                vec = split(notas)
-                auditoria=Auditoria.objects.get(id=request.data.get('auditoria'))
-                usuarioE = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user'])).exists()
-                if not usuarioE:
-                        return Response("No se pudo generar un incidente para la persona solicitada, pero se guardo la respuesta", status = status.HTTP_206_PARTIAL_CONTENT)
-                else:
-                    usuario = get_user_model().objects.filter(Q(username=vec['incident']['user'])|Q(first_name=vec['incident']['user']))[0]
-                datos_incidente = {
-                    'reporta':request.data.get("usuario"),
-                    'asignado':usuario.id,
-                    'respuesta':respuesta.id,
-                    'accion':vec['incident']['action'],
-                    'status':"Pendiente",
-                    'sucursal': auditoria.sucursal.id
-                }
-                IncSer=IncidenteSerializer(data=datos_incidente)
-                if IncSer.is_valid():
-                    IncSer.save()
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-                return Response("No se pudo generar el incidente, pero se guardo la respuesta",status=status.HTTP_206_PARTIAL_CONTENT)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
 
-    @action(methods=['post'],detail=False)
+    @action(methods=['post'], detail=False)
     def transcribir(self, request):
         audio = request.data.get("audio")
         if not audio:
             return Response({"detail": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
-        audio = audio.replace('data:audio/mpeg;base64,', '')
-        audio += '======='
+        audio = audio.replace('data:image/*;charset=utf-8;base64,', '')
         audio_data = b64decode(audio)
-        nombre_audio = "audio_" + str(datetime.now()) + '.mp3'
+        nombre_audio = "audio_" + str(datetime.now()) + '.m4a'
         file = ContentFile(content=audio_data, name=nombre_audio)
 
         if settings.DEBUG == 1:
             if settings.USE_S3:
-                instance = PrivateMediaStorage()
+                instance = PublicMediaStorage()
                 path = instance.save(f'audios/debug/{nombre_audio}', file)
             else:
                 path = default_storage.save('files/audios/', file)
         try:
             resVector = split(get_transcription(file))
-        except:  # no se puedo transcripibr el audio
-            return Response("No se puedo procesar el audio", status=status.HTTP_418_IM_A_TEAPOT)
+        except:
+            return Response("No se puedo procesar el audio", status=status.HTTP_400_BAD_REQUEST)
 
         if settings.USE_S3:
-            instance = PrivateMediaStorage()
+            instance = PublicMediaStorage()
             path = instance.save(f'audios/{nombre_audio}', file)
         else:
             path = default_storage.save('files/audios/', file)
 
-        if resVector['note'] is not None:
+        if 'note' in resVector:
             return Response({'respuesta': resVector['response'], 'notas': resVector['note'], 'url_path': path}, status=status.HTTP_200_OK)
         return Response({'respuesta': resVector['response'], 'url_path': path}, status=status.HTTP_200_OK)
 
@@ -219,13 +183,14 @@ class ImagenView(APIView):
         nombre_imagen = str(pk) + "_image_" + str(datetime.now()) + '.jpeg'
         file = ContentFile(content=imagen_data, name=nombre_imagen)
         if settings.USE_S3:
-            instance = PrivateMediaStorage()
+            instance = PublicMediaStorage()
             path = instance.save(f'imagenes/{nombre_imagen}', file)
         else:
             path = default_storage.save('files/imagenes/', file)
 
-        Media.objects.create(url=path, respuesta=respuesta, tipo='Image')
-        return Response({'respuesta': path}, status=status.HTTP_200_OK)
+        url = f'{settings.MEDIA_URL}{path}'
+        Media.objects.create(url=url, respuesta=respuesta, tipo='Image')
+        return Response({'respuesta': url}, status=status.HTTP_200_OK)
 
 
 class MediaViewSet(viewsets.ModelViewSet):
@@ -238,14 +203,13 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
     def list(self, request):
-        queryset = Incidente.objects.filter(Q(reporta=request.user.id)|Q(asignado=request.user.id))
+        queryset = Incidente.objects.filter(Q(reporta=request.user.id) | Q(asignado=request.user.id))
         serializer = IncidenteSerializer(queryset, many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
-
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
-        datos = request.data.copy() 
-        datos["reporta"] = request.user.id #Usuario logeado
+        datos = request.data.copy()
+        datos["reporta"] = request.user.id  # Usuario logeado
         datosSerializados = IncidenteSerializer(data=datos)
         if datosSerializados.is_valid() and (datos.get('asignado') is not None):
             return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
@@ -280,28 +244,28 @@ class IncidenteViewSet(viewsets.ModelViewSet):
             incidente = Incidente.objects.filter(id__exact=pk).first()
             incidente.status = "Procesando"
             incidente.save(update_fields=['status'])
-            serializer= IncidenteSerializer(incidente,many=False)
-            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['get'],detail=True)
+    @action(methods=['get'], detail=True)
     def resolver(self, resquest, pk):
         is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
             incidente.status = "Resuelto"
             incidente.save(update_fields=['status'])
-            serializer= IncidenteSerializer(incidente,many=False)
-            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['get'],detail=True)
-    def confirmar(self,request,pk):
+    @action(methods=['get'], detail=True)
+    def confirmar(self, request, pk):
         is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/confirmar, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
-            #todo cmabiar la respuesta de la pregunta
-            incidente.status= 'Confirmado'
+            # todo cmabiar la respuesta de la pregunta
+            incidente.status = 'Confirmado'
             incidente.save(update_fields=['status'])
             serializer = IncidenteSerializer(incidente, many=False)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
