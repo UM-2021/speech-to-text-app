@@ -6,6 +6,7 @@ import {
   GET_INCIDENTE_SUCCESS,
   GET_INCIDENTE_FAILED,
   GET_INCIDENTE_RESET,
+  MODIFY_INCIDENTE_STATE,
 } from '../actions/types';
 
 export const incidentesReducer = (state = { incidentes: [] }, action: any) => {
@@ -16,6 +17,14 @@ export const incidentesReducer = (state = { incidentes: [] }, action: any) => {
       return { loading: false, incidentes: [...action.payload] };
     case FETCH_INCIDENTES_FAILED:
       return { ...state, error: action.payload };
+    case MODIFY_INCIDENTE_STATE:
+      const newIncidentes = state.incidentes.map((i: any) => {
+        if (i.id.toString() === action.payload.id) {
+          i.status = action.payload.status;
+        }
+        return i;
+      });
+      return { ...state, incidentes: newIncidentes };
     default:
       return state;
   }

@@ -24,7 +24,7 @@ const Incidentes: React.FC = () => {
   const { incidentes, loading } = useSelector((state: any) => state.incidentes);
   useEffect(() => {
     dispatch(fetchIncidentes());
-  }, []);
+  }, [dispatch]);
 
   return (
     <PageWrapper>
@@ -96,7 +96,7 @@ const Incidentes: React.FC = () => {
                           }
                         />
                         <IonLabel>
-                          SAG: {i.sucursal} - {i.accion}
+                          {i.nombre_de_la_sucursal} - {i.accion}
                         </IonLabel>
                         <IonIcon slot="end" icon={arrowForwardOutline} />
                       </IonItem>

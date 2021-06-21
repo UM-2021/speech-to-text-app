@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { incidenteDetails } from '../actions/incidentesActions';
 import { arrowBack } from 'ionicons/icons';
 import axiosInstance from '../utils/axios';
+import { MODIFY_INCIDENTE_STATE } from '../actions/types';
 
 export default function DetallesIncidente() {
   let history = useHistory();
@@ -27,32 +28,58 @@ export default function DetallesIncidente() {
 
   useEffect(() => {
     dispatch(incidenteDetails(id));
-  }, []);
+  }, [dispatch, id]);
 
   const { incidente, loading } = useSelector((state: any) => state.incidente);
 
   const tomarIncidente = async () => {
-    await axiosInstance(`/api/auditorias/incidente/${id}/procesando/`, {
-      headers: {
-        Authorization: `Token ${user.token ?? ''}`,
-      },
+    await axiosInstance.post(
+      `/api/auditorias/incidente/${id}/procesando/`,
+      {},
+      {
+        headers: {
+          Authorization: `Token ${user.token ?? ''}`,
+        },
+      }
+    );
+    dispatch({
+      type: MODIFY_INCIDENTE_STATE,
+      payload: { id, status: 'Procesando' },
     });
     history.push('/incidentes');
   };
 
   const resolverIncidente = async () => {
-    if (incidente.incidente.asignado === user.user_id)
-      await axiosInstance.post(`/api/auditorias/incidente/${id}/resolver/`, {
-        headers: {
-          Authorization: `Token ${user.token ?? ''}`,
-        },
+    if (incidente.incidente.asignado === user.user_id) {
+      await axiosInstance.post(
+        `/api/auditorias/incidente/${id}/resolver/`,
+        {},
+        {
+          headers: {
+            Authorization: `Token ${user.token ?? ''}`,
+          },
+        }
+      );
+      dispatch({
+        type: MODIFY_INCIDENTE_STATE,
+        payload: { id, status: 'Resuelto' },
       });
-    if (incidente.incidente.reporta === user.user_id)
-      await axiosInstance.post(`/api/auditorias/incidente/${id}/confirmar/`, {
-        headers: {
-          Authorization: `Token ${user.token ?? ''}`,
-        },
+    }
+    if (incidente.incidente.reporta === user.user_id) {
+      await axiosInstance.post(
+        `/api/auditorias/incidente/${id}/confirmar/`,
+        {},
+        {
+          headers: {
+            Authorization: `Token ${user.token ?? ''}`,
+          },
+        }
+      );
+      dispatch({
+        type: MODIFY_INCIDENTE_STATE,
+        payload: { id, status: 'Confirmado' },
       });
+    }
     history.push('/incidentes');
   };
 
