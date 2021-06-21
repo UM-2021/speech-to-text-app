@@ -51,11 +51,11 @@ const PerfilSucursalPage: React.FC = () => {
 				{loading ? (
 					<Loader />
 				) : error ? (
-					<div style={{ position: 'absolute' }}>
+					<div style={{ position: 'absolute', width: '100%' }}>
 						<Message color='danger'>{error}</Message>
 					</div>
 				) : Object.keys(auditoria).length === 0 ? (
-					<div style={{ position: 'absolute' }}>
+					<div style={{ position: 'absolute', width: '100%' }}>
 						<Message color='light'>Local no auditado</Message>
 					</div>
 				) : auditoria.digefe_aprobada && auditoria.extra_aprobada ? (
