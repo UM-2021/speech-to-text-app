@@ -245,7 +245,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
     def list(self, request):
-        queryset_incidente = Incidente.objects.filter(Q(reporta=request.user.id), ~Q(estado='Confirmado') | Q(asignado=request.user.id), ~Q(estado='Pendiente'))
+        queryset_incidente = Incidente.objects.filter((Q(reporta=request.user.id) & ~Q(status='confirmado'))| (Q(asignado=request.user.id) & ~Q(status='resuelto')  & ~Q(status='confirmado')))
         incidente_serializer = IncidenteSerializer(queryset_incidente, many=True)
         # Añadir el nombre de la sucursal
         result = []
