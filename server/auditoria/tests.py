@@ -45,7 +45,7 @@ class RespuestaViewTestCase(APITestCase):
         audit1.id
         preg = Pregunta.objects.create(pregunta="El test funciona bien?", seccion="Adentro", categoria="DIGEFE",
                                        tipo="Audio", respuestas_correctas=["Si", "No"])
-        self.client.post('/api/aud  itorias/respuesta/',
+        self.client.post('/api/auditorias/respuesta/',
                          {'auditoria': audit1.id, 'pregunta': preg.id, 'usuario': self.user.id})
 
         resp1 = self.client.post('/api/auditorias/respuesta/',
@@ -105,16 +105,17 @@ class IncidenteViewTestCase(APITestCase):
         usr = get_user_model().objects.create(username="Sher", email="sher@gmail.com", password="123456")
         res = Respuesta.objects.create(respuesta="Si anda bien", auditoria=aud, pregunta=preg, usuario=usr)
         usr2 = get_user_model().objects.create(username="Nacho", email="nacho@gmail.com", password="123456")
-        Incidente.objects.create(reporta=usr2,asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc) #si 1
-        Incidente.objects.create(reporta=self.user,asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc_2) #si 2
+        Incidente.objects.create(reporta=usr2,asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE 1', sucursal=suc) #si 1
+        Incidente.objects.create(reporta=self.user,asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE 2', sucursal=suc_2) #si 2
         Incidente.objects.create(reporta=usr2, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE', sucursal=suc) #no
-        Incidente.objects.create(reporta=usr2, asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc,status="confirmado") # no
-        Incidente.objects.create(reporta=self.user, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc_2,status="confirmado")# no
-        Incidente.objects.create(reporta=usr2, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc,status="confirmado")# no
-        Incidente.objects.create(reporta=usr2, asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc, status="resuelto")# no
-        Incidente.objects.create(reporta=self.user, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc_2, status="resuelto")# si 3
-        Incidente.objects.create(reporta=usr2, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc, status="resuelto")# no
-        resp1 = self.client.get('/api/auditorias/incidente/')
+        Incidente.objects.create(reporta=usr2, asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc,status="Confirmado") # no
+        Incidente.objects.create(reporta=self.user, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc_2,status="Confirmado")# no
+        Incidente.objects.create(reporta=usr2, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc,status="Confirmado")# no
+        Incidente.objects.create(reporta=usr2, asignado=self.user, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc, status="Resuelto")# no
+        Incidente.objects.create(reporta=self.user, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE 3',sucursal=suc_2, status="Resuelto")# si 3
+        Incidente.objects.create(reporta=usr2, asignado=usr2, respuesta=res, accion='TOMA ACCION EN INCIDENTE',sucursal=suc, status="Resuelto")# no
+        resp1 = self.client.get('/api/auditorias/incidente',follow=True)
+        print(resp1.data)
         self.assertEqual(len(resp1.data),3)
         self.assertEqual(resp1.status_code, 200)
 
