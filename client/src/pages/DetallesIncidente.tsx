@@ -150,16 +150,17 @@ export default function DetallesIncidente() {
             </IonList>
           </IonContent>
           <IonFooter className="center-content">
-            {user.user_id !== incidente.incidente.reporta && (
-              <IonButton
-                color="primary"
-                className="block-btn"
-                style={{ width: '45%' }}
-                onClick={tomarIncidente}
-              >
-                Tomar
-              </IonButton>
-            )}
+            {user.user_id !== incidente.incidente.reporta &&
+              incidente.incidente.status === 'Pendiente' && (
+                <IonButton
+                  color="primary"
+                  className="block-btn"
+                  style={{ width: '45%' }}
+                  onClick={tomarIncidente}
+                >
+                  Tomar
+                </IonButton>
+              )}
 
             <IonButton
               color="secondary"
