@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
@@ -123,6 +123,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
+
     def perform_create(self, serializer):
         serializer.save(usuario=self.request.user)
 
@@ -203,10 +204,20 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
     def list(self, request):
-        queryset = Incidente.objects.filter(Q(reporta=request.user.id) | Q(asignado=request.user.id))
-        serializer = IncidenteSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        queryset_incidente = Incidente.objects.filter(Q(reporta=request.user.id) | Q(asignado=request.user.id))
+        incidente_serializer = IncidenteSerializer(queryset_incidente, many=True)
+        # Añadir el nombre de la sucursal
+        result = []
+        for incidente in incidente_serializer.data:
+            nombre_de_la_sucursal = None
+            if Sucursal.objects.filter(pk=incidente.get("sucursal")).exists():
+                nombre_de_la_sucursal = Sucursal.objects.filter(pk=incidente.get("sucursal")).first().nombre
 
+            incidente["nombre_de_la_sucursal"] = nombre_de_la_sucursal
+            result.append(incidente)
+
+        return Response(result, status=status.HTTP_200_OK)
+      
     def create(self, request):
         datos = request.data.copy()
         datos["reporta"] = request.user.id  # Usuario logeado
@@ -221,10 +232,12 @@ class IncidenteViewSet(viewsets.ModelViewSet):
         except:
             return Response({"detail:" "El ID tiene que ser un integer"}, status=status.HTTP_400_BAD_REQUEST)
 
-        incidente = Incidente.objects.filter(reporta=request.user, pk=pk).first() or Incidente.objects.filter(asignado=request.user, pk=pk).first()
+        incidente = Incidente.objects.filter(reporta=request.user, pk=pk).first() or Incidente.objects.filter(
+            asignado=request.user, pk=pk).first()
 
         if not incidente:
-            return Response({"Detail:" "No se encontró un incidente relacionado al usuario de la request."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"Detail:" "No se encontró un incidente relacionado al usuario de la request."},
+                            status=status.HTTP_404_NOT_FOUND)
 
         serializer = IncidenteSerializer(incidente)
 
@@ -237,31 +250,34 @@ class IncidenteViewSet(viewsets.ModelViewSet):
 
         return Response(dict_de_respuesta, status=status.HTTP_200_OK)
 
-    @action(methods=['get'], detail=True)
+    @action(methods=['post'], detail=True)
     def procesando(self, resquest, pk):
-        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/procesando, ese id que pasan va a ser por el cual se filtra
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/procesando, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
             incidente.status = "Procesando"
             incidente.save(update_fields=['status'])
             serializer = IncidenteSerializer(incidente, many=False)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
+        return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=['get'], detail=True)
+    @action(methods=['post'], detail=True)
     def resolver(self, resquest, pk):
-        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
             incidente.status = "Resuelto"
             incidente.save(update_fields=['status'])
             serializer = IncidenteSerializer(incidente, many=False)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
+        return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=['get'], detail=True)
+    @action(methods=['post'], detail=True)
     def confirmar(self, request, pk):
-        is_incidente = Incidente.objects.filter(id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/confirmar, ese id que pasan va a ser por el cual se filtra
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/confirmar, ese id que pasan va a ser por el cual se filtra
         if is_incidente:
             incidente = Incidente.objects.filter(id__exact=pk).first()
             # todo cmabiar la respuesta de la pregunta
@@ -269,7 +285,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
             incidente.save(update_fields=['status'])
             serializer = IncidenteSerializer(incidente, many=False)
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response("Incidente not found", status=status.HTTP_204_NO_CONTENT)
+        return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
 
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):
