@@ -53,7 +53,9 @@ const PerfilSucursalPage: React.FC = () => {
 				) : error ? (
 					<Message color='danger'>{error}</Message>
 				) : Object.keys(auditoria).length === 0 ? (
-					<Message color='light'>Local no auditado</Message>
+					<div style={{ position: 'absolute' }}>
+						<Message color='light'>Local no auditado</Message>
+					</div>
 				) : auditoria.digefe_aprobada && auditoria.extra_aprobada ? (
 					<Message color='success'>Auditoria finalizada: Local habilitado</Message>
 				) : auditoria.digefe_aprobada && !auditoria.extra_aprobada ? (
@@ -61,7 +63,9 @@ const PerfilSucursalPage: React.FC = () => {
 				) : auditoria.finalizada && !auditoria.digefe_aprobada ? (
 					<Message color='danger'>Auditoria finalizada: Local no habilitado</Message>
 				) : !auditoria.finalizada ? (
-					<Message color='primary'>Auditoria en curso</Message>
+					<div style={{ position: 'absolute', width: '100%'}}>
+						<Message color='primary'>Auditoria en curso</Message>
+					</div>
 				) : null}
 
 				<PerfilSucursal id={id} />

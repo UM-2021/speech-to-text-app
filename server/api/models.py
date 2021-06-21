@@ -34,7 +34,7 @@ class Sucursal(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     if settings.USE_S3:
-        imagen = models.ImageField(storage=PrivateMediaStorage(), null=True, blank=True)
+        imagen = models.ImageField(storage=PublicMediaStorage(), null=True, blank=True)
     else:
         imagen = models.ImageField(upload_to='audios_de_respuesta/', null=True, blank=True)
 
