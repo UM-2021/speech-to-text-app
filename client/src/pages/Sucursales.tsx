@@ -87,7 +87,7 @@ const Sucursales: React.FC = () => {
       return unaud;
     });
   };
-
+  
   return (
     <PageWrapper>
       <IonHeader>
@@ -161,7 +161,7 @@ const Sucursales: React.FC = () => {
                 </IonCol>
               </IonRow>
             </IonGrid>
-            <IonList>
+            <IonList lines='full'>
               {showApproved &&
                 getApprovedSucursales(sucursales, auditorias.auditorias)
                   .filter((s: any) =>

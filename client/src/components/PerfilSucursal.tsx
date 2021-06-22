@@ -22,24 +22,28 @@ const PerfilSucursal: React.FC<{ id: string }> = ({ id }) => {
 	else
 		return (
 			<div>
-				<div className='center-content avatar-cont-suc'>
-					<IonAvatar className='center-content avatar-suc'>
-						<IonIcon color='primary' icon={storefrontOutline} />
-					</IonAvatar>
-				</div>
-				<div className='center-content' style={{ marginBottom: '3rem' }}>
-					<IonChip>
-						<IonAvatar>
-							<IonIcon
-								color='primary'
-								style={{ fontSize: '26px' }}
-								icon={navigateCircleOutline}
-							/>
+				<div
+					className='container avatar-cont-suc'
+					style={{ backgroundImage: `url(${sucursal!.imagen})`, backgroundSize: 'cover'}}>
+					<div>
+						<IonAvatar className='center-content avatar-suc'>
+							<IonIcon color='primary' icon={storefrontOutline} />
 						</IonAvatar>
-						<IonLabel>
-							{sucursal!.direccion}, {sucursal!.ciudad}
-						</IonLabel>
-					</IonChip>
+					</div>
+					<div>
+						<IonChip>
+							<IonAvatar>
+								<IonIcon
+									color='primary'
+									style={{ fontSize: '26px' }}
+									icon={navigateCircleOutline}
+								/>
+							</IonAvatar>
+							<IonLabel>
+								{sucursal!.direccion}, {sucursal!.ciudad}
+							</IonLabel>
+						</IonChip>
+					</div>
 				</div>
 
 				<IonList lines='none'>

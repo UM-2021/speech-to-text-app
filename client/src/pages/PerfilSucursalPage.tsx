@@ -51,15 +51,29 @@ const PerfilSucursalPage: React.FC = () => {
 				{loading ? (
 					<Loader />
 				) : error ? (
-					<Message color='danger'>{error}</Message>
+					<div style={{ position: 'absolute', width: '100%' }}>
+						<Message color='danger'>{error}</Message>
+					</div>
 				) : Object.keys(auditoria).length === 0 ? (
-					<Message color='light'>Local no auditado</Message>
-				) : auditoria.aprobada ? (
-					<Message color='success'>Auditoria finalizada: Local habilitado</Message>
-				) : auditoria.finalizada && !auditoria.aprobada ? (
-					<Message color='danger'>Auditoria finalizada: Local no habilitado</Message>
+					<div style={{ position: 'absolute', width: '100%' }}>
+						<Message color='light'>Local no auditado</Message>
+					</div>
+				) : auditoria.digefe_aprobada && auditoria.extra_aprobada ? (
+					<div style={{ position: 'absolute', width: '100%' }}>
+						<Message color='success'>Auditoria finalizada: Local habilitado</Message>
+					</div>
+				) : auditoria.digefe_aprobada && !auditoria.extra_aprobada ? (
+					<div style={{ position: 'absolute', width: '100%' }}>
+						<Message color='warning'>Auditoria finalizada: DIGEFE aprobado</Message>
+					</div>
+				) : auditoria.finalizada && !auditoria.digefe_aprobada ? (
+					<div style={{ position: 'absolute', width: '100%' }}>
+						<Message color='danger'>Auditoria finalizada: Local no habilitado</Message>
+					</div>
 				) : !auditoria.finalizada ? (
-					<Message color='primary'>Auditoria en curso</Message>
+					<div style={{ position: 'absolute', width: '100%' }}>
+						<Message color='primary'>Auditoria en curso</Message>
+					</div>
 				) : null}
 
 				<PerfilSucursal id={id} />

@@ -67,7 +67,7 @@ const Pregunta: React.FC<IPregunta> = ({
 				{tipo === 'Audio' && <div></div>}
 				{tipo === 'Opciones' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}
 				{tipo === 'Numerica' && <PreguntaNumerica preguntaId={id} />}
-				<PreguntaAudio preguntaId={id} />
+				<PreguntaAudio preguntaId={id} notas={respuesta.notas} imagen={respuesta.imagen}/>
 			</div>
 		</div>
 	);

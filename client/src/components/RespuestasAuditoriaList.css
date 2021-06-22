@@ -1,4 +1,9 @@
 .small-chip {
 	transform: scale(0.8);
-    margin: 0;
+	margin: 0;
+}
+
+.list {
+	height: 100%;
+	overflow-y: scroll !important;
 }
