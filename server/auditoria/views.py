@@ -66,7 +66,8 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         respuestas = Respuesta.objects.filter(auditoria=auditoria)
         preguntas = Pregunta.objects.all()
 
-        is_incidente = Incidente.objects.filter(respuesta__auditoria=auditoria.id).exists()
+        is_incidente = Incidente.objects.filter(respuesta__auditoria=auditoria.id) \
+            .exclude(status='Confirmado').exists()
         auditoria.finalizada = len(preguntas) == len(respuestas) and not is_incidente
 
         preguntas_digefe = [p for p in preguntas if p.categoria == 'DIGEFE']
@@ -198,7 +199,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
     def list(self, request):
-        queryset_incidente = Incidente.objects.filter((Q(reporta=request.user.id) & ~Q(status='Confirmado'))| (Q(asignado=request.user.id) & ~Q(status='Resuelto')  & ~Q(status='Confirmado')))
+        queryset_incidente = Incidente.objects.filter((Q(reporta=request.user.id) & ~Q(status='Confirmado')) | (Q(asignado=request.user.id) & ~Q(status='Resuelto') & ~Q(status='Confirmado')))
         incidente_serializer = IncidenteSerializer(queryset_incidente, many=True)
         # Añadir el nombre de la sucursal
         result = []
