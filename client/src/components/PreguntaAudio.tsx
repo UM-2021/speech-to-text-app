@@ -92,9 +92,9 @@ const PreguntaAudio: React.FC<{ preguntaId: string; notas: string; imagen: any }
 
 	const recordAudio = async (e: any) => {
 		if (!activeAudio) {
-			await File.createFile(File.externalApplicationStorageDirectory, 'myaudio.mp3', true);
+			await File.createFile(File.externalApplicationStorageDirectory, 'myaudio.m4a', true);
 			const mediaObj: MediaObject = Media.create(
-				File.externalApplicationStorageDirectory + 'myaudio.mp3'
+				File.externalApplicationStorageDirectory + 'myaudio.m4a'
 			);
 			mediaObj.startRecord();
 			setRecording(mediaObj);
@@ -123,7 +123,7 @@ const PreguntaAudio: React.FC<{ preguntaId: string; notas: string; imagen: any }
 	const processAudio = async () => {
 		setProcessingAudio(true);
 		try {
-			const base64 = await Base64.encodeFile(File.externalApplicationStorageDirectory + 'myaudio.mp3');
+			const base64 = await Base64.encodeFile(File.externalApplicationStorageDirectory + 'myaudio.m4a');
 			const { data } = await axiosInstance.post(
 				`/api/auditorias/respuesta/transcribir/`,
 				{
