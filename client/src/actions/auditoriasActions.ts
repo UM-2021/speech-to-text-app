@@ -80,57 +80,54 @@ export const postRespuestas = () => (dispatch: any, getState: any) => {
     const { auditoria } = getState().auditoria;
     const { user } = getState().auth;
 
-    respuestas.forEach(async (r: any) => {
-      if (r.id) {
-        await axiosInstance.put(
-          `/api/auditorias/respuesta/${r.id}/`,
-          {
-            pregunta: r.pregunta,
-            respuesta: r.respuesta,
-            auditoria: auditoria.id,
-            audio: r?.audio || null,
-            usuario: user.user_id,
-            notas: r?.notas || '',
-          },
-          {
-            headers: {
-              Authorization: `Token ${getState().auth.user.token ?? ''}`,
-            },
-          }
-        );
-      } else {
-        await axiosInstance.post(
-          '/api/auditorias/respuesta/',
-          {
-            pregunta: r.pregunta,
-            respuesta: r.respuesta,
-            auditoria: auditoria.id,
-            audio: r?.audio || null,
-            usuario: user.user_id,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getState().auth.user.token ?? ''}`,
-            },
-          }
-        );
-      }
-      if (r.photo) {
-        let resId;
-        if (!r.id) {
-          const { data } = await axiosInstance(
-            `/api/auditorias/auditoria/${auditoria.id}/respuestas/`,
-            {
-              headers: {
-                Authorization: `Token ${getState().auth.user.token ?? ''}`,
-              },
-            }
-          );
-          const { id } = data.find((rs: any) => rs.pregunta === r.pregunta);
-          resId = id;
-        } else {
-          resId = r.id;
-        }
+		respuestas.forEach(async (r: any) => {
+			if (r.id) {
+				await axiosInstance.put(
+					`/api/auditorias/respuesta/${r.id}/`,
+					{
+						pregunta: r.pregunta,
+						respuesta: r.respuesta,
+						auditoria: auditoria.id,
+						usuario: user.user_id,
+						notas: r.notas
+					},
+					{
+						headers: {
+							Authorization: `Token ${getState().auth.user.token ?? ''}`
+						}
+					}
+				);
+			} else {
+				await axiosInstance.post(
+					'/api/auditorias/respuesta/',
+					{
+						pregunta: r.pregunta,
+						respuesta: r.respuesta,
+						auditoria: auditoria.id,
+						usuario: user.user_id,
+						notas: r.notas
+					},
+					{
+						headers: {
+							Authorization: `Token ${getState().auth.user.token ?? ''}`
+						}
+					}
+				);
+			}
+			if (r.photo) {
+				let resId;
+				if (!r.id) {
+					const { data } = await axiosInstance(
+						`/api/auditorias/auditoria/${auditoria.id}/respuestas/`,
+						{
+							headers: { Authorization: `Token ${getState().auth.user.token ?? ''}` }
+						}
+					);
+					const { id } = data.find((rs: any) => rs.pregunta === r.pregunta);
+					resId = id;
+				} else {
+					resId = r.id;
+				}
 
         await axiosInstance.post(
           `/api/auditorias/respuesta/${resId}/imagen/`,

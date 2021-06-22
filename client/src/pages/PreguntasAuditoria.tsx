@@ -18,10 +18,10 @@ import { useHistory, useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  fetchAuditoria,
-  fetchPreguntas,
-  fetchRespuestas,
-  postRespuestas,
+	fetchAuditoria,
+	fetchPreguntas,
+	fetchRespuestas,
+	postRespuestas
 } from '../actions/auditoriasActions';
 import PageWrapper from '../components/PageWrapper';
 import RespuestasAuditoriaList from '../components/RespuestasAuditoriaList';
@@ -33,22 +33,15 @@ const PreguntasAuditoria: React.FC = () => {
 	let { id } = useParams<{ id: string }>();
 	const sucursalId = id;
 
-  const {
-    preguntas,
-    loading: loadingPreguntas,
-    error: errorPreguntas,
-  } = useSelector((state: any) => state.preguntas);
-  const {
-    auditoria,
-    loading: loadingAuditoria,
-    success,
-    error: errorAuditoria,
-  } = useSelector((state: any) => state.auditoria);
-  const {
-    respuestas,
-    loading: loadingRespuestas,
-    error: errorRespuestas,
-  } = useSelector((state: any) => state.respuestas);
+	const { preguntas, loading: loadingPreguntas, error: errorPreguntas } = useSelector(
+		(state: any) => state.preguntas
+	);
+	const { auditoria, loading: loadingAuditoria, success, error: errorAuditoria } = useSelector(
+		(state: any) => state.auditoria
+	);
+	const { respuestas, loading: loadingRespuestas, error: errorRespuestas } = useSelector(
+		(state: any) => state.respuestas
+	);
 
 	const {
 		success: sendRespuestasSuccess,
@@ -64,10 +57,10 @@ const PreguntasAuditoria: React.FC = () => {
 		}
 	}, [dispatch, auditoria?.id, success]);
 
-  useEffect(() => {
-    dispatch(fetchAuditoria(sucursalId));
-    dispatch(fetchPreguntas());
-  }, [dispatch, sucursalId]);
+	useEffect(() => {
+		dispatch(fetchAuditoria(sucursalId));
+		dispatch(fetchPreguntas());
+	}, [dispatch, sucursalId]);
 
 	useEffect(() => {
 		if (sendRespuestasSuccess) history.replace(`/auditoria/${auditoria.id}/resultado`);
@@ -174,16 +167,17 @@ const PreguntasAuditoria: React.FC = () => {
 										<IonButton
 											expand='block'
 											size='large'
-											className='ion-margin'
 											color='primary'
 											onClick={onSubmit}>
 											Enviar
 										</IonButton>
-										<RespuestasAuditoriaList
-											auditoria={auditoria.id}
-											preguntas={preguntas}
-											respuestas={respuestas}
-										/>
+										<div className='list-wrapper'>
+											<RespuestasAuditoriaList
+												auditoria={auditoria.id}
+												preguntas={preguntas}
+												respuestas={respuestas}
+											/>
+										</div>
 									</div>
 								)}
 							</IonSlide>

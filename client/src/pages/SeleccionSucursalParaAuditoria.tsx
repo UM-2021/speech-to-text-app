@@ -60,7 +60,7 @@ const SeleccionSucursalParaAuditoria: React.FC = () => {
 				) : error ? (
 					<Message color='danger'>{error}</Message>
 				) : (
-					<IonList>
+					<IonList lines='full'>
 						{sucursales
 							.filter((s: any) =>
 								s.nombre.toLowerCase().includes(searchText.toLocaleLowerCase())
