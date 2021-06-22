@@ -1,7 +1,5 @@
-import base64
-import uuid
+from server.storage_backends import PublicMediaStorage
 from datetime import datetime
-
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -11,7 +9,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
@@ -19,11 +16,9 @@ from audio.natural_language_processing import split
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
     MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
 from base64 import b64decode
-from django.forms.models import model_to_dict
-from django.shortcuts import get_object_or_404
 from audio.speech_to_text import get_transcription
-from server.storage_backends import PublicMediaStorage
-from django.core.files.storage import default_storage, FileSystemStorage
+from django.core.files.storage import default_storage
+
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 from server import settings
 
@@ -71,7 +66,9 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         respuestas = Respuesta.objects.filter(auditoria=auditoria)
         preguntas = Pregunta.objects.all()
 
-        auditoria.finalizada = len(preguntas) == len(respuestas)
+        is_incidente = Incidente.objects.filter(respuesta__auditoria=auditoria.id) \
+            .exclude(status='Confirmado').exists()
+        auditoria.finalizada = len(preguntas) == len(respuestas) and not is_incidente
 
         preguntas_digefe = [p for p in preguntas if p.categoria == 'DIGEFE']
         preguntas_extra = [p for p in preguntas if p.categoria == 'Extranormativa']
@@ -121,7 +118,6 @@ class PreguntaViewSet(viewsets.ModelViewSet):
 class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
-
 
     def perform_create(self, serializer):
         serializer.save(usuario=self.request.user)
@@ -203,7 +199,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
     serializer_class = IncidenteSerializer
 
     def list(self, request):
-        queryset_incidente = Incidente.objects.filter((Q(reporta=request.user.id) & ~Q(status='Confirmado'))| (Q(asignado=request.user.id) & ~Q(status='Resuelto')  & ~Q(status='Confirmado')))
+        queryset_incidente = Incidente.objects.filter((Q(reporta=request.user.id) & ~Q(status='Confirmado')) | (Q(asignado=request.user.id) & ~Q(status='Resuelto') & ~Q(status='Confirmado')))
         incidente_serializer = IncidenteSerializer(queryset_incidente, many=True)
         # Añadir el nombre de la sucursal
         result = []
@@ -216,7 +212,7 @@ class IncidenteViewSet(viewsets.ModelViewSet):
             result.append(incidente)
 
         return Response(result, status=status.HTTP_200_OK)
-      
+
     def create(self, request):
         datos = request.data.copy()
         datos["reporta"] = request.user.id  # Usuario logeado
