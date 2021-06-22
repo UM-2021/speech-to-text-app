@@ -1,19 +1,28 @@
-h1{
-    height: 100%;
-    width: 100%;
-    justify-content: center;
+h1 {
+	height: 100%;
+	width: 100%;
+	justify-content: center;
 }
 
 ion-slides {
-  height: 90%;
+	height: 90%;
 }
 
 .flex-result {
 	min-width: 90%;
 	max-width: 90%;
-    max-height: 100%;
+	max-height: 100%;
 	height: 90%;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
+}
+
+.list-wrapper {
+	display: flex;
+	flex-direction: column;
+	height: 70%;
+	border: 2px solid #d6d9e4;
+	border-radius: 4px !important;
+	overflow-y: scroll;
 }

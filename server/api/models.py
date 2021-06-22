@@ -1,11 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
-
+from audio.natural_language_processing import split
 from server.storage_backends import PublicMediaStorage, PrivateMediaStorage
 
 
@@ -23,8 +25,8 @@ class Sucursal(models.Model):
     tipo_de_acceso = models.CharField(max_length=30)
     cantidad_de_cajas = models.IntegerField
     # Campos agregados por nosotros
-    ultimo_responsable = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, \
-                                            null=True, blank=True, default=None, related_name='ultima_sucursal')
+    ultimo_responsable = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
+                                           null=True, blank=True, default=None, related_name='ultima_sucursal')
     esta_habilitado = models.BooleanField(default=False)
     ciudad = models.CharField(max_length=40)
     coord_lat = models.FloatField(null=True, blank=True)
@@ -32,7 +34,7 @@ class Sucursal(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     if settings.USE_S3:
-        imagen = models.ImageField(storage=PrivateMediaStorage(), null=True, blank=True)
+        imagen = models.ImageField(storage=PublicMediaStorage(), null=True, blank=True)
     else:
         imagen = models.ImageField(upload_to='audios_de_respuesta/', null=True, blank=True)
 
@@ -45,7 +47,8 @@ class Auditoria(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
     finalizada = models.BooleanField(default=False)
-    aprobada = models.BooleanField(default=False)
+    digefe_aprobada = models.BooleanField(default=False)
+    extra_aprobada = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.sucursal.nombre} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
@@ -73,7 +76,7 @@ class Pregunta(models.Model):
     seccion = models.CharField(max_length=7, choices=SECCION, default=SECCION[0][0])
     categoria = models.CharField(max_length=14, choices=CATEGORIAS)
     tipo = models.CharField(max_length=8, choices=TIPOS, default=TIPOS[0][0])
-    respuesta_correcta = models.CharField(max_length=255, null=True)
+    respuestas_correctas = ArrayField(models.CharField(max_length=255, null=True))
     # Campos agregados por nosotros
     opciones = ArrayField(models.CharField(max_length=25), null=True, blank=True)
 
@@ -98,8 +101,42 @@ class Respuesta(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ['pregunta', 'auditoria']
+
     def __str__(self):
         return f'{self.pregunta.pregunta} - {self.respuesta}'
+
+
+@receiver(post_save, sender=Respuesta, dispatch_uid='create_incident')
+def respuesta_post_save_receiver(sender, instance, **kwargs):
+    notas = instance.notas
+    if not notas:
+        return
+
+    try:
+        vec = split(notas)
+        if 'incident' not in vec:
+            return
+    except Exception as e:
+        print(e)
+    usuario = get_user_model().objects.filter(Q(username__iexact=vec['incident']['user'])
+                                              | Q(first_name__iexact=vec['incident']['user']))
+    if not usuario:
+        return
+
+    auditoria = get_object_or_404(Auditoria, id=instance.auditoria.id)
+    usuario = usuario.first()
+    sucursal = get_object_or_404(Sucursal, id=auditoria.sucursal.id)
+    datos_incidente = {
+        'reporta': instance.usuario,
+        'asignado': usuario,
+        'respuesta': instance,
+        'accion': vec['incident']['action'],
+        'status': "Pendiente",
+        'sucursal': sucursal
+    }
+    Incidente.objects.create(**datos_incidente)
 
 
 class Media(models.Model):
@@ -110,7 +147,7 @@ class Media(models.Model):
     )
 
     url = models.URLField(max_length=255)
-    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE, related_name='imagen')
     tipo = models.CharField(max_length=5, choices=TIPO)
     # Campos agregados por nosotros
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -121,15 +158,23 @@ class Media(models.Model):
 
 
 class Incidente(models.Model):
-    reporta = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
-                                null=True, related_name='incidentes_reportados')
-    asignado = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
-                                 null=True, related_name='incidentes_asignados')
-    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    reporta = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, related_name='incidentes_reportados')
+    asignado = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, related_name='incidentes_asignados')
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE, null=False)
     accion = models.CharField(max_length=255)
+    # Campos agregados por nosotros
+    status = (
+        ('Resuelto', 'Resuelto'),
+        ('Procesando', 'Procesando'),
+        ('Pendiente', 'Pendiente'),
+        ('Confirmado', 'Confirmado')
+
+    )
+    status = models.CharField(max_length=10, choices=status, default='Pendiente')
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.CASCADE, null=False)
 
     def __str__(self):
-        return self.accion, self.reporta, self.asignado, self.pregunta
+        return f'{self.sucursal.nombre} - {self.accion}'
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

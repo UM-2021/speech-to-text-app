@@ -16,15 +16,16 @@ class PreguntaSerializer(serializers.ModelSerializer):
 
 
 class RespuestaSerializer(serializers.ModelSerializer):
+    imagen = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Respuesta
         fields = '__all__'
 
-
-class MinRespuestaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Respuesta
-        fields = '__all__'
+    def get_imagen(self, obj):
+        imagen = obj.imagen.filter(tipo='Image').first()
+        serializer = MediaSerializer(imagen, many=False)
+        return serializer.data
 
 
 class MediaSerializer(serializers.ModelSerializer):

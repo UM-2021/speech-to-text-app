@@ -1,26 +1,23 @@
-import base64
-import uuid
+from server.storage_backends import PublicMediaStorage
 from datetime import datetime
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from api.models import Pregunta, Auditoria, Respuesta, Media, Incidente, Sucursal
 from audio.natural_language_processing import split
 from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, RespuestaSerializer, \
-    MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer, MinRespuestaSerializer
+    MediaSerializer, RespuestaMultimediaSerializer, IncidenteSerializer
 from base64 import b64decode
-from django.forms.models import model_to_dict
-from django.shortcuts import get_object_or_404
 from audio.speech_to_text import get_transcription
-from server.storage_backends import PrivateMediaStorage
-from django.core.files.storage import default_storage, FileSystemStorage
+from django.core.files.storage import default_storage
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 from server import settings
@@ -57,7 +54,7 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         auditoria = get_object_or_404(Auditoria, id=pk)
 
         respuestas = Respuesta.objects.filter(auditoria=auditoria)
-        serializer = MinRespuestaSerializer(respuestas, many=True)
+        serializer = RespuestaSerializer(respuestas, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -69,21 +66,43 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         respuestas = Respuesta.objects.filter(auditoria=auditoria)
         preguntas = Pregunta.objects.all()
 
-        auditoria.finalizada = len(preguntas) == len(respuestas)
+        is_incidente = Incidente.objects.filter(respuesta__auditoria=auditoria.id) \
+            .exclude(status='Confirmado').exists()
+        auditoria.finalizada = len(preguntas) == len(respuestas) and not is_incidente
 
         preguntas_digefe = [p for p in preguntas if p.categoria == 'DIGEFE']
+        preguntas_extra = [p for p in preguntas if p.categoria == 'Extranormativa']
+        preguntas_faltantes = []
 
-        aprobada = True
+        digefe_aprobada = True
         for preg in preguntas_digefe:
             respuesta = next((r for r in respuestas if r.pregunta.id == preg.id), None)
-            if not respuesta or str(preg.respuesta_correcta).lower() != str(respuesta.respuesta).lower():
-                aprobada = False
+            if not respuesta or \
+                    str(respuesta.respuesta).lower() not in \
+                    [str(r).lower() for r in preg.respuestas_correctas]:
+                digefe_aprobada = False
+                preguntas_faltantes.append(preg)
 
-        auditoria.aprobada = aprobada
+        extra_aprobada = True
+        for preg in preguntas_extra:
+            respuesta = next((r for r in respuestas if r.pregunta.id == preg.id), None)
+            if not respuesta or \
+                    str(respuesta.respuesta).lower() not in \
+                    [str(r).lower() for r in preg.respuestas_correctas]:
+                extra_aprobada = False
+                preguntas_faltantes.append(preg)
+
+        auditoria.digefe_aprobada = digefe_aprobada
+        auditoria.extra_aprobada = extra_aprobada
         auditoria.save()
 
         serializer = AuditoriaSerializer(auditoria, many=False)
-        return Response(serializer.data)
+        serializer_pregunta = PreguntaSerializer(preguntas_faltantes, many=True)
+
+        data = serializer.data
+        data['preguntas_faltantes'] = serializer_pregunta.data
+
+        return Response(data)
 
 
 class PreguntaViewSet(viewsets.ModelViewSet):
@@ -100,44 +119,37 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
 
-    def create(self, request):
-        serializer = RespuestaSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
 
-    @action(methods=['post'], detail=True,)
-    def transcribir(self, request, pk=None):
+    @action(methods=['post'], detail=False)
+    def transcribir(self, request):
         audio = request.data.get("audio")
         if not audio:
             return Response({"detail": "Bad Request."}, status=status.HTTP_400_BAD_REQUEST)
-
-        audio = audio.replace('data:audio/mpeg;base64,', '')
-        audio += '======='
+        audio = audio.replace('data:image/*;charset=utf-8;base64,', '')
         audio_data = b64decode(audio)
-        nombre_audio = "audio_" + str(datetime.now()) + '.mp3'
+        nombre_audio = "audio_" + str(datetime.now()) + '.m4a'
         file = ContentFile(content=audio_data, name=nombre_audio)
 
         if settings.DEBUG == 1:
             if settings.USE_S3:
-                instance = PrivateMediaStorage()
+                instance = PublicMediaStorage()
                 path = instance.save(f'audios/debug/{nombre_audio}', file)
             else:
                 path = default_storage.save('files/audios/', file)
-
         try:
             resVector = split(get_transcription(file))
-        except:  # no se puedo transcripibr el audio
-            return Response("No se puedo procesar el audio", status=status.HTTP_418_IM_A_TEAPOT)
+        except:
+            return Response("No se puedo procesar el audio", status=status.HTTP_400_BAD_REQUEST)
 
         if settings.USE_S3:
-            instance = PrivateMediaStorage()
+            instance = PublicMediaStorage()
             path = instance.save(f'audios/{nombre_audio}', file)
         else:
             path = default_storage.save('files/audios/', file)
 
-        if resVector['note'] is not None:
+        if 'note' in resVector:
             return Response({'respuesta': resVector['response'], 'notas': resVector['note'], 'url_path': path}, status=status.HTTP_200_OK)
         return Response({'respuesta': resVector['response'], 'url_path': path}, status=status.HTTP_200_OK)
 
@@ -167,13 +179,14 @@ class ImagenView(APIView):
         nombre_imagen = str(pk) + "_image_" + str(datetime.now()) + '.jpeg'
         file = ContentFile(content=imagen_data, name=nombre_imagen)
         if settings.USE_S3:
-            instance = PrivateMediaStorage()
+            instance = PublicMediaStorage()
             path = instance.save(f'imagenes/{nombre_imagen}', file)
         else:
             path = default_storage.save('files/imagenes/', file)
 
-        Media.objects.create(url=path, respuesta=respuesta, tipo='Image')
-        return Response({'respuesta': path}, status=status.HTTP_200_OK)
+        url = f'{settings.MEDIA_URL}{path}'
+        Media.objects.create(url=url, respuesta=respuesta, tipo='Image')
+        return Response({'respuesta': url}, status=status.HTTP_200_OK)
 
 
 class MediaViewSet(viewsets.ModelViewSet):
@@ -184,6 +197,90 @@ class MediaViewSet(viewsets.ModelViewSet):
 class IncidenteViewSet(viewsets.ModelViewSet):
     queryset = Incidente.objects.all()
     serializer_class = IncidenteSerializer
+
+    def list(self, request):
+        queryset_incidente = Incidente.objects.filter((Q(reporta=request.user.id) & ~Q(status='Confirmado')) | (Q(asignado=request.user.id) & ~Q(status='Resuelto') & ~Q(status='Confirmado')))
+        incidente_serializer = IncidenteSerializer(queryset_incidente, many=True)
+        # Añadir el nombre de la sucursal
+        result = []
+        for incidente in incidente_serializer.data:
+            nombre_de_la_sucursal = None
+            if Sucursal.objects.filter(pk=incidente.get("sucursal")).exists():
+                nombre_de_la_sucursal = Sucursal.objects.filter(pk=incidente.get("sucursal")).first().nombre
+
+            incidente["nombre_de_la_sucursal"] = nombre_de_la_sucursal
+            result.append(incidente)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        datos = request.data.copy()
+        datos["reporta"] = request.user.id  # Usuario logeado
+        datosSerializados = IncidenteSerializer(data=datos)
+        if datosSerializados.is_valid() and (datos.get('asignado') is not None):
+            return Response(datosSerializados.data, status=status.HTTP_201_CREATED)
+        return Response(datosSerializados.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        try:
+            int(pk)
+        except:
+            return Response({"detail:" "El ID tiene que ser un integer"}, status=status.HTTP_400_BAD_REQUEST)
+
+        incidente = Incidente.objects.filter(reporta=request.user, pk=pk).first() or Incidente.objects.filter(
+            asignado=request.user, pk=pk).first()
+
+        if not incidente:
+            return Response({"Detail:" "No se encontró un incidente relacionado al usuario de la request."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = IncidenteSerializer(incidente)
+
+        dict_de_respuesta = {
+            "incidente": serializer.data,
+            "nombre_sucursal": incidente.sucursal.nombre,
+            "nombre_del_usuario_asignado": incidente.asignado.username,
+            "email_del_usuario_asignado": incidente.asignado.email
+        }
+
+        return Response(dict_de_respuesta, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=True)
+    def procesando(self, resquest, pk):
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/procesando, ese id que pasan va a ser por el cual se filtra
+        if is_incidente:
+            incidente = Incidente.objects.filter(id__exact=pk).first()
+            incidente.status = "Procesando"
+            incidente.save(update_fields=['status'])
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=['post'], detail=True)
+    def resolver(self, resquest, pk):
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/resolver, ese id que pasan va a ser por el cual se filtra
+        if is_incidente:
+            incidente = Incidente.objects.filter(id__exact=pk).first()
+            incidente.status = "Resuelto"
+            incidente.save(update_fields=['status'])
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=['post'], detail=True)
+    def confirmar(self, request, pk):
+        is_incidente = Incidente.objects.filter(
+            id__exact=pk).exists()  # le van apegar a una url que sea auditoria/{id}/confirmar, ese id que pasan va a ser por el cual se filtra
+        if is_incidente:
+            incidente = Incidente.objects.filter(id__exact=pk).first()
+            # todo cmabiar la respuesta de la pregunta
+            incidente.status = 'Confirmado'
+            incidente.save(update_fields=['status'])
+            serializer = IncidenteSerializer(incidente, many=False)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response("Incidente not found", status=status.HTTP_404_NOT_FOUND)
 
 
 class RespuestaConAudio(RespuestaViewSet, viewsets.ModelViewSet):

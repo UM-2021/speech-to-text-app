@@ -26,8 +26,7 @@ def recognize(audio, service):
     """
     dic = service.recognize(
         audio=audio,
-        content_type='audio/mp3',
-        model='es-AR_BroadbandModel',
+        model='es-AR_NarrowbandModel',
         continuous=True).get_result()
     audio.close()
     transcription = dic.get('results')[0].get('alternatives')[0].get('transcript')
@@ -51,8 +50,7 @@ def recognizeWithCustomModel(audio, service):
     """
     dic = service.recognize(
         audio=audio,
-        content_type='audio/mp3',
-        model='es-AR_BroadbandModel',
+        model='es-AR_NarrowbandModel',
         language_customization_id="614eac75-9d15-489c-9b48-5da6f6c62a7f",
         acoustic_customization_id="a5295b2d-fdfb-4124-b34b-e8eef803ddc9",
         continuous=True).get_result()

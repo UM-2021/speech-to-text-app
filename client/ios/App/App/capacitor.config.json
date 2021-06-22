@@ -11,7 +11,9 @@
   },
   "cordova": {},
   "server": {
-    "url": "http://testpagos.tk",
-    "cleartext": true
+    "allowNavigation": [
+      "testpagos.tk",
+      "192.168.0.108"
+    ]
   }
 }

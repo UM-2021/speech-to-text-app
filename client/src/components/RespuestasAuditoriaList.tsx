@@ -37,14 +37,10 @@ const RespuestasAuditoriaList: React.FC<{
 		}
 	};
 
-	const validateAnswer = (pregunta: any) => {
-		if ('respuesta' in pregunta?.respuesta)
-			return (
-				pregunta.respuesta_correcta.toLowerCase() ===
-					pregunta.respuesta?.respuesta.toString().toLowerCase() ?? null
-			);
-		return false;
-	};
+	const validateAnswer = (pregunta: any) =>
+		pregunta.respuestas_correctas
+			.map((r: any) => r.toString().toLowerCase())
+			.includes(pregunta.respuesta.respuesta.toString().toLowerCase() ?? null);
 
 	const colors: any = {
 		DIGEFE: 'var(--ion-color-danger)',
@@ -53,9 +49,12 @@ const RespuestasAuditoriaList: React.FC<{
 	};
 
 	return (
-		<IonList inset key='ukey'>
+		<IonList inset key='ukey' lines='full' className='list'>
 			{newPreguntas.map((pregunta: any, index: number) => (
-				<IonItem key={index} onClick={() => setRespuesta(pregunta.pregunta, pregunta.respuesta)}>
+				<IonItem
+					button
+					key={index}
+					onClick={() => setRespuesta(pregunta.pregunta, pregunta.respuesta)}>
 					{pregunta?.respuesta && Object.keys(pregunta.respuesta).includes('respuesta') ? (
 						<IonIcon
 							slot='start'
@@ -72,7 +71,7 @@ const RespuestasAuditoriaList: React.FC<{
 							<small style={{ color: colors[pregunta.categoria] }}>{pregunta.categoria}</small>
 						</div>
 					</IonLabel>
-					<IonIcon slot='end' icon={arrowForwardOutline} />
+					<IonIcon slot='end' size='small' icon={arrowForwardOutline} />
 				</IonItem>
 			))}
 		</IonList>

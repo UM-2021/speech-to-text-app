@@ -4,8 +4,16 @@
     align-items: center;
 }
 
+.container {
+    display: flex;
+    height: 250px;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
 .avatar-cont-suc {
-    padding: 3rem 0;
+    padding: 5rem 0 2rem 0;
 }
 
 .avatar-suc {

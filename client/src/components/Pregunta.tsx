@@ -8,34 +8,30 @@ import PreguntaNumerica from './PreguntaNumerica';
 import PreguntaOpciones from './PreguntaOpciones';
 
 interface IPregunta {
-  id: string;
-  auditoriaId: string;
-  pregunta: string;
-  tipo: string;
-  opciones?: any;
-  categoria: string;
-  respuesta: any;
-  respuestaCorrecta: string | number;
+	id: string;
+	auditoriaId: string;
+	pregunta: string;
+	tipo: string;
+	opciones?: any;
+	categoria: string;
+	respuesta: any;
+	respuestasCorrectas: string[] | number[];
 }
 
 const Pregunta: React.FC<IPregunta> = ({
-  id,
-  tipo,
-  pregunta,
-  opciones,
-  auditoriaId,
-  respuesta,
-  respuestaCorrecta,
-  categoria,
+	id,
+	tipo,
+	pregunta,
+	opciones,
+	auditoriaId,
+	respuesta,
+	respuestasCorrectas,
+	categoria
 }) => {
-		const validateAnswer = () => {
-			if ('respuesta' in respuesta)
-				return (
-					respuestaCorrecta.toString().toLowerCase() ===
-						respuesta?.respuesta.toString().toLowerCase() ?? null
-				);
-			return false;
-		};
+	const validateAnswer = () =>
+		respuestasCorrectas
+			.map((r: any) => r.toString().toLowerCase())
+			.includes(respuesta.respuesta.toString().toLowerCase() ?? null);
 
 	const colors: any = {
 		DIGEFE: 'danger',
@@ -71,7 +67,7 @@ const Pregunta: React.FC<IPregunta> = ({
 				{tipo === 'Audio' && <div></div>}
 				{tipo === 'Opciones' && <PreguntaOpciones opciones={opciones} preguntaId={id} />}
 				{tipo === 'Numerica' && <PreguntaNumerica preguntaId={id} />}
-				<PreguntaAudio preguntaId={id} />
+				<PreguntaAudio preguntaId={id} notas={respuesta.notas} imagen={respuesta.imagen}/>
 			</div>
 		</div>
 	);
