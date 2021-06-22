@@ -17,13 +17,13 @@ import {
 	IonToast
 } from '@ionic/react';
 import {
-	cameraOutline,
-	micOutline,
-	checkmarkOutline,
-	playCircle,
-	pauseCircle,
-	createOutline,
-	close
+  cameraOutline,
+  micOutline,
+  checkmarkOutline,
+  playCircle,
+  pauseCircle,
+  createOutline,
+  close,
 } from 'ionicons/icons';
 import React, { useCallback, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -83,12 +83,12 @@ const PreguntaAudio: React.FC<{ preguntaId: string; notas: string; imagen: any }
 		}
 	};
 
-	const addPhotoToAnswer = (photo: string) => {
-		dispatch({
-			type: ADD_RESPUESTA_FIELD,
-			payload: { pregunta: preguntaId, photo }
-		});
-	};
+  const addPhotoToAnswer = (photo: string) => {
+    dispatch({
+      type: ADD_RESPUESTA_FIELD,
+      payload: { pregunta: preguntaId, photo },
+    });
+  };
 
 	const recordAudio = async (e: any) => {
 		if (!activeAudio) {
@@ -106,19 +106,19 @@ const PreguntaAudio: React.FC<{ preguntaId: string; notas: string; imagen: any }
 			isPopover.current = true;
 		}
 
-		setActiveAudio(!activeAudio);
-	};
+    setActiveAudio(!activeAudio);
+  };
 
-	const takePhoto = async () => {
-		const image = await Camera.getPhoto({
-			quality: 50,
-			allowEditing: false,
-			resultType: CameraResultType.Base64
-		});
-		var imageBase64 = image.base64String;
-		addPhotoToAnswer(imageBase64 as string);
-		setPhoto(imageBase64);
-	};
+  const takePhoto = async () => {
+    const image = await Camera.getPhoto({
+      quality: 50,
+      allowEditing: false,
+      resultType: CameraResultType.Base64,
+    });
+    var imageBase64 = image.base64String;
+    addPhotoToAnswer(imageBase64 as string);
+    setPhoto(imageBase64);
+  };
 
 	const processAudio = async () => {
 		setProcessingAudio(true);
@@ -146,35 +146,35 @@ const PreguntaAudio: React.FC<{ preguntaId: string; notas: string; imagen: any }
 		isPopover.current = false;
 	};
 
-	const playAudio = () => {
-		if (isPlaying) recording!.pause();
-		else {
-			recording!.play();
-			updateProgress();
-		}
-		setIsPlaying(!isPlaying);
-	};
+  const playAudio = () => {
+    if (isPlaying) recording!.pause();
+    else {
+      recording!.play();
+      updateProgress();
+    }
+    setIsPlaying(!isPlaying);
+  };
 
-	const updateProgress = useCallback(() => {
-		recording!.getCurrentPosition().then(current => {
-			// As the interval u[dates every 100ms, I'm checking the end of file
-			// by seeing if it is in last 250ms just to be sure.
-			if (!isPopover.current || recording!.getDuration() - current < 0.25) {
-				setIsPlaying(false);
-				setProgress(0);
-				recording!.seekTo(0);
-				clearTimeout(timeout.current);
-			} else {
-				setProgress((current / recording!.getDuration()) * 100 || 0);
-				timeout.current = setTimeout(updateProgress, 90);
-			}
-		});
-	}, [recording]);
+  const updateProgress = useCallback(() => {
+    recording!.getCurrentPosition().then((current) => {
+      // As the interval u[dates every 100ms, I'm checking the end of file
+      // by seeing if it is in last 250ms just to be sure.
+      if (!isPopover.current || recording!.getDuration() - current < 0.25) {
+        setIsPlaying(false);
+        setProgress(0);
+        recording!.seekTo(0);
+        clearTimeout(timeout.current);
+      } else {
+        setProgress((current / recording!.getDuration()) * 100 || 0);
+        timeout.current = setTimeout(updateProgress, 90);
+      }
+    });
+  }, [recording]);
 
-	const onPopoverDismiss = () => {
-		isPopover.current = false;
-		setShowPopover({ showPopover: false, event: undefined });
-	};
+  const onPopoverDismiss = () => {
+    isPopover.current = false;
+    setShowPopover({ showPopover: false, event: undefined });
+  };
 
 	const addNotes = (e: any) => {
 		setNotes(e.target.value);

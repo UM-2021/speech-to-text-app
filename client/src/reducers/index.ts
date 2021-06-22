@@ -10,6 +10,10 @@ import {
 } from './auditoriasReducer';
 import { authReducer } from './authReducer';
 import { sucursalesReducer, sucursalReducer } from './sucursalesReducer';
+import {
+  incidentesReducer,
+  incidenteDetailsReducer,
+} from './incidentesReducer';
 
 export default combineReducers({
   sucursales: sucursalesReducer,
@@ -21,5 +25,7 @@ export default combineReducers({
   respuesta: respuestaReducer,
   sendRespuestas: sendRespuestasReducer,
   auth: authReducer,
+  incidentes: incidentesReducer,
+  incidente: incidenteDetailsReducer,
   auditorias: getAuditoriasReducer,
 });
