@@ -45,7 +45,7 @@ const Login: React.FC<any> = () => {
 		<IonPage>
 			<IonHeader>
 				<IonToolbar>
-					<IonTitle>Login</IonTitle>
+					<IonTitle>Iniciar Sesión</IonTitle>
 				</IonToolbar>
 			</IonHeader>
 			<IonContent fullscreen>
@@ -62,7 +62,7 @@ const Login: React.FC<any> = () => {
 					<form onSubmit={onSubmit}>
 						<IonHeader collapse='condense'>
 							<IonToolbar>
-								<IonTitle size='large'>Login</IonTitle>
+								<IonTitle size='large'>Iniciar Sesión</IonTitle>
 							</IonToolbar>
 						</IonHeader>
 						<IonGrid>
@@ -78,7 +78,7 @@ const Login: React.FC<any> = () => {
 							<IonRow>
 								<IonCol>
 									<IonItem>
-										<IonLabel position='floating'>Username</IonLabel>
+										<IonLabel position='floating'>Nombre de usuario</IonLabel>
 										<IonInput
 											value={username}
 											onIonChange={(e: any) => setUsername(e.detail.value)}
@@ -89,7 +89,7 @@ const Login: React.FC<any> = () => {
 							<IonRow>
 								<IonCol>
 									<IonItem>
-										<IonLabel position='floating'>Password</IonLabel>
+										<IonLabel position='floating'>Contraseña</IonLabel>
 										<IonInput
 											type='password'
 											value={password}
@@ -101,7 +101,7 @@ const Login: React.FC<any> = () => {
 							<IonRow>
 								<IonCol>
 									<IonButton type='submit' expand='block'>
-										Login
+										Iniciar Sesión
 									</IonButton>
 								</IonCol>
 							</IonRow>

@@ -66,7 +66,6 @@ def split(text):
         response_notes_dict['incident']['action'] = action
     except UserNotFoundException or ActionNotFoundException:
         response_notes_dict = {'response': '', 'note': ''}
-    text = text.lower()
     text_split = ' '.join(text.split()[:3])
     for resp in possible_responses:
         resp = clean_text(resp)

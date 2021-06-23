@@ -119,9 +119,11 @@ def respuesta_post_save_receiver(sender, instance, **kwargs):
         if 'incident' not in vec:
             return
     except Exception as e:
-        print(e)
+        return
+
     usuario = get_user_model().objects.filter(Q(username__iexact=vec['incident']['user'])
                                               | Q(first_name__iexact=vec['incident']['user']))
+
     if not usuario:
         return
 
@@ -136,7 +138,9 @@ def respuesta_post_save_receiver(sender, instance, **kwargs):
         'status': "Pendiente",
         'sucursal': sucursal
     }
-    Incidente.objects.create(**datos_incidente)
+    is_incidente = Incidente.objects.filter(respuesta=instance.id).exists()
+    if not is_incidente:
+        Incidente.objects.create(**datos_incidente)
 
 
 class Media(models.Model):

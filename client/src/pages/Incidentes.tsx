@@ -16,19 +16,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import { alertCircleOutline, arrowForwardOutline } from 'ionicons/icons';
 import PageWrapper from '../components/PageWrapper';
 import { fetchIncidentes } from '../actions/incidentesActions';
+import Loader from '../components/Loader';
 
 const Incidentes: React.FC = () => {
   const [showAsignados, setShowAsignados] = useState<boolean>(true);
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
   const { incidentes, loading } = useSelector((state: any) => state.incidentes);
+  
   useEffect(() => {
     dispatch(fetchIncidentes());
   }, [dispatch]);
 
   return (
     <PageWrapper>
-      {!loading && (
+      {loading ? <Loader/> : (
         <>
           <IonHeader>
             <IonToolbar>

@@ -18,6 +18,7 @@ from auditoria.serializers import PreguntaSerializer, AuditoriaSerializer, Respu
 from base64 import b64decode
 from audio.speech_to_text import get_transcription
 from django.core.files.storage import default_storage
+import time
 
 # Recordar que fue seteada la autenticacion por token por default rest_framework.permissions.IsAuthenticated
 from server import settings
@@ -66,10 +67,6 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
         respuestas = Respuesta.objects.filter(auditoria=auditoria)
         preguntas = Pregunta.objects.all()
 
-        is_incidente = Incidente.objects.filter(respuesta__auditoria=auditoria.id) \
-            .exclude(status='Confirmado').exists()
-        auditoria.finalizada = len(preguntas) == len(respuestas) and not is_incidente
-
         preguntas_digefe = [p for p in preguntas if p.categoria == 'DIGEFE']
         preguntas_extra = [p for p in preguntas if p.categoria == 'Extranormativa']
         preguntas_faltantes = []
@@ -94,6 +91,14 @@ class AuditoriaViewSet(viewsets.ModelViewSet):
 
         auditoria.digefe_aprobada = digefe_aprobada
         auditoria.extra_aprobada = extra_aprobada
+
+        time.sleep(5)
+        is_incidente = Incidente.objects.filter(respuesta__auditoria=auditoria.id) \
+            .exclude(status='Confirmado').exists()
+        auditoria.finalizada = len(preguntas) == len(respuestas) and \
+            not is_incidente and \
+            len(preguntas_faltantes) == 0
+
         auditoria.save()
 
         serializer = AuditoriaSerializer(auditoria, many=False)
@@ -139,8 +144,19 @@ class RespuestaViewSet(viewsets.ModelViewSet):
             else:
                 path = default_storage.save('files/audios/', file)
         try:
-            resVector = split(get_transcription(file))
-        except:
+            text_array = get_transcription(file).split()
+            names_array = [user.username for user in User.objects.all()]
+            print(names_array)
+            for i, word in enumerate(text_array):
+                if word in names_array:
+                    print(i, word)
+                    text_array[i] = word.capitalize()
+            print(text_array)
+            text = " ".join(text_array)
+            print(text)
+            resVector = split(text)
+        except Exception as e:
+            print(e)
             return Response("No se puedo procesar el audio", status=status.HTTP_400_BAD_REQUEST)
 
         if settings.USE_S3:

@@ -56,7 +56,7 @@ const RespuestaAuditoria: React.FC = () => {
 					<div>{respuesta?.notas || 'No hay notas'}</div>
 					<IonItemDivider />
 					<h2>Imagenes:</h2>
-					{respuesta?.imagen.url ? (
+					{respuesta?.imagen && respuesta?.imagen.url ? (
 						<IonThumbnail onClick={(e: any) => setShowPopover({ showPopover: true, event: e })}>
 							<IonImg src={respuesta?.imagen.url} />
 						</IonThumbnail>
@@ -64,12 +64,14 @@ const RespuestaAuditoria: React.FC = () => {
 						'No hay imagenes'
 					)}
 				</div>
-				<IonPopover
-					event={popoverState.event}
-					isOpen={popoverState.showPopover}
-					onDidDismiss={() => setShowPopover({ showPopover: false, event: undefined })}>
-					<IonImg src={respuesta?.imagen.url} />
-				</IonPopover>
+				{respuesta?.imagen && (
+					<IonPopover
+						event={popoverState.event}
+						isOpen={popoverState.showPopover}
+						onDidDismiss={() => setShowPopover({ showPopover: false, event: undefined })}>
+						<IonImg src={respuesta?.imagen.url} />
+					</IonPopover>
+				)}
 			</IonContent>
 		</PageWrapper>
 	);

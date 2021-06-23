@@ -10,7 +10,9 @@ import {
 	IonList,
 	IonLabel,
 	IonItem,
-	IonListHeader
+	IonListHeader,
+	IonItemDivider,
+	IonButtons
 } from '@ionic/react';
 import PageWrapper from '../components/PageWrapper';
 import { useHistory, useParams } from 'react-router-dom';
@@ -46,7 +48,7 @@ export default function DetallesIncidente() {
 			type: MODIFY_INCIDENTE_STATE,
 			payload: { id, status: 'Procesando' }
 		});
-		history.push('/incidentes');
+		history.replace('/incidentes');
 	};
 
 	const resolverIncidente = async () => {
@@ -80,18 +82,21 @@ export default function DetallesIncidente() {
 				payload: { id, status: 'Confirmado' }
 			});
 			console.log(incidente);
-			const { data } = await axiosInstance(`/api/auditorias/respuesta/${incidente.incidente.respuesta}/`, {
-				headers: {
-					Authorization: `Token ${user.token ?? ''}`
+			const { data } = await axiosInstance(
+				`/api/auditorias/respuesta/${incidente.incidente.respuesta}/`,
+				{
+					headers: {
+						Authorization: `Token ${user.token ?? ''}`
+					}
 				}
-			});
+			);
 			await axiosInstance(`/api/auditorias/auditoria/${data.auditoria}/resultado/`, {
 				headers: {
 					Authorization: `Token ${user.token ?? ''}`
 				}
 			});
 		}
-		history.push('/incidentes');
+		history.replace('/incidentes');
 	};
 
 	return (
@@ -101,11 +106,11 @@ export default function DetallesIncidente() {
 					<IonHeader>
 						<IonToolbar>
 							<IonTitle>Incidente</IonTitle>
-							<IonIcon
-								slot='start'
-								size='large'
-								icon={arrowBack}
-								onClick={() => history.goBack()}></IonIcon>
+							<IonButtons slot='start'>
+								<IonButton color='secondary' onClick={() => history.goBack()}>
+									<IonIcon icon={arrowBack} />
+								</IonButton>
+							</IonButtons>
 						</IonToolbar>
 					</IonHeader>
 					<IonContent>
@@ -135,29 +140,18 @@ export default function DetallesIncidente() {
 							</IonItem>
 							<IonItem className=''>
 								<IonLabel color='medium' slot='start'>
-									Respuesta
-								</IonLabel>
-								<IonLabel>{incidente.incidente.respuesta}</IonLabel>
-							</IonItem>
-							<IonItem className=''>
-								<IonLabel color='medium' slot='start'>
-									Accion
-								</IonLabel>
-								<IonLabel>{incidente.incidente.accion}</IonLabel>
-							</IonItem>
-							<IonItem className=''>
-								<IonLabel color='medium' slot='start'>
 									Responsable
 								</IonLabel>
-								<IonLabel>Id: {incidente.nombre_del_usuario_asignado}</IonLabel>
-							</IonItem>
-							<IonItem className=''>
-								<IonLabel color='medium' slot='start'>
-									Email
-								</IonLabel>
-								<IonLabel>{incidente.email_del_usuario_asignado}</IonLabel>
+								<IonLabel>{incidente.nombre_del_usuario_asignado}</IonLabel>
 							</IonItem>
 						</IonList>
+						<IonItemDivider />
+						<div className='ion-padding'>
+							<h3>
+								<strong>Acción</strong>
+							</h3>
+							<div>{incidente.incidente.accion}</div>
+						</div>
 					</IonContent>
 					<IonFooter className='center-content'>
 						{user.user_id !== incidente.incidente.reporta &&
